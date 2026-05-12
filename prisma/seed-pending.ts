@@ -50,7 +50,6 @@ async function main() {
         description: `Espectacular unidad de ${car.brand} ${car.model} en estado prístino. Servicios oficiales en concesionaria documentados. Titular al día, lista para transferir sin detalles ni rayones. Cubiertas Michelin nuevas y tratamiento acrílico cerámico reciente. Una oportunidad única para exigentes.`,
         fuel: "Nafta",
         transmission: "Automática",
-        engine: "Motor Turbo Premium",
         doors: 5,
         color: "Gris Plata Metálico",
         location: "Capital Federal",
