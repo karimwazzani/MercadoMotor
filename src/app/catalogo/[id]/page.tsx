@@ -83,9 +83,9 @@ export default async function VehicleDetail({
   }
 
   const mainImage = vehicle.images.find(img => img.isMain) || vehicle.images[0];
-  const sellerName = vehicle.agencyId 
+  const sellerName = (vehicle.agencyId 
     ? vehicle.agency?.tradeName 
-    : `${vehicle.user.name} ${vehicle.user.lastName || ''}`;
+    : `${vehicle.user.name || 'Usuario'} ${vehicle.user.lastName || ''}`) || "Vendedor";
 
   let parsedEquipment: string[] = [];
   try {
