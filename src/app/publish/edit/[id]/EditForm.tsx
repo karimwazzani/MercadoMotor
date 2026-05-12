@@ -167,7 +167,7 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
 
       Object.entries(formData).forEach(([key, value]) => {
         if (key !== "province" && key !== "municipality" && key !== "locality" && key !== "equipment") {
-          uploadData.append(key, typeof value === 'boolean' ? String(value) : value);
+          uploadData.append(key, typeof value === 'boolean' ? String(value) : value as string);
         }
       });
       uploadData.append("location", location);
