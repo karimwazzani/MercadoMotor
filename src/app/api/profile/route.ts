@@ -2,9 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { promises as fs } from "fs";
-import path from "path";
-import crypto from "crypto";
+import { uploadToCloud } from "@/lib/storage";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -38,19 +36,7 @@ export async function PUT(req: Request) {
     let imageUrl = null;
 
     if (file && file.size > 0) {
-      const uploadDir = path.join(process.cwd(), "public", "uploads", "profiles");
-      await fs.mkdir(uploadDir, { recursive: true });
-
-      const extension = path.extname(file.name);
-      const uniqueId = crypto.randomUUID();
-      const fileName = `${uniqueId}${extension}`;
-      const filePath = path.join(uploadDir, fileName);
-
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      await fs.writeFile(filePath, buffer);
-
-      imageUrl = `/uploads/profiles/${fileName}`;
+      imageUrl = await uploadToCloud(file, "profiles");
     }
 
     if (user.accountType === "AGENCIA") {

@@ -2,9 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma"; // Importar la instancia global
-import { promises as fs } from "fs";
-import path from "path";
-import crypto from "crypto";
+import { uploadToCloud } from "@/lib/storage";
 
 export async function POST(req: Request) {
   try {
@@ -50,20 +48,12 @@ export async function POST(req: Request) {
     const uploadedImagesPaths: { url: string; order: number; isMain: boolean }[] = [];
 
     if (files.length > 0) {
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-      await fs.mkdir(uploadDir, { recursive: true });
-
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         if (file && file.name) {
-          const extension = path.extname(file.name);
-          const uniqueId = crypto.randomUUID();
-          const fileName = `${uniqueId}${extension}`;
-          const filePath = path.join(uploadDir, fileName);
-          const bytes = await file.arrayBuffer();
-          await fs.writeFile(filePath, Buffer.from(bytes));
+          const publicUrl = await uploadToCloud(file, "vehicles");
           uploadedImagesPaths.push({
-            url: `/uploads/${fileName}`,
+            url: publicUrl,
             order: i,
             isMain: i === 0,
           });

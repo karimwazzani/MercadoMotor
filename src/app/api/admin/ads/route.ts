@@ -2,9 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { promises as fs } from "fs";
-import path from "path";
-import crypto from "crypto";
+import { uploadToCloud } from "@/lib/storage";
 
 export async function POST(req: Request) {
   try {
@@ -31,17 +29,7 @@ export async function POST(req: Request) {
     // Procesar archivo
     let mediaUrl = "";
     if (file) {
-      const uploadDir = path.join(process.cwd(), "public", "uploads", "ads");
-      await fs.mkdir(uploadDir, { recursive: true });
-
-      const extension = path.extname(file.name);
-      const uniqueId = crypto.randomUUID();
-      const fileName = `${uniqueId}${extension}`;
-      const filePath = path.join(uploadDir, fileName);
-      
-      const bytes = await file.arrayBuffer();
-      await fs.writeFile(filePath, Buffer.from(bytes));
-      mediaUrl = `/uploads/ads/${fileName}`;
+      mediaUrl = await uploadToCloud(file, "ads");
     }
 
     // Crear anuncio
@@ -93,17 +81,7 @@ export async function PATCH(req: Request) {
 
     // Si hay un archivo nuevo, procesarlo
     if (file && typeof file !== "string") {
-      const uploadDir = path.join(process.cwd(), "public", "uploads", "ads");
-      await fs.mkdir(uploadDir, { recursive: true });
-
-      const extension = path.extname(file.name);
-      const uniqueId = crypto.randomUUID();
-      const fileName = `${uniqueId}${extension}`;
-      const filePath = path.join(uploadDir, fileName);
-      
-      const bytes = await file.arrayBuffer();
-      await fs.writeFile(filePath, Buffer.from(bytes));
-      dataToUpdate.mediaUrl = `/uploads/ads/${fileName}`;
+      dataToUpdate.mediaUrl = await uploadToCloud(file, "ads");
       // Actualizar tipo basado en archivo
       dataToUpdate.type = file.type.includes("video") ? "VIDEO" : "IMAGE";
     }

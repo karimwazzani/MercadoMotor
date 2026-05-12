@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { promises as fs } from "fs";
-import path from "path";
+import { uploadToCloud } from "@/lib/storage";
 import crypto from "crypto";
 
 export async function POST(req: Request) {
@@ -49,23 +48,12 @@ export async function POST(req: Request) {
     let logoPath = null;
     let coverPath = null;
 
-    const uploadDir = path.join(process.cwd(), "public/uploads/agencies");
-    await fs.mkdir(uploadDir, { recursive: true });
-
     if (logoFile && logoFile.size > 0) {
-      const bytes = await logoFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const filename = `${Date.now()}-logo-${logoFile.name.replace(/\s+/g, "_")}`;
-      await fs.writeFile(path.join(uploadDir, filename), buffer);
-      logoPath = `/uploads/agencies/${filename}`;
+      logoPath = await uploadToCloud(logoFile, "agencies");
     }
 
     if (coverFile && coverFile.size > 0) {
-      const bytes = await coverFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const filename = `${Date.now()}-cover-${coverFile.name.replace(/\s+/g, "_")}`;
-      await fs.writeFile(path.join(uploadDir, filename), buffer);
-      coverPath = `/uploads/agencies/${filename}`;
+      coverPath = await uploadToCloud(coverFile, "agencies");
     }
 
     // Crear la agencia
@@ -150,23 +138,12 @@ export async function PUT(req: Request) {
     let logoPath = existingAgency.logo;
     let coverPath = existingAgency.coverImage;
 
-    const uploadDir = path.join(process.cwd(), "public/uploads/agencies");
-    await fs.mkdir(uploadDir, { recursive: true });
-
     if (logoFile && logoFile.size > 0) {
-      const bytes = await logoFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const filename = `${Date.now()}-logo-${logoFile.name.replace(/\s+/g, "_")}`;
-      await fs.writeFile(path.join(uploadDir, filename), buffer);
-      logoPath = `/uploads/agencies/${filename}`;
+      logoPath = await uploadToCloud(logoFile, "agencies");
     }
 
     if (coverFile && coverFile.size > 0) {
-      const bytes = await coverFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const filename = `${Date.now()}-cover-${coverFile.name.replace(/\s+/g, "_")}`;
-      await fs.writeFile(path.join(uploadDir, filename), buffer);
-      coverPath = `/uploads/agencies/${filename}`;
+      coverPath = await uploadToCloud(coverFile, "agencies");
     }
 
     const branchesData = formData.get("branches") ? JSON.parse(formData.get("branches") as string) : [];

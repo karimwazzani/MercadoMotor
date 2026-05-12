@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { promises as fs } from "fs";
-import path from "path";
-import crypto from "crypto";
+import { uploadToCloud, supabase } from "@/lib/storage";
 import prisma from "@/lib/prisma";
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -63,20 +61,19 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
     // Proceso 1: Destrucción local y en DB de imagenes seleccionadas
     if (imagesToDelete.length > 0) {
-      const uploadDir = path.join(process.cwd(), "public");
-      
       const imagesToNuke = await prisma.image.findMany({
         where: { id: { in: imagesToDelete }, vehicleId }
       });
 
       for (const img of imagesToNuke) {
-        // Asegurarnos de que no borramos una imagen dummy (/suv.png), unicamente archivos subidos a /uploads/*
-        if (img.url.startsWith("/uploads/")) {
+        if (img.url.includes("/uploads/")) {
            try {
-              const fullPath = path.join(uploadDir, img.url);
-              await fs.unlink(fullPath);
-           } catch (fsError) {
-              console.error(`No se pudo eliminar el fichero fiscal ${img.url}`, fsError);
+              const fileName = img.url.split("/uploads/")[1];
+              if (fileName) {
+                await supabase.storage.from("uploads").remove([fileName]);
+              }
+           } catch (err) {
+              console.error(`No se pudo eliminar el archivo de la nube ${img.url}`, err);
            }
         }
       }
@@ -95,23 +92,12 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     let startingOrder = Math.max(0, remainingImagesCount);
 
     if (newFiles.length > 0) {
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-      await fs.mkdir(uploadDir, { recursive: true });
-
       for (let i = 0; i < newFiles.length; i++) {
         const file = newFiles[i];
-        const extension = path.extname(file.name);
-        const uniqueId = crypto.randomUUID();
-        const fileName = `${uniqueId}${extension}`;
-        const filePath = path.join(uploadDir, fileName);
-
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-
-        await fs.writeFile(filePath, buffer);
+        const publicUrl = await uploadToCloud(file, "vehicles");
 
         uploadedImagesPaths.push({
-          url: `/uploads/${fileName}`,
+          url: publicUrl,
           order: startingOrder + i,
           isMain: startingOrder === 0 && i === 0, 
         });
