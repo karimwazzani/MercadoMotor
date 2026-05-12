@@ -3,15 +3,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
-export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || (session.user as any).accountType !== "ADMINISTRADOR") {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const { id } = await params;
-    const { status } = await req.json(); // "APPROVED" | "REJECTED"
+    const { id, status } = await req.json(); // "APPROVED" | "REJECTED"
 
     const updatedAgency = await prisma.agency.update({
       where: { id },
