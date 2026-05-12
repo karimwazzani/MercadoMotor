@@ -19,6 +19,12 @@ export default function RegisterForm() {
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
     defaultValues: {
       accountType: "PARTICULAR",
+      name: "",
+      lastName: "",
+      tradeName: "",
+      email: "",
+      phone: "",
+      password: "",
       province: "",
       municipality: "",
       locality: ""
