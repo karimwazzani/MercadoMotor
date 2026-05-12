@@ -473,8 +473,8 @@ export default function PublishForm() {
               
               <div className={styles.equipmentContainer}>
                 {EQUIPMENT_CATEGORIES.map((cat, catIdx) => (
-                  <div key={`cat-${catIdx}-${cat.title}`} className={styles.equipmentSection}>
-                    <h3 className={styles.equipmentSectionTitle}>{cat.title}</h3>
+                  <div key={`cat-${catIdx}-${cat.category}`} className={styles.equipmentSection}>
+                    <h3 className={styles.equipmentSectionTitle}>{cat.category}</h3>
                     <div className={styles.equipmentGrid}>
                       {cat.items.map((item, itemIdx) => (
                         <button 
