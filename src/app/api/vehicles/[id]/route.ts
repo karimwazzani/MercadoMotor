@@ -231,15 +231,16 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
       return NextResponse.json({ message: "No tienes permiso para borrar este vehículo." }, { status: 403 });
     }
 
-    // Borrar archivos de imagen físicamente
-    const uploadDir = path.join(process.cwd(), "public");
+    // Borrar archivos de imagen de Supabase
     for (const img of vehicle.images) {
-      if (img.url.startsWith("/uploads/")) {
+      if (img.url.includes("/uploads/")) {
         try {
-          const fullPath = path.join(uploadDir, img.url);
-          await fs.unlink(fullPath);
+          const fileName = img.url.split("/uploads/")[1];
+          if (fileName) {
+            await supabase.storage.from("uploads").remove([fileName]);
+          }
         } catch (e) {
-          console.error("Error al borrar archivo físico:", e);
+          console.error("Error al borrar archivo en la nube:", e);
         }
       }
     }
