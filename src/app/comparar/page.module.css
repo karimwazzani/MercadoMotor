@@ -1,0 +1,138 @@
+.page {
+  background-color: var(--color-bg-base);
+  min-height: 100vh;
+  padding-bottom: 5rem;
+}
+
+.header {
+  background-color: var(--color-white);
+  padding: 3rem 0;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 3rem;
+}
+
+.backBtn {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: var(--color-primary);
+}
+
+.comparisonGrid {
+  display: flex;
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+}
+
+.labelsColumn {
+  width: 200px;
+  background: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.imagePlaceholder {
+  height: 200px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.labelRow {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.vehicleColumn {
+  flex: 1;
+  min-width: 250px;
+  border-right: 1px solid var(--color-border);
+  transition: background 0.3s;
+}
+
+.vehicleColumn:last-child {
+  border-right: none;
+}
+
+.vehicleColumn:hover {
+  background-color: #fafafa;
+}
+
+.vehicleHeader {
+  height: 200px;
+  padding: 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  height: 100px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.vehicleName {
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.vehicleVersion {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.valueRow {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.highlight {
+  color: #10b981;
+  background-color: rgba(16, 185, 129, 0.05);
+  font-weight: 700;
+}
+
+.footerAction {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.viewBtn {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  background: var(--color-primary);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.emptyContainer {
+  text-align: center;
+  padding: 5rem 0;
+}
+
+@media (max-width: 900px) {
+  .comparisonGrid {
+    overflow-x: auto;
+  }
+}

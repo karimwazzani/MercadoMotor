@@ -1,0 +1,231 @@
+.adminPage {
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.header {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 1rem 0;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.logoAccent {
+  color: var(--color-accent);
+}
+
+.badge {
+  font-size: 0.7rem;
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+}
+
+.navLink {
+  color: white;
+  text-decoration: none;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.navLink:hover {
+  opacity: 1;
+}
+
+.main {
+  padding: 3rem 0;
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 2.25rem;
+  color: var(--color-primary);
+  font-weight: 800;
+}
+
+.counter {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  margin-bottom: 3rem;
+  font-size: 1.1rem;
+}
+
+.tableContainer {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f1f5f9;
+  padding: 1rem 1.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.table td {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.agencyCell {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.miniLogo {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+.noLogo {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f1f5f9;
+  border-radius: 50%;
+  font-size: 1.2rem;
+}
+
+.agencyLink {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.2s;
+}
+
+.agencyLink:hover {
+  opacity: 0.7;
+}
+
+.agencyName {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.slug {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.userName {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.userEmail {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.statusPENDING {
+  background-color: #fffbeb;
+  color: #92400e;
+}
+
+.statusAPPROVED {
+  background-color: #ecfdf5;
+  color: #065f46;
+}
+
+.statusREJECTED {
+  background-color: #fef2f2;
+  color: #991b1b;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btnApprove {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btnReject {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btnReset {
+  background-color: transparent;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btnApprove:hover { background-color: #059669; }
+.btnReject:hover { background-color: #dc2626; }
+.btnReset:hover { background-color: #f8fafc; }

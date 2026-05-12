@@ -1,0 +1,129 @@
+.agenciasPage {
+  background-color: #f9f7f2;
+  min-height: 100vh;
+  padding-bottom: 5rem;
+}
+
+.header {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 4rem 0;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  opacity: 0.8;
+  font-weight: 300;
+}
+
+.agencyGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.agencyCard {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+}
+
+.agencyCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.logoWrapper {
+  position: relative;
+  height: 180px;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  object-fit: contain;
+  padding: 1.5rem;
+}
+
+.logoPlaceholder {
+  font-size: 4rem;
+  font-weight: 900;
+  color: var(--color-border);
+}
+
+.info {
+  padding: 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.agencyName {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+}
+
+.location {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.stats {
+  margin-bottom: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.statItem {
+  font-size: 1.1rem;
+  color: var(--color-primary);
+}
+
+.viewBtn {
+  background-color: #c8b89a;
+  color: #2c2415;
+  text-decoration: none;
+  padding: 0.8rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+  margin-top: auto;
+}
+
+.viewBtn:hover {
+  background-color: #b8a488;
+}
+
+.noResults {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 5rem 2rem;
+  background: white;
+  border-radius: 20px;
+  border: 2px dashed var(--color-border);
+}
+
+.noResults h2 {
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}

@@ -1,0 +1,425 @@
+.publishPage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-secondary);
+}
+
+.header {
+  background-color: var(--color-bg-base);
+  border-bottom: 1px solid var(--color-border);
+  padding: 1.25rem 0;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.logoAccent {
+  color: var(--color-accent);
+}
+
+.btnClose {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.btnClose:hover {
+  color: var(--color-primary);
+}
+
+.progressContainer {
+  height: 4px;
+  background-color: var(--color-border);
+  width: 100%;
+}
+
+.progressBar {
+  height: 100%;
+  background-color: var(--color-accent);
+  transition: width 0.4s ease-in-out;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 20px;
+}
+
+.formCard {
+  background-color: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 3rem;
+  width: 650px;
+  max-width: 100%;
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+}
+
+.stepIndicator {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  margin-bottom: 2.5rem;
+  line-height: 1.5;
+}
+
+.errorMessage {
+  background-color: #FEF2F2;
+  color: #991B1B;
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #FCA5A5;
+}
+
+.stepContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.row {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.row > div {
+  flex: 1;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.inputGroup label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.inputGroup input,
+.inputGroup select,
+.descriptionTextarea {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  transition: all var(--transition-fast);
+  background-color: #fcfcfc;
+  width: 100%;
+}
+
+.inputGroup input:focus,
+.inputGroup select:focus,
+.descriptionTextarea:focus {
+  border-color: var(--color-accent);
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(184, 151, 89, 0.1);
+}
+
+.inputGroup input:disabled,
+.inputGroup select:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* PRECIOS Y MONEDA */
+.priceContainer {
+  background-color: #f9f9f9;
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  margin-bottom: 1.5rem;
+}
+
+.currencyToggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.currencyToggle button {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  background: white;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.activeCurrency {
+  background-color: var(--color-accent) !important;
+  color: white !important;
+  border-color: var(--color-accent) !important;
+}
+
+.priceInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.priceSymbol {
+  position: absolute;
+  left: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: 1.2rem;
+}
+
+.priceInput {
+  padding-left: 4rem !important;
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+  color: var(--color-primary);
+}
+
+/* CHECKBOXES */
+.checksGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.checkboxLabel:hover {
+  background-color: #f5f5f5;
+}
+
+.checkboxLabel input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-accent);
+}
+
+/* EQUIPAMIENTO */
+.equipmentContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 1rem;
+}
+
+.equipmentSectionTitle {
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: var(--color-primary);
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+.equipmentGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.equipmentItem {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 30px;
+  background: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.equipmentItem:hover {
+  border-color: var(--color-accent);
+}
+
+.equipmentItemActive {
+  background-color: var(--color-accent) !important;
+  color: white !important;
+  border-color: var(--color-accent) !important;
+}
+
+/* FOTOS */
+.photoUploadContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.photoUploadTrigger {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 3rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.photoUploadTrigger:hover {
+  border-color: var(--color-accent);
+  background-color: rgba(184, 151, 89, 0.05);
+}
+
+.uploadIcon {
+  font-size: 2.5rem;
+  color: var(--color-accent);
+  line-height: 1;
+}
+
+.photoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.photoItem {
+  aspect-ratio: 1;
+  position: relative;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.btnRemovePhoto {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(255, 0, 0, 0.8);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.mainPhotoTag {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.7rem;
+  text-align: center;
+  padding: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* ACCIONES */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.btnBack {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btnNext, .btnSubmit {
+  background-color: var(--color-accent);
+  color: white;
+  padding: 0.9rem 2.5rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnNext:hover, .btnSubmit:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(184, 151, 89, 0.2);
+}
+
+.btnSubmit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.descriptionTextarea {
+  min-height: 200px;
+  resize: vertical;
+}
+
+.fileInputHidden {
+  display: none;
+}
+
+@media (max-width: 650px) {
+  .row, .checksGrid {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+}

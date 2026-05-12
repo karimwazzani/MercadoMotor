@@ -1,0 +1,718 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  background-color: var(--color-bg-base);
+  border-bottom: 1px solid var(--color-border);
+  padding: 1.25rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: -0.04em;
+}
+
+.logoAccent {
+  color: var(--color-accent);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.navLink {
+  color: var(--color-text);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color var(--transition-fast);
+}
+
+.navLink:hover {
+  color: var(--color-accent);
+}
+
+.btnPrimary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  padding: 0.6rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  transition: all var(--transition-fast);
+  border: 1px solid var(--color-primary);
+}
+
+.btnPrimary:hover {
+  background-color: var(--color-primary-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.btnAccent {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all var(--transition-fast);
+  border: none;
+  cursor: pointer;
+}
+
+.btnAccent:hover {
+  background-color: var(--color-accent-hover);
+  box-shadow: var(--shadow-lg);
+}
+
+.main {
+  flex: 1;
+}
+
+/* HERO SECTION */
+.hero {
+  position: relative;
+  min-height: 80vh;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 2.5rem;
+  border-bottom: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.heroImageWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.heroBgImage {
+  object-fit: cover;
+  object-position: center;
+  filter: blur(2px); /* Menos borroso */
+  transform: scale(1.05); /* Escalamos un poquito para evitar bordes blancos por el blur */
+}
+
+/* Dark gradient overlay to ensure text readability over the image */
+.heroOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(28, 25, 23, 0.85) 0%, rgba(28, 25, 23, 0.4) 100%);
+  z-index: 1;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  color: var(--color-white);
+  width: 100%;
+  max-width: 900px;
+  padding-right: 20px;
+}
+
+.heroTitle {
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.heroSubtitle {
+  color: #E0E0E0;
+  font-size: 1.25rem;
+  max-width: 600px;
+  margin-bottom: 3rem;
+  font-weight: 300;
+  line-height: 1.6;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+/* SEARCH BAR */
+.searchBar {
+  display: flex;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 0.3rem;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  min-width: 0;
+  align-items: stretch;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.searchFields {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  padding: 0.8rem 1.2rem; /* Reducimos altura */
+  font-size: 1rem;
+  background: transparent;
+  outline: none;
+  color: var(--color-primary);
+  font-family: inherit;
+}
+
+.searchInput::placeholder {
+  color: #999;
+}
+
+.searchDivider {
+  width: 1px;
+  height: 60%;
+  background-color: var(--color-border);
+  margin: 0 0.5rem;
+}
+
+.searchSelect {
+  border: none;
+  padding: 0.8rem 1.2rem; /* Reducimos altura */
+  font-size: 1rem;
+  background: transparent;
+  outline: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  appearance: none;
+}
+
+.searchButton {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  border: none;
+  padding: 0 2rem;
+  border-radius: var(--radius-sm); /* Igual al resto de los botones */
+  font-weight: 600;
+  font-size: 1.05rem;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.searchButton:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.arrowIcon {
+  font-size: 1.2rem;
+}
+
+/* CATEGORIES / FEATURED */
+.categories {
+  padding: 6rem 20px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 3rem;
+}
+
+.sectionTitle {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+}
+
+.linkAccent {
+  color: var(--color-accent);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  transition: color var(--transition-fast);
+}
+
+.linkAccent:hover {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+.interactiveCarouselWrapper {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  padding-bottom: 2rem;
+  mask-image: linear-gradient(to right, transparent, black 2%, black 98%, transparent);
+}
+
+.interactiveCarouselWrapper.noMask {
+  mask-image: none;
+}
+
+.interactiveCarouselTrack {
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+  overflow-x: scroll; /* Vital for javascript scroll control and manual override */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+}
+
+.interactiveCarouselTrack:active {
+  cursor: grabbing;
+}
+
+.interactiveCarouselTrack::-webkit-scrollbar {
+  display: none;
+}
+
+.vehicleCard {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  flex-shrink: 0;
+}
+
+.vehicleCard:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-accent);
+}
+
+.vehicleCardSmall {
+  width: 220px;
+}
+
+.vehicleImageContainer {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  background-color: var(--color-bg-secondary);
+}
+
+.vehicleImageContainerSmall {
+  height: 140px;
+}
+
+.vehicleImage {
+  object-fit: cover;
+}
+
+.badgePremium {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: rgba(15, 15, 15, 0.85);
+  color: var(--color-accent);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(184, 151, 89, 0.3);
+}
+
+.vehicleInfo {
+  padding: 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cardMetaRow {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.cardMetaBadge {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-muted);
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+.vehicleName {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 0.2rem;
+  line-height: 1.3;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vehicleNameSmall {
+  font-size: 1rem;
+}
+
+.vehicleDetails {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+  height: 2.5rem;
+  line-height: 1.25rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* CATEGORIES GRID */
+.categorySection {
+  margin-top: -1.5rem;
+  position: relative;
+  z-index: 10;
+  margin-bottom: 4rem;
+}
+
+.categoryGrid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  background: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  max-width: fit-content;
+  margin: 0 auto;
+}
+
+.categoryItem {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 2rem;
+  text-decoration: none;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  border-right: 1px solid rgba(0,0,0,0.05);
+}
+
+.categoryItem:last-child {
+  border-right: none;
+}
+
+.categoryItem:hover {
+  color: var(--color-accent);
+  transform: scale(1.05);
+}
+
+/* Removiendo estilos de iconos viejos */
+.categoryIcon {
+  display: none;
+}
+
+/* NEW ARRIVALS */
+.newArrivals {
+  margin-bottom: 5rem;
+}
+
+/* SELL SECTION */
+.sellSection {
+  background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+  padding: 6rem 0;
+  margin: 4rem 0 0 0;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  /* Sombras arriba y abajo */
+  box-shadow: 
+    0 -20px 40px rgba(0,0,0,0.15), 
+    0 20px 40px rgba(0,0,0,0.15);
+  z-index: 5;
+}
+
+.sellContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.sellContent {
+  max-width: 600px;
+  text-align: left;
+}
+
+.sellTitle {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+}
+
+.sellText {
+  font-size: 1.25rem;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 2.5rem;
+}
+
+.btnSellNow {
+  display: inline-block;
+  background: var(--color-accent);
+  color: var(--color-primary);
+  padding: 1.2rem 2.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
+}
+
+.btnSellNow:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 30px rgba(212, 175, 55, 0.3);
+}
+
+.sellBadge {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.badgeItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255,255,255,0.05);
+  padding: 1rem 2rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+}
+
+.badgeIcon {
+  font-size: 1.5rem;
+}
+
+@media (max-width: 992px) {
+  .categoryGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .sellContainer {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .sellTitle {
+    font-size: 2.5rem;
+  }
+  
+  .sellBadge {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 576px) {
+  .categoryGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.vehiclePriceRow {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+}
+
+.vehiclePrice {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+.vehiclePriceSmall {
+  font-size: 1.1rem;
+}
+
+.vehicleLocation {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+/* AGENCIES */
+/* AGENCY PREMIUM BANNER (Right Aligned) */
+.agencyPremiumSection {
+  background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+  padding: 5rem 0;
+  margin: 4rem 0;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  /* Sombras arriba y abajo */
+  box-shadow: 
+    0 -20px 40px rgba(0,0,0,0.15), 
+    0 20px 40px rgba(0,0,0,0.15);
+  z-index: 5;
+}
+
+.agencyPremiumContainer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.agencyPremiumContent {
+  max-width: 600px;
+  text-align: right;
+}
+
+.agencies {
+  padding-bottom: 6rem;
+}
+
+.agenciesBanner {
+  background-color: var(--color-bg-dark);
+  border-radius: var(--radius-lg);
+  padding: 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gold accent border on top of agencies banner */
+.agenciesBanner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: var(--color-accent);
+}
+
+.agenciesContent {
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.agenciesTitle {
+  color: var(--color-white);
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.agenciesText {
+  color: #A0A0A0;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* FOOTER */
+.footer {
+  background-color: var(--color-bg-base);
+  border-top: 1px solid var(--color-border);
+  padding: 4rem 0 2rem;
+}
+
+.footerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.footerLogo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.footerLinks {
+  display: flex;
+  gap: 2rem;
+}
+
+.footerLinks a {
+  color: var(--color-text-muted);
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.footerLinks a:hover {
+  color: var(--color-accent);
+}
+
+.footerBottom {
+  text-align: center;
+  color: #A0A0A0;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .heroTitle { font-size: 2.5rem; }
+  .searchBar { flex-direction: column; }
+  .searchDivider { display: none; }
+  .searchSelect { border-top: 1px solid var(--color-border); }
+  .searchButton { justify-content: center; padding: 1rem; }
+  .footerTop { flex-direction: column; gap: 2rem; }
+}
+
+/* NEW SEARCH TABS */
+.searchContainer { width: 100%; max-width: 858px; margin-top: 1rem; }
+.searchTabs { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; justify-content: flex-start; }
+.searchTab { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.15); color: white; padding: 0.5rem 1.25rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
+.activeTab { background: white !important; color: #1C1917 !important; }

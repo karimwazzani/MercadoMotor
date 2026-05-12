@@ -1,0 +1,274 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { promises as fs } from "fs";
+import path from "path";
+import crypto from "crypto";
+import prisma from "@/lib/prisma";
+
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user) {
+      return NextResponse.json({ message: "No autorizado" }, { status: 401 });
+    }
+
+    const userId = (session.user as any).id;
+    const awaitedParams = await params;
+    const vehicleId = awaitedParams.id;
+
+    // Verificar propiedad
+    const existingVehicle = await prisma.vehicle.findUnique({
+      where: { id: vehicleId },
+      include: { images: true }
+    });
+
+    if (!existingVehicle || existingVehicle.userId !== userId) {
+      return NextResponse.json({ message: "Vehículo no encontrado o protegido." }, { status: 403 });
+    }
+
+    const formData = await req.formData();
+    
+    // Extracción de datos base
+    const category = formData.get("category") as string;
+    const brand = formData.get("brand") as string;
+    const model = formData.get("model") as string;
+    const version = formData.get("version") as string;
+    const year = formData.get("year") as string;
+    const location = formData.get("location") as string;
+    const mileage = formData.get("mileage") as string;
+    const fuel = formData.get("fuel") as string;
+    const transmission = formData.get("transmission") as string;
+    const engine = formData.get("engine") as string;
+    const color = formData.get("color") as string;
+    const doors = formData.get("doors") as string;
+    const traction = formData.get("traction") as string;
+    const price = formData.get("price") as string;
+    const currency = formData.get("currency") as string;
+    const description = formData.get("description") as string;
+    const acceptsTradeIn = formData.get("acceptsTradeIn") === "true";
+    const acceptsFinancing = formData.get("acceptsFinancing") === "true";
+    const equipment = formData.get("equipment") as string;
+
+    // Manejar imagenes a eliminar
+    const imagesToDeleteJson = formData.get("imagesToDelete") as string;
+    let imagesToDelete: string[] = [];
+    if (imagesToDeleteJson) {
+      try {
+        imagesToDelete = JSON.parse(imagesToDeleteJson);
+      } catch (e) {
+        console.error("No se pudo parsear imagesToDelete");
+      }
+    }
+
+    // Proceso 1: Destrucción local y en DB de imagenes seleccionadas
+    if (imagesToDelete.length > 0) {
+      const uploadDir = path.join(process.cwd(), "public");
+      
+      const imagesToNuke = await prisma.image.findMany({
+        where: { id: { in: imagesToDelete }, vehicleId }
+      });
+
+      for (const img of imagesToNuke) {
+        // Asegurarnos de que no borramos una imagen dummy (/suv.png), unicamente archivos subidos a /uploads/*
+        if (img.url.startsWith("/uploads/")) {
+           try {
+              const fullPath = path.join(uploadDir, img.url);
+              await fs.unlink(fullPath);
+           } catch (fsError) {
+              console.error(`No se pudo eliminar el fichero fiscal ${img.url}`, fsError);
+           }
+        }
+      }
+
+      await prisma.image.deleteMany({
+        where: { id: { in: imagesToDelete } }
+      });
+    }
+
+    // Proceso 2: Agregar nuevas fotos
+    const newFiles = (formData.getAll("newImages") as File[]).filter(f => f.name && f.size > 0);
+    const uploadedImagesPaths: { url: string; order: number; isMain: boolean }[] = [];
+
+    // Calcular el order base basado en las imagenes que quedaron
+    const remainingImagesCount = existingVehicle.images.length - imagesToDelete.length;
+    let startingOrder = Math.max(0, remainingImagesCount);
+
+    if (newFiles.length > 0) {
+      const uploadDir = path.join(process.cwd(), "public", "uploads");
+      await fs.mkdir(uploadDir, { recursive: true });
+
+      for (let i = 0; i < newFiles.length; i++) {
+        const file = newFiles[i];
+        const extension = path.extname(file.name);
+        const uniqueId = crypto.randomUUID();
+        const fileName = `${uniqueId}${extension}`;
+        const filePath = path.join(uploadDir, fileName);
+
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+
+        await fs.writeFile(filePath, buffer);
+
+        uploadedImagesPaths.push({
+          url: `/uploads/${fileName}`,
+          order: startingOrder + i,
+          isMain: startingOrder === 0 && i === 0, 
+        });
+      }
+    }
+
+    // Asegurar si borramos la main image obligar a la primera remanente a ser isMain=true
+    if (imagesToDelete.length > 0) {
+      const dbImages = await prisma.image.findMany({
+        where: { 
+          vehicleId,
+          NOT: { id: { in: imagesToDelete } }
+        },
+        orderBy: { order: 'asc' }
+      });
+      
+      if (dbImages.length > 0 && !dbImages.some(img => img.isMain) && uploadedImagesPaths.length === 0) {
+        await prisma.image.update({
+          where: { id: dbImages[0].id },
+          data: { isMain: true }
+        });
+      }
+    }
+
+    // LÓGICA DE ALERTA DE PRECIO Y PRECIO ANTERIOR
+    const newPrice = parseFloat(price);
+    let previousPriceToStore = existingVehicle.previousPrice;
+
+    if (newPrice < existingVehicle.price) {
+      previousPriceToStore = existingVehicle.price;
+      // ... trigger notifications logic will follow ...
+    } else if (newPrice > existingVehicle.price) {
+      previousPriceToStore = null; // Si subió el precio, reseteamos el anterior
+    }
+
+    const updatedVehicle = await prisma.vehicle.update({
+      where: { id: vehicleId },
+      data: {
+        category,
+        brand,
+        model,
+        version,
+        year: parseInt(year),
+        mileage: parseInt(mileage) || 0,
+        fuel,
+        transmission,
+        engine,
+        color,
+        doors: doors ? parseInt(doors) : null,
+        traction,
+        location,
+        price: newPrice,
+        previousPrice: previousPriceToStore,
+        currency,
+        description,
+        equipment,
+        acceptsTradeIn,
+        acceptsFinancing,
+        status: "PENDING", // Devuelto a revision
+        images: {
+          create: uploadedImagesPaths
+        }
+      }
+    });
+
+    if (newPrice < existingVehicle.price) {
+      console.log(`[DEBUG] Price Drop Detected! Searching for interested users...`);
+      // 1. Buscar a todos los que tienen este auto en favoritos
+      const interestedUsers = await prisma.favorite.findMany({
+        where: { vehicleId },
+        include: { user: true }
+      });
+
+      console.log(`[DEBUG] Found ${interestedUsers.length} interested users.`);
+
+      const oldPriceStr = `${existingVehicle.currency === 'ARS' ? '$' : 'US$'} ${existingVehicle.price.toLocaleString()}`;
+      const newPriceStr = `${currency === 'ARS' ? '$' : 'US$'} ${newPrice.toLocaleString()}`;
+
+      for (const favorite of interestedUsers) {
+        if (favorite.user.email) {
+          console.log(`[DEBUG] Notifying user: ${favorite.user.email}`);
+          // 2. Crear notificación en DB (la campanita)
+          await prisma.notification.create({
+            data: {
+              userId: favorite.user.id,
+              title: "🔥 ¡Baja de precio!",
+              message: `El ${updatedVehicle.brand} ${updatedVehicle.model} que te interesa bajó a ${newPriceStr}`,
+              link: `/catalogo/${vehicleId}`,
+              type: "PRICE_DROP"
+            }
+          });
+
+          // 3. Enviar Mail (Simulado)
+          const { sendPriceDropEmail } = await import("@/lib/mailer");
+          await sendPriceDropEmail(
+            favorite.user.email,
+            `${updatedVehicle.brand} ${updatedVehicle.model}`,
+            oldPriceStr,
+            newPriceStr,
+            `${process.env.NEXTAUTH_URL}/catalogo/${vehicleId}`
+          );
+        }
+      }
+    }
+
+    return NextResponse.json({ message: "Corregido exitosamente" }, { status: 200 });
+
+  } catch (error) {
+    console.error("Editing API failed:", error);
+    return NextResponse.json({ message: "Ocurrió un error al actualizar" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ message: "No autorizado" }, { status: 401 });
+    }
+
+    const userId = (session.user as any).id;
+    const awaitedParams = await params;
+    const vehicleId = awaitedParams.id;
+
+    // Verificar propiedad
+    const vehicle = await prisma.vehicle.findUnique({
+      where: { id: vehicleId },
+      include: { images: true }
+    });
+
+    if (!vehicle || vehicle.userId !== userId) {
+      return NextResponse.json({ message: "No tienes permiso para borrar este vehículo." }, { status: 403 });
+    }
+
+    // Borrar archivos de imagen físicamente
+    const uploadDir = path.join(process.cwd(), "public");
+    for (const img of vehicle.images) {
+      if (img.url.startsWith("/uploads/")) {
+        try {
+          const fullPath = path.join(uploadDir, img.url);
+          await fs.unlink(fullPath);
+        } catch (e) {
+          console.error("Error al borrar archivo físico:", e);
+        }
+      }
+    }
+
+    // El borrado en DB de images ocurre por Cascade onDelete en el schema.prisma
+    await prisma.vehicle.delete({
+      where: { id: vehicleId }
+    });
+
+    return NextResponse.json({ message: "Publicación eliminada correctamente" });
+
+  } catch (error) {
+    console.error("Delete API failed:", error);
+    return NextResponse.json({ message: "Error al eliminar la publicación" }, { status: 500 });
+  }
+}
