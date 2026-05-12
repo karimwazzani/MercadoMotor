@@ -40,7 +40,6 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const mileage = formData.get("mileage") as string;
     const fuel = formData.get("fuel") as string;
     const transmission = formData.get("transmission") as string;
-    const engine = formData.get("engine") as string;
     const color = formData.get("color") as string;
     const doors = formData.get("doors") as string;
     const traction = formData.get("traction") as string;
@@ -159,7 +158,6 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         mileage: parseInt(mileage) || 0,
         fuel,
         transmission,
-        engine,
         color,
         doors: doors ? parseInt(doors) : null,
         traction,

@@ -41,7 +41,6 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
     mileage: vehicle.mileage ? vehicle.mileage.toString() : "",
     fuel: vehicle.fuel || "",
     transmission: vehicle.transmission || "",
-    engine: vehicle.engine || "",
     color: vehicle.color || "",
     doors: vehicle.doors ? vehicle.doors.toString() : "",
     price: vehicle.price ? vehicle.price.toString() : "",
@@ -62,8 +61,7 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
   const brands = categoryData ? Object.keys(categoryData).sort((a, b) => a === "Otro" ? 1 : b === "Otro" ? -1 : a.localeCompare(b)) : [];
   const models = (categoryData && formData.brand) ? Object.keys(categoryData[formData.brand] || {}).sort((a, b) => a === "Otro" ? 1 : b === "Otro" ? -1 : a.localeCompare(b)) : [];
   const versions = (categoryData && formData.brand && formData.model) ? (categoryData[formData.brand]?.[formData.model] || ["Otro"]) : [];
-  
-  const motorizations = formData.model ? (MOTORIZATION_DATA[formData.model] || ["Otro"]) : ["Otro"];
+
 
   // Logica Mixta de Imagenes Viejas vs Nuevas
   const [existingImages, setExistingImages] = useState<{id: string, url: string}[]>(vehicle.images || []);
@@ -91,16 +89,13 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
       updatedData.brand = "";
       updatedData.model = "";
       updatedData.version = "";
-      updatedData.engine = "";
     }
     if (name === "brand") {
       updatedData.model = "";
       updatedData.version = "";
-      updatedData.engine = "";
     }
     if (name === "model") {
       updatedData.version = "";
-      updatedData.engine = "";
     }
 
     setFormData(updatedData);
