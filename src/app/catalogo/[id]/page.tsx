@@ -1,7 +1,6 @@
 import styles from "./page.module.css";
 import Link from "next/link";
 import Image from "next/image";
-import { PrismaClient } from "@prisma/client";
 import { notFound } from "next/navigation";
 import ImageGallery from "./ImageGallery";
 import { EQUIPMENT_CATEGORIES } from "@/lib/equipment";

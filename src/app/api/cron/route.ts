@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { sendRenewalNotificationEmail } from "@/lib/mailer";
-
-const prisma = new PrismaClient();
 
 // Este GET puede gatillarse diariamente a la madrugada mediante Vercel Cron
 export async function GET(req: Request) {

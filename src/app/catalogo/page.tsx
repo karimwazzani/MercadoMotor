@@ -1,7 +1,6 @@
 import styles from "./page.module.css";
 import Link from "next/link";
 import Image from "next/image";
-import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { toggleHighlight } from "./actions";
