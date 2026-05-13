@@ -397,10 +397,17 @@
   }
 }
 
+@media (max-width: 768px) {
+  .headerContent { flex-direction: column; gap: 1rem; padding: 0.5rem; }
+  .nav { flex-wrap: wrap; justify-content: center; gap: 1rem; }
+  .logo { font-size: 1.5rem; }
+}
+
 @media (max-width: 600px) {
   .grid {
     grid-template-columns: 1fr;
     gap: 1rem;
+    padding: 0 15px;
   }
   .cardInternalLink {
     flex-direction: row;
