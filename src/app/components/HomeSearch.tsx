@@ -36,14 +36,13 @@ export default function HomeSearch() {
       </div>
 
       <form onSubmit={handleSearch} className={styles.searchBar}>
-        <div className={styles.searchFields} style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+        <div className={styles.searchFields}>
           <input 
             type="text" 
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={searchType === "VEHICLES" ? "Marca, modelo o versión..." : "Nombre de la agencia..."} 
             className={styles.searchInput}
-            style={{ flex: 1, minWidth: 0 }}
           />
           {searchType === "VEHICLES" && (
             <>
