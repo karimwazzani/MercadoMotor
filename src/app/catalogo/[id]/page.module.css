@@ -707,3 +707,14 @@
   font-size: 1.5rem;
 }
 
+@media (max-width: 768px) {
+  .zoomModal .navCircle {
+    top: auto;
+    bottom: 140px;
+    transform: none;
+    background-color: rgba(212, 175, 55, 0.9); /* Doradas en móvil para mejor visibilidad */
+  }
+  .zoomModal .navLeft { left: 20%; }
+  .zoomModal .navRight { right: 20%; }
+}
+
