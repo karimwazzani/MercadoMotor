@@ -284,13 +284,13 @@ export default async function Catalogo({
                             )}
                           </div>
                           <div className={styles.cardContent}>
+                            <h3 className={styles.cardTitle}>{vehicle.brand} {vehicle.model}</h3>
+                            <p className={styles.cardVersion}>{vehicle.version || '\u00A0'}</p>
+                            
                             <div className={styles.cardMetaRow}>
                               <span className={styles.cardMetaBadge}>{vehicle.year}</span>
                               <span className={styles.cardMetaBadge}>{vehicle.mileage.toLocaleString()} km</span>
                             </div>
-                            
-                            <h3 className={styles.cardTitle}>{vehicle.brand} {vehicle.model}</h3>
-                            <p className={styles.cardVersion}>{vehicle.version || '\u00A0'}</p>
                             
                             <div className={styles.compareWrapper} style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}>
                               <CompareToggleButton vehicle={{

@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./page.module.css";
+import { formatLocation } from "@/lib/utils";
 
 export default function FeaturedCarousel({ featuredVehicles, small = false }: { featuredVehicles: any[], small?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -115,16 +116,16 @@ export default function FeaturedCarousel({ featuredVehicles, small = false }: { 
                   )}
                 </div>
                 <div className={styles.vehicleInfo}>
+                  <h3 className={`${styles.vehicleName} ${small ? styles.vehicleNameSmall : ""}`}>{vehicle.brand} {vehicle.model}</h3>
+                  <p className={styles.vehicleDetails}>{vehicle.version || '\u00A0'}</p>
                   <div className={styles.cardMetaRow}>
                     <span className={styles.cardMetaBadge}>{vehicle.year}</span>
                     <span className={styles.cardMetaBadge}>{vehicle.mileage.toLocaleString()} km</span>
                   </div>
-                  <h3 className={`${styles.vehicleName} ${small ? styles.vehicleNameSmall : ""}`}>{vehicle.brand} {vehicle.model}</h3>
-                  <p className={styles.vehicleDetails}>{vehicle.version || '\u00A0'}</p>
                   
                   <div className={styles.vehiclePriceRow}>
                     <span className={`${styles.vehiclePrice} ${small ? styles.vehiclePriceSmall : ""}`}>{vehicle.currency === "ARS" ? "$" : "US$"} {vehicle.price.toLocaleString()}</span>
-                    <span className={styles.vehicleLocation}>{vehicle.location}</span>
+                    <span className={styles.vehicleLocation}>{formatLocation(vehicle.location)}</span>
                   </div>
                 </div>
               </div>

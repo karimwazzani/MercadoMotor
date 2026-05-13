@@ -5,9 +5,16 @@
 export function formatLocation(text: string | null | undefined): string {
   if (!text) return "";
   
-  return text
+  const titleCased = text
     .toLowerCase()
     .split(' ')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
+    
+  const parts = titleCased.split(',').map(p => p.trim());
+  if (parts.length >= 2) {
+    return parts.slice(-2).join(', ');
+  }
+  
+  return titleCased;
 }
