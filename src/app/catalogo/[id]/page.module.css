@@ -167,8 +167,9 @@
 
 .thumbnail {
   position: relative;
-  width: 120px;
+  width: 80px;
   height: 80px;
+  flex-shrink: 0;
   border-radius: var(--radius-sm);
   overflow: hidden;
   cursor: pointer;
@@ -602,13 +603,27 @@
 }
 
 @media (max-width: 992px) {
+  .headerContent { flex-direction: column; gap: 1rem; padding: 0.5rem; }
+  .nav { flex-wrap: wrap; justify-content: center; gap: 1rem; }
+  
   .detailLayout {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
   }
   
-  .infoSection {
+  .infoSection, .gallerySection {
     position: static;
+    display: contents;
   }
+  
+  .galleryWrapper { order: 1; width: 100%; }
+  .priceCard { order: 2; width: 100%; }
+  .specsCard { order: 3; width: 100%; }
+  .descriptionSection { order: 4; width: 100%; }
+  .equipmentSection { order: 5; width: 100%; }
+  .descriptionAd { order: 6; width: 100%; }
+  .sellerCard { order: 7; width: 100%; }
 }
 
 /* ZOOM MODAL */
@@ -663,8 +678,9 @@
 
 .zoomThumbnail {
   position: relative;
-  width: 120px;
+  width: 80px;
   height: 80px;
+  flex-shrink: 0;
   border: 2px solid transparent;
   cursor: pointer;
   opacity: 0.6;

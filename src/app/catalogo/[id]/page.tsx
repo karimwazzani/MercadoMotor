@@ -151,7 +151,9 @@ export default async function VehicleDetail({
         <div className={styles.detailLayout}>
           {/* LEFT: IMAGES */}
           <div className={styles.gallerySection}>
-            <ImageGallery images={vehicle.images} title={`${vehicle.brand} ${vehicle.model}`} />
+            <div className={styles.galleryWrapper}>
+              <ImageGallery images={vehicle.images} title={`${vehicle.brand} ${vehicle.model}`} />
+            </div>
             
             <div className={styles.descriptionSection}>
               <h2 className={styles.sectionTitle}>Descripción del vendedor</h2>

@@ -532,7 +532,24 @@
 
 @media (max-width: 992px) {
   .categoryGrid {
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .categoryGrid::-webkit-scrollbar {
+    display: none;
+  }
+  .categoryItem {
+    flex-shrink: 0;
+    padding: 0.5rem 1rem;
+    border-right: none;
+    background: rgba(0,0,0,0.03);
+    margin-right: 0.5rem;
+    border-radius: 20px;
   }
   
   .sellContainer {
