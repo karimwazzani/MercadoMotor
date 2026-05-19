@@ -57,7 +57,7 @@
   width: 0px;
   height: 2px;
   background: linear-gradient(90deg, transparent, #B89759 50%, transparent);
-  animation: expandLoader 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: expandLoader 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; /* Adjusted to 2.5s to match visibility timer */
   box-shadow: 0 0 8px rgba(184, 151, 89, 0.3);
 }
 
@@ -82,7 +82,7 @@
     font-size: 2.4rem;
   }
   .loaderLine {
-    animation: expandLoaderMobile 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: expandLoaderMobile 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; /* Adjusted to 2.5s */
   }
 }
 

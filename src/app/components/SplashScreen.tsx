@@ -38,15 +38,15 @@ export default function SplashScreen() {
       document.documentElement.classList.add("splash-shown");
     } catch (e) {}
 
-    // Start fade out at 1.5 seconds
+    // Start fade out at 2.5 seconds (gives a solid 1.75s of full visibility after entrance)
     const fadeTimer = setTimeout(() => {
       setIsVisible(false);
-    }, 1500);
+    }, 2500);
 
-    // Remove from the DOM completely after fade out transition (1.5s + 0.5s transition = 2s)
+    // Remove from the DOM completely after fade out transition (2.5s + 0.5s transition = 3s)
     const removeTimer = setTimeout(() => {
       setIsMounted(false);
-    }, 2000);
+    }, 3000);
 
     return () => {
       clearTimeout(fadeTimer);
