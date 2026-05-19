@@ -217,6 +217,16 @@
   user-select: none;
   gap: 0.75rem;
   font-family: inherit;
+  min-width: 0;
+}
+
+.customSelectTrigger span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  text-align: left;
+  min-width: 0;
 }
 
 .customSelectArrow {
