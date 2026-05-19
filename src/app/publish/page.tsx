@@ -20,6 +20,15 @@ export default function PublishForm() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
+
+  const toggleCategoryExpand = (catName: string) => {
+    setExpandedCategories(prev => 
+      prev.includes(catName) 
+        ? prev.filter(c => c !== catName)
+        : [...prev, catName]
+    );
+  };
 
   const [formData, setFormData] = useState({
     category: "",
@@ -470,26 +479,51 @@ export default function PublishForm() {
           {step === 5 && (
             <div className={styles.stepContent}>
               <h1 className={styles.title}>Equipamiento</h1>
-              <p className={styles.subtitle}>Seleccioná todo lo que incluye tu vehículo.</p>
+              <p className={styles.subtitle}>Hacé clic en cada categoría de abajo para desplegarla y seleccionar las prestaciones.</p>
               
-              <div className={styles.equipmentContainer}>
-                {EQUIPMENT_CATEGORIES.map((cat, catIdx) => (
-                  <div key={`cat-${catIdx}-${cat.category}`} className={styles.equipmentSection}>
-                    <h3 className={styles.equipmentSectionTitle}>{cat.category}</h3>
-                    <div className={styles.equipmentGrid}>
-                      {cat.items.map((item, itemIdx) => (
-                        <button 
-                          key={`item-${catIdx}-${itemIdx}`} 
-                          type="button"
-                          className={`${styles.equipmentItem} ${formData.equipment.includes(item) ? styles.equipmentItemActive : ""}`}
-                          onClick={() => toggleEquipment(item)}
+              <div className={styles.equipmentContainer} style={{ maxHeight: "none", overflow: "visible" }}>
+                {EQUIPMENT_CATEGORIES.map((cat, catIdx) => {
+                  const isExpanded = expandedCategories.includes(cat.category);
+                  return (
+                    <div key={`cat-${catIdx}-${cat.category}`} className={styles.equipmentAccordion}>
+                      <div 
+                        className={styles.equipmentAccordionHeader}
+                        onClick={() => toggleCategoryExpand(cat.category)}
+                      >
+                        <h4>{cat.category}</h4>
+                        <svg 
+                          className={`${styles.accordionChevron} ${isExpanded ? styles.chevronOpen : ""}`} 
+                          width="12" 
+                          height="8" 
+                          viewBox="0 0 12 8" 
+                          fill="none"
                         >
-                          {item}
-                        </button>
-                      ))}
+                          <path d="M1 1L6 6L11 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                      
+                      {isExpanded && (
+                        <div className={styles.equipmentAccordionContent}>
+                          <div className={styles.equipmentCheckboxGrid}>
+                            {cat.items.map((item, itemIdx) => {
+                              const isActive = formData.equipment.includes(item);
+                              return (
+                                <label key={`item-${catIdx}-${itemIdx}`} className={styles.equipmentCheckboxLabel}>
+                                  <input 
+                                    type="checkbox" 
+                                    checked={isActive}
+                                    onChange={() => toggleEquipment(item)}
+                                  />
+                                  <span>{item}</span>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <div className={styles.actions}>

@@ -19,6 +19,15 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
+
+  const toggleCategoryExpand = (catName: string) => {
+    setExpandedCategories(prev => 
+      prev.includes(catName) 
+        ? prev.filter(c => c !== catName)
+        : [...prev, catName]
+    );
+  };
 
   useEffect(() => {
     document.title = "Editar Publicación | MercadoMotor";
@@ -424,30 +433,51 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
           <div className={styles.editSection}>
             <h3 className={styles.editSectionTitle}>5. Equipamiento y Confort</h3>
             <p className={styles.subtitle} style={{ marginBottom: "1.5rem", fontSize: "0.85rem", color: "var(--color-text-muted)" }}>
-              Seleccioná los chips de prestaciones que incluye tu unidad.
+              Hacé clic en cada categoría de abajo para desplegarla y seleccionar las prestaciones que tiene tu vehículo.
             </p>
             
-            {EQUIPMENT_CATEGORIES.map((category) => (
-              <div key={category.category} className={styles.equipmentGroup} style={{ marginBottom: "1.5rem" }}>
-                <h4 className={styles.equipmentTitle} style={{ fontSize: "0.95rem", color: "var(--color-primary)", marginBottom: "0.75rem" }}>
-                  {category.category}
-                </h4>
-                <div className={styles.chipContainer}>
-                  {category.items.map((item) => {
-                    const isActive = formData.equipment.includes(item);
-                    return (
-                      <div 
-                        key={item} 
-                        onClick={() => toggleEquipment(item)}
-                        className={`${styles.chip} ${isActive ? styles.chipActive : ""}`}
-                      >
-                        {item}
+            {EQUIPMENT_CATEGORIES.map((category) => {
+              const isExpanded = expandedCategories.includes(category.category);
+              return (
+                <div key={category.category} className={styles.equipmentAccordion}>
+                  <div 
+                    className={styles.equipmentAccordionHeader}
+                    onClick={() => toggleCategoryExpand(category.category)}
+                  >
+                    <h4>{category.category}</h4>
+                    <svg 
+                      className={`${styles.accordionChevron} ${isExpanded ? styles.chevronOpen : ""}`} 
+                      width="12" 
+                      height="8" 
+                      viewBox="0 0 12 8" 
+                      fill="none"
+                    >
+                      <path d="M1 1L6 6L11 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  
+                  {isExpanded && (
+                    <div className={styles.equipmentAccordionContent}>
+                      <div className={styles.equipmentCheckboxGrid}>
+                        {category.items.map((item) => {
+                          const isActive = formData.equipment.includes(item);
+                          return (
+                            <label key={item} className={styles.equipmentCheckboxLabel}>
+                              <input 
+                                type="checkbox" 
+                                checked={isActive}
+                                onChange={() => toggleEquipment(item)}
+                              />
+                              <span>{item}</span>
+                            </label>
+                          );
+                        })}
                       </div>
-                    );
-                  })}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className={styles.editSeparator} />
@@ -464,7 +494,7 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
                 value={formData.description} 
                 onChange={handleChange}
                 placeholder="Escribí aquí detalles sobre el estado del auto, service realizados, únicos dueños, etc..."
-                className={styles.textarea}
+                className={styles.descriptionTextarea}
               />
             </div>
           </div>
@@ -481,11 +511,11 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
             {existingImages.length > 0 && (
               <div style={{ marginBottom: "2rem" }}>
                 <h4 style={{ marginBottom: "1rem", color: "var(--color-primary)", fontSize: "0.9rem" }}>Fotos Guardadas Actuales</h4>
-                <div className={styles.previewGrid}>
+                <div className={styles.photoGrid}>
                   {existingImages.map((img) => (
-                    <div key={img.id} className={styles.previewCard}>
+                    <div key={img.id} className={styles.photoItem}>
                       <Image src={img.url} alt="vehiculo" fill style={{ objectFit: 'cover' }} />
-                      <button type="button" onClick={() => handleOldImageRemove(img.id)} className={styles.removeBtn}>X</button>
+                      <button type="button" onClick={() => handleOldImageRemove(img.id)} className={styles.btnRemovePhoto}>X</button>
                     </div>
                   ))}
                 </div>
@@ -509,11 +539,11 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
             {previewUrls.length > 0 && (
               <div>
                 <h4 style={{ marginBottom: "1rem", color: "var(--color-accent)", fontSize: "0.9rem" }}>Fotos Nuevas a Subir</h4>
-                <div className={styles.previewGrid}>
+                <div className={styles.photoGrid}>
                   {previewUrls.map((url, index) => (
-                    <div key={index} className={styles.previewCard}>
+                    <div key={index} className={styles.photoItem}>
                       <Image src={url} alt="previa" fill style={{ objectFit: 'cover' }} />
-                      <button type="button" onClick={() => removeNewFile(index)} className={styles.removeBtn}>X</button>
+                      <button type="button" onClick={() => removeNewFile(index)} className={styles.btnRemovePhoto}>X</button>
                     </div>
                   ))}
                 </div>
