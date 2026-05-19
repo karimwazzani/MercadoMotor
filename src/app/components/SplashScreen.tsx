@@ -48,26 +48,19 @@ export default function SplashScreen() {
     <div 
       id="MM_splash_screen"
       className={`${styles.overlay} ${isVisible ? styles.visible : styles.hidden}`}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        backgroundColor: "#0A0A0A",
+        zIndex: 9999999,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+      }}
     >
-      {/* 
-        This script tag executes synchronously as the browser parses the initial HTML.
-        We add a helper class to the root HTML tag. CSS will read this class and instantly 
-        hide the splash screen, bypassing any React client-side hydration overrides to 
-        completely prevent flashing or blinking.
-      */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            try {
-              if (sessionStorage.getItem("splashShown")) {
-                document.documentElement.classList.add("splash-shown");
-              }
-            } catch (e) {
-              console.error("Error in splash inline script:", e);
-            }
-          `,
-        }}
-      />
       <div className={styles.logoContainer}>
         <div className={styles.logo}>
           Mercado<span className={styles.logoAccent}>Motor</span>
