@@ -195,17 +195,87 @@
   background-color: var(--color-border);
   margin: 0 0.5rem;
 }
+.customSelectWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 200px;
+}
 
-.searchSelect {
-  border: none;
-  padding: 0.8rem 1.2rem; /* Reducimos altura */
-  font-size: 1rem;
+.customSelectTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-primary);
   background: transparent;
-  outline: none;
-  color: var(--color-text-muted);
   cursor: pointer;
+  user-select: none;
+  gap: 0.75rem;
   font-family: inherit;
-  appearance: none;
+}
+
+.customSelectArrow {
+  transition: transform var(--transition-fast);
+  color: var(--color-text-muted);
+}
+
+.arrowOpen {
+  transform: rotate(180deg);
+}
+
+.selectOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 998;
+}
+
+.customSelectOptions {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 250px;
+  background: rgba(28, 25, 23, 0.98);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.customSelectOption {
+  padding: 0.7rem 1rem;
+  font-size: 0.9rem;
+  color: #E0E0E0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-weight: 500;
+  text-align: left;
+}
+
+.customSelectOption:hover {
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--color-accent);
+}
+
+.selectedOption {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--color-accent) !important;
+  font-weight: 600;
 }
 
 .searchButton {
@@ -731,7 +801,9 @@
   .searchFields { flex-direction: column; align-items: stretch; width: 100%; }
   .searchInput { width: 100%; border-bottom: 1px solid rgba(0,0,0,0.1); padding: 1rem; text-align: center; }
   .searchDivider { display: none; }
-  .searchSelect { width: 100%; padding: 1rem; text-align: center; }
+  .customSelectWrapper { width: 100%; border-top: 1px solid rgba(0,0,0,0.08); }
+  .customSelectTrigger { justify-content: center; width: 100%; padding: 1rem; }
+  .customSelectOptions { left: 0; right: 0; width: 100%; top: 100%; position: absolute; }
   .searchButton { justify-content: center; padding: 1rem; margin-top: 0.5rem; width: 100%; }
   .footerTop { flex-direction: column; gap: 2rem; }
 }
