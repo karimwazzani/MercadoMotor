@@ -35,6 +35,10 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Por favor, verifica tu correo antes de ingresar.");
         }
 
+        if (user.status === "SUSPENDED") {
+          throw new Error("Esta cuenta ha sido suspendida preventivamente por razones de seguridad. Ponete en contacto con soporte.");
+        }
+
         const isPasswordCorrect = await bcrypt.compare(
           credentials.password,
           user.password
@@ -49,6 +53,17 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
+    async signIn({ user }) {
+      if (user?.email) {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email }
+        });
+        if (dbUser && dbUser.status === "SUSPENDED") {
+          throw new Error("Esta cuenta ha sido suspendida preventivamente por razones de seguridad.");
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
