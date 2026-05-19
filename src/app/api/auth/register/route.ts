@@ -21,6 +21,35 @@ export async function POST(req: Request) {
     });
 
     if (existingUser) {
+      if (existingUser.status === "PENDING_VERIFICATION") {
+        // --- RE-ENVIAR EL CORREO DE VERIFICACIÓN SI YA EXISTE PERO ESTÁ PENDIENTE ---
+        // 1. Eliminar tokens antiguos
+        await prisma.verificationToken.deleteMany({
+          where: { identifier: email }
+        });
+
+        // 2. Generar nuevo token seguro y expiración
+        const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 horas
+
+        await prisma.verificationToken.create({
+          data: {
+            identifier: email,
+            token,
+            expires
+          }
+        });
+
+        // 3. Enviar el correo de verificación
+        const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.com.ar";
+        const verificationLink = `${siteUrl}/api/auth/verify?token=${token}`;
+        await sendVerificationEmail(email, verificationLink);
+
+        return NextResponse.json({ 
+          message: "Se ha reenviado el correo de activación. Por favor, revisa tu bandeja de entrada." 
+        }, { status: 201 });
+      }
+
       return NextResponse.json(
         { message: "Ya existe un usuario con este correo electrónico" },
         { status: 409 }
