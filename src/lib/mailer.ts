@@ -46,3 +46,50 @@ AutoVirtual
     }
     return true;
 }
+
+export async function sendVerificationEmail(recipientEmail: string, verificationLink: string) {
+    if (process.env.NODE_ENV !== "production") {
+        console.log(`
+=========================================
+📧 E-MAIL SIMULADO: VERIFICACIÓN DE CUENTA
+-----------------------------------------
+Para: ${recipientEmail}
+Asunto: ✉️ Confirma tu cuenta en MercadoMotor
+Enlace: ${verificationLink}
+
+Hola,
+Gracias por registrarte en MercadoMotor. Por favor, confirma tu cuenta haciendo clic en el siguiente enlace:
+${verificationLink}
+
+¡Te esperamos!
+MercadoMotor
+=========================================
+        `);
+        return true;
+    }
+    return true;
+}
+
+export async function sendPasswordResetEmail(recipientEmail: string, resetLink: string) {
+    if (process.env.NODE_ENV !== "production") {
+        console.log(`
+=========================================
+📧 E-MAIL SIMULADO: RECUPERACIÓN DE CONTRASEÑA
+-----------------------------------------
+Para: ${recipientEmail}
+Asunto: 🔑 Restablece tu contraseña - MercadoMotor
+Enlace: ${resetLink}
+
+Hola,
+Has solicitado restablecer tu contraseña en MercadoMotor. Por favor, haz clic en el siguiente enlace para crear una nueva clave:
+${resetLink}
+
+Si no realizaste esta solicitud, puedes ignorar este mensaje de forma segura.
+
+MercadoMotor
+=========================================
+        `);
+        return true;
+    }
+    return true;
+}

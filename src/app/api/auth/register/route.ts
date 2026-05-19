@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
+import { sendVerificationEmail } from "@/lib/mailer";
 
 export async function POST(req: Request) {
   try {
@@ -27,15 +28,16 @@ export async function POST(req: Request) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    let newUser;
 
     if (accountType === "AGENCIA") {
       if (!tradeName || !phone || !location) {
         return NextResponse.json({ message: "Completá los datos comerciales obligatorios" }, { status: 400 });
       }
 
-      const slug = tradeName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Math.random().toString(36).substring(2, 6);
+      const slug = tradeName.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Math.random().toString(36).substring(2, 6);
       
-      const newUser = await prisma.user.create({
+      newUser = await prisma.user.create({
         data: {
           name,
           email,
@@ -43,6 +45,7 @@ export async function POST(req: Request) {
           accountType,
           phone,
           location,
+          status: "PENDING_VERIFICATION", // Inactivo hasta que verifique
           agencies: {
             create: {
               tradeName,
@@ -53,27 +56,47 @@ export async function POST(req: Request) {
           }
         },
       });
-      return NextResponse.json({ message: "Agencia registrada con éxito", user: newUser }, { status: 201 });
-    }
-
-    // Usuario Particular
-    if (!lastName || !phone) {
+    } else {
+      // Usuario Particular
+      if (!lastName || !phone) {
         return NextResponse.json({ message: "Tu apellido y celular son necesarios" }, { status: 400 });
+      }
+
+      newUser = await prisma.user.create({
+        data: {
+          name,
+          lastName,
+          phone,
+          email,
+          password: hashedPassword,
+          accountType,
+          location,
+          status: "PENDING_VERIFICATION", // Inactivo hasta que verifique
+        },
+      });
     }
 
-    const newUser = await prisma.user.create({
+    // --- GENERAR Y GUARDAR EL TOKEN DE VERIFICACIÓN ---
+    const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 horas
+
+    await prisma.verificationToken.create({
       data: {
-        name,
-        lastName,
-        phone,
-        email,
-        password: hashedPassword,
-        accountType,
-        location,
-      },
+        identifier: email,
+        token,
+        expires
+      }
     });
 
-    return NextResponse.json({ message: "Usuario registrado con éxito", user: newUser }, { status: 201 });
+    // --- ENVIAR EL CORREO DE VERIFICACIÓN ---
+    const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.com.ar";
+    const verificationLink = `${siteUrl}/api/auth/verify?token=${token}`;
+    await sendVerificationEmail(email, verificationLink);
+
+    return NextResponse.json({ 
+      message: "Registro exitoso. Por favor, revisa tu correo electrónico para activar tu cuenta.", 
+      user: { id: newUser.id, email: newUser.email } 
+    }, { status: 201 });
 
   } catch (error: any) {
     console.error("Error Registration:", error);

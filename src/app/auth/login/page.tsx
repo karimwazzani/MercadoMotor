@@ -9,18 +9,42 @@ import styles from "./page.module.css";
 export default function LoginPage() {
   const router = useRouter();
 
-  useEffect(() => {
-    document.title = "Iniciar Sesión | MercadoMotor";
-  }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    document.title = "Iniciar Sesión | MercadoMotor";
+
+    // Leer parámetros de URL de forma segura sin romper pre-renderización de Next.js
+    const params = new URLSearchParams(window.location.search);
+    const verified = params.get("verified");
+    const errorParam = params.get("error");
+
+    if (verified === "true") {
+      setSuccessMessage("¡Tu cuenta ha sido verificada con éxito! Ya podés ingresar.");
+    }
+
+    if (errorParam) {
+      if (errorParam === "InvalidToken") {
+        setError("El enlace de activación es inválido o ya fue utilizado.");
+      } else if (errorParam === "ExpiredToken") {
+        setError("El enlace de activación ha expirado. Por favor registrate nuevamente.");
+      } else if (errorParam === "UserNotFound") {
+        setError("No se encontró el usuario asociado a esta activación.");
+      } else {
+        setError("Ocurrió un inconveniente al verificar tu cuenta.");
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccessMessage("");
 
     const res = await signIn("credentials", {
       redirect: false,
@@ -29,7 +53,7 @@ export default function LoginPage() {
     });
 
     if (res?.error) {
-      setError("Credenciales incorrectas. Por favor, intentá de nuevo.");
+      setError("Credenciales incorrectas o cuenta no verificada por email.");
       setLoading(false);
     } else {
       router.push("/");
@@ -47,6 +71,17 @@ export default function LoginPage() {
         <p className={styles.subtitle}>Accedé a tu panel para publicar y gestionar vehículos.</p>
 
         {error && <div className={styles.errorMessage}>{error}</div>}
+        {successMessage && <div style={{
+          backgroundColor: "rgba(46, 204, 113, 0.15)",
+          color: "#2ecc71",
+          padding: "0.75rem 1rem",
+          borderRadius: "8px",
+          marginBottom: "1.5rem",
+          fontSize: "0.9rem",
+          textAlign: "center",
+          fontWeight: "500",
+          border: "1px solid rgba(46, 204, 113, 0.3)"
+        }}>{successMessage}</div>}
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.inputGroup}>
@@ -77,7 +112,7 @@ export default function LoginPage() {
             <label className={styles.checkboxLabel}>
               <input type="checkbox" /> Recordarme
             </label>
-            <Link href="#" className={styles.forgotLink}>¿Olvidaste tu contraseña?</Link>
+            <Link href="/auth/forgot-password" className={styles.forgotLink}>¿Olvidaste tu contraseña?</Link>
           </div>
 
           <button type="submit" className={styles.btnSubmit} disabled={loading}>

@@ -1,5 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma"; // Instancia global corregida
 import bcrypt from "bcryptjs";
@@ -7,6 +8,10 @@ import bcrypt from "bcryptjs";
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "dummy-client-id",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "dummy-client-secret",
+    }),
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -24,6 +29,10 @@ export const authOptions: NextAuthOptions = {
 
         if (!user || !user.password) {
           throw new Error("Usuario no encontrado");
+        }
+
+        if (user.status === "PENDING_VERIFICATION") {
+          throw new Error("Por favor, verifica tu correo antes de ingresar.");
         }
 
         const isPasswordCorrect = await bcrypt.compare(
