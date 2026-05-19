@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 
 import { Providers } from "./providers";
 import CompareBar from "./components/CompareBar";
+import SplashScreen from "./components/SplashScreen";
 
 export default function RootLayout({
   children,
@@ -21,6 +22,7 @@ export default function RootLayout({
     <html lang="es" className={inter.variable}>
       <body>
         <Providers>
+          <SplashScreen />
           {children}
           <CompareBar />
         </Providers>
