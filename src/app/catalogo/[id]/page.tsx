@@ -74,12 +74,10 @@ export default async function VehicleDetail({
     notFound();
   }
 
-  // Tracking: Increment views (usando raw query para evitar errores de validación de Prisma)
-  try {
-    await prisma.$executeRawUnsafe(`UPDATE "Vehicle" SET "views" = "views" + 1 WHERE "id" = '${resolvedParams.id}'`);
-  } catch (e) {
-    console.error("Error incrementing views:", e);
-  }
+  // Tracking: Increment views (usando raw query para evitar errores de validación de Prisma) - running in background to avoid blocking page load
+  prisma.$executeRawUnsafe(`UPDATE "Vehicle" SET "views" = "views" + 1 WHERE "id" = '${resolvedParams.id}'`).catch((e) => {
+    console.error("Error incrementing views in background:", e);
+  });
 
   const mainImage = vehicle.images.find(img => img.isMain) || vehicle.images[0];
   const sellerName = (vehicle.agencyId 

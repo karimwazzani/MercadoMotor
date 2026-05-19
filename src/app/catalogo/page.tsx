@@ -18,18 +18,8 @@ export default async function Catalogo({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const resolvedParams = await searchParams;
-  const session = await getServerSession(authOptions);
-  const isAdmin = session && (session.user as any).accountType === "ADMINISTRADOR";
+  const sessionPromise = getServerSession(authOptions);
   
-  let favoriteIds: Set<string> = new Set();
-  if (session?.user?.email) {
-    const favs = await prisma.favorite.findMany({
-      where: { user: { email: session.user.email } },
-      select: { vehicleId: true }
-    });
-    favoriteIds = new Set(favs.map(f => f.vehicleId));
-  }
-
   // Extraer parametros de URL
   const queryParam = typeof resolvedParams.query === 'string' ? resolvedParams.query : undefined;
   const categoryParam = typeof resolvedParams.categoria === 'string' ? resolvedParams.categoria : undefined;
@@ -57,8 +47,6 @@ export default async function Catalogo({
 
   // 1. Busqueda global rapida (Afecta Marca, Modelo O Version)
   if (queryParam && queryParam.trim() !== '') {
-    // Cuando hay query general en el home, buscamos en los 3 ejes usando Contains y case-insensitive
-    // Nota: SQLite requires lowercasing for simple case insensitivity typically, but Prisma 'contains' handles it softly or we can rely on standard contains.
     whereClause.AND = [
       {
         OR: [
@@ -97,18 +85,33 @@ export default async function Catalogo({
     if (maxKmParam) whereClause.mileage.lte = maxKmParam;
   }
 
-  const vehicles = await prisma.vehicle.findMany({
-    where: whereClause,
-    include: {
-      images: {
-        where: { isMain: true },
-        take: 1
+  // Execute session verification and vehicles search in parallel to optimize TTFB
+  const [session, vehicles] = await Promise.all([
+    sessionPromise,
+    prisma.vehicle.findMany({
+      where: whereClause,
+      include: {
+        images: {
+          where: { isMain: true },
+          take: 1
+        },
+        agency: true,
+        user: true,
       },
-      agency: true,
-      user: true,
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+    })
+  ]);
+
+  const isAdmin = session && (session.user as any).accountType === "ADMINISTRADOR";
+  
+  let favoriteIds: Set<string> = new Set();
+  if (session?.user?.email) {
+    const favs = await prisma.favorite.findMany({
+      where: { user: { email: session.user.email } },
+      select: { vehicleId: true }
+    });
+    favoriteIds = new Set(favs.map(f => f.vehicleId));
+  }
 
   return (
     <div className={styles.page}>

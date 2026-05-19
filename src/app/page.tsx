@@ -11,36 +11,35 @@ import HomeSearch from "./components/HomeSearch";
 import AdSlot from "./components/AdSlot";
 
 export default async function Home() {
-  const session = await getServerSession(authOptions);
-
-  // Traer los 4 ultimos vehiculos que el admin haya marcado con la estrella
-  const featuredVehicles = await prisma.vehicle.findMany({
-    where: { 
-      isHighlighted: true,
-      status: "APPROVED"
-    },
-    include: {
-      images: {
-        where: { isMain: true },
-        take: 1
-      }
-    },
-    orderBy: { createdAt: "desc" },
-    take: 25
-  });
-
-  // Traer los últimos 8 vehículos ingresados
-  const newArrivals = await prisma.vehicle.findMany({
-    where: { status: "APPROVED" },
-    include: {
-      images: {
-        where: { isMain: true },
-        take: 1
-      }
-    },
-    orderBy: { createdAt: "desc" },
-    take: 8
-  });
+  // Execute the session check and database queries in parallel to drastically improve page speed
+  const [session, featuredVehicles, newArrivals] = await Promise.all([
+    getServerSession(authOptions),
+    prisma.vehicle.findMany({
+      where: { 
+        isHighlighted: true,
+        status: "APPROVED"
+      },
+      include: {
+        images: {
+          where: { isMain: true },
+          take: 1
+        }
+      },
+      orderBy: { createdAt: "desc" },
+      take: 25
+    }),
+    prisma.vehicle.findMany({
+      where: { status: "APPROVED" },
+      include: {
+        images: {
+          where: { isMain: true },
+          take: 1
+        }
+      },
+      orderBy: { createdAt: "desc" },
+      take: 8
+    })
+  ]);
 
   return (
     <div className={styles.page}>

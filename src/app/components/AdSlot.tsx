@@ -28,15 +28,13 @@ export default async function AdSlot({ areaKey, className = "", isWrapped = fals
 
   if (!ad) return null;
 
-  // Tracking: Incrementar vistas (simple increment)
-  try {
-    await prisma.advertisement.update({
-      where: { id: ad.id },
-      data: { views: { increment: 1 } }
-    });
-  } catch (e) {
-    console.error("Error incrementing ad views:", e);
-  }
+  // Tracking: Incrementar vistas (simple increment in the background to not block HTML rendering)
+  prisma.advertisement.update({
+    where: { id: ad.id },
+    data: { views: { increment: 1 } }
+  }).catch((e) => {
+    console.error("Error incrementing ad views in background:", e);
+  });
 
   const Content = () => (
     <div className={`${styles.adContainer} ${styles[ad.areaKey] || ""} ${className}`}>
