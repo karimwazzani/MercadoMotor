@@ -4,6 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma"; // Instancia global corregida
 import bcrypt from "bcryptjs";
+import { verifyTurnstileToken } from "@/lib/captcha";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -16,9 +17,16 @@ export const authOptions: NextAuthOptions = {
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
+        captchaToken: { label: "Captcha Token", type: "text" }
       },
       async authorize(credentials) {
+        // Verificar captcha primero
+        const isCaptchaValid = await verifyTurnstileToken(credentials?.captchaToken);
+        if (!isCaptchaValid) {
+          throw new Error("Fallo de validación de seguridad (Captcha).");
+        }
+
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Credenciales inválidas");
         }

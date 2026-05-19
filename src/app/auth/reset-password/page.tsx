@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import styles from "../login/page.module.css";
+import { PasswordStrengthMeter } from "../../components/PasswordStrengthMeter";
+import { validatePassword } from "@/lib/passwordValidator";
 
 export default function ResetPasswordPage() {
   const [token, setToken] = useState("");
@@ -31,8 +33,9 @@ export default function ResetPasswordPage() {
     setError("");
     setSuccess("");
 
-    if (password.length < 8) {
-      setError("La contraseña debe tener al menos 8 caracteres.");
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      setError(passwordValidation.message || "La contraseña no cumple con los requisitos de seguridad.");
       setLoading(false);
       return;
     }
@@ -115,6 +118,7 @@ export default function ResetPasswordPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required 
                 />
+                <PasswordStrengthMeter password={password} />
               </div>
 
               <div className={styles.inputGroup}>

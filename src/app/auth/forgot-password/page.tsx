@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import styles from "../login/page.module.css";
+import { TurnstileCaptcha } from "../../components/TurnstileCaptcha";
 
 export default function ForgotPasswordPage() {
   useEffect(() => {
@@ -13,9 +14,16 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !captchaToken) {
+      setError("Por favor, completa la verificación de captcha.");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setSuccess("");
@@ -24,7 +32,7 @@ export default function ForgotPasswordPage() {
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email, captchaToken })
       });
 
       const data = await res.json();
@@ -91,6 +99,8 @@ export default function ForgotPasswordPage() {
                 required 
               />
             </div>
+
+            <TurnstileCaptcha onVerify={setCaptchaToken} action="forgot-password" />
 
             <button type="submit" className={styles.btnSubmit} disabled={loading}>
               {loading ? "Enviando enlace..." : "Enviar enlace de recuperación"}

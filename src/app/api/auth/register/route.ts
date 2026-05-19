@@ -2,14 +2,29 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { sendVerificationEmail } from "@/lib/mailer";
+import { verifyTurnstileToken } from "@/lib/captcha";
+import { validatePassword } from "@/lib/passwordValidator";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, password, accountType, tradeName, lastName, phone, city, location } = body;
+    const { name, email, password, accountType, tradeName, lastName, phone, city, location, captchaToken } = body;
 
+    // 1. Validar campos obligatorios básicos
     if (!name || !email || !password || !accountType) {
       return NextResponse.json({ message: "Faltan campos obligatorios" }, { status: 400 });
+    }
+
+    // 2. Validar Turnstile Captcha
+    const isCaptchaValid = await verifyTurnstileToken(captchaToken);
+    if (!isCaptchaValid) {
+      return NextResponse.json({ message: "La verificación de seguridad (Captcha) falló. Reintentalo." }, { status: 400 });
+    }
+
+    // 3. Validar fortaleza de la contraseña
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      return NextResponse.json({ message: passwordValidation.message }, { status: 400 });
     }
 
     if (accountType === "ADMINISTRADOR") {

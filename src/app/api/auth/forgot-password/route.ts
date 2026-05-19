@@ -1,13 +1,20 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/mailer";
+import { verifyTurnstileToken } from "@/lib/captcha";
 
 export async function POST(req: Request) {
   try {
-    const { email } = await req.json();
+    const { email, captchaToken } = await req.json();
 
     if (!email) {
       return NextResponse.json({ message: "El correo electrónico es obligatorio" }, { status: 400 });
+    }
+
+    // Validar captcha de Turnstile primero para evitar spam masivo de correos
+    const isCaptchaValid = await verifyTurnstileToken(captchaToken);
+    if (!isCaptchaValid) {
+      return NextResponse.json({ message: "La verificación de seguridad (Captcha) falló. Reintentalo." }, { status: 400 });
     }
 
     // 1. Verificar si el usuario existe

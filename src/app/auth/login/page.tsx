@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "./page.module.css";
+import { TurnstileCaptcha } from "../../components/TurnstileCaptcha";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState("");
 
   useEffect(() => {
     document.title = "Iniciar Sesión | MercadoMotor";
@@ -42,6 +44,12 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !captchaToken) {
+      setError("Por favor, completa la verificación de captcha.");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setSuccessMessage("");
@@ -50,10 +58,19 @@ export default function LoginPage() {
       redirect: false,
       email,
       password,
+      captchaToken,
     });
 
     if (res?.error) {
-      setError("Credenciales incorrectas o cuenta no verificada por email.");
+      if (res.error.includes("suspendida") || res.error.includes("SUSPENDED")) {
+        setError("Esta cuenta ha sido suspendida preventivamente por razones de seguridad. Ponete en contacto con soporte.");
+      } else if (res.error.includes("correo") || res.error.includes("verifica")) {
+        setError("Por favor, verifica tu correo antes de ingresar.");
+      } else if (res.error.includes("captcha") || res.error.includes("Captcha")) {
+        setError("Fallo en la validación del Captcha. Por favor, reintentalo.");
+      } else {
+        setError("Credenciales incorrectas o cuenta no verificada por email.");
+      }
       setLoading(false);
     } else {
       router.push("/");
@@ -114,6 +131,8 @@ export default function LoginPage() {
             </label>
             <Link href="/auth/forgot-password" className={styles.forgotLink}>¿Olvidaste tu contraseña?</Link>
           </div>
+
+          <TurnstileCaptcha onVerify={setCaptchaToken} action="login" />
 
           <button type="submit" className={styles.btnSubmit} disabled={loading}>
             {loading ? "Ingresando..." : "Ingresar a mi cuenta"}

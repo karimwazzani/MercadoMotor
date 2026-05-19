@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import crypto from "crypto";
 import { sendPasswordChangedSuccessEmail } from "@/lib/mailer";
+import { validatePassword } from "@/lib/passwordValidator";
 
 export async function POST(req: Request) {
   try {
@@ -12,8 +13,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Faltan campos obligatorios" }, { status: 400 });
     }
 
-    if (password.length < 8) {
-      return NextResponse.json({ message: "La contraseña debe tener al menos 8 caracteres" }, { status: 400 });
+    // Validar fortaleza de la contraseña
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      return NextResponse.json({ message: passwordValidation.message }, { status: 400 });
     }
 
     // 1. Buscar el token en VerificationToken

@@ -8,12 +8,16 @@ import Link from "next/link";
 import WelcomeScreen from "../../components/WelcomeScreen";
 import styles from "./RegisterForm.module.css";
 import { LOCATION_DATA } from "@/lib/constants";
+import { PasswordStrengthMeter } from "../../components/PasswordStrengthMeter";
+import { TurnstileCaptcha } from "../../components/TurnstileCaptcha";
+import { validatePassword } from "@/lib/passwordValidator";
 
 export default function RegisterForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isVerificationSent, setIsVerificationSent] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
   
   const router = useRouter();
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
@@ -34,6 +38,7 @@ export default function RegisterForm() {
   const accountType = watch("accountType");
   const province = watch("province");
   const municipality = watch("municipality");
+  const password = watch("password");
 
   // Función para capitalizar iniciales
   const capitalize = (str: string) => {
@@ -46,6 +51,19 @@ export default function RegisterForm() {
   const localities = (province && municipality) ? (LOCATION_DATA[province][municipality] || []).sort() : [];
 
   const onSubmit = async (data: any) => {
+    // Si la llave del sitio está configurada, captchaToken es mandatorio
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !captchaToken) {
+      setError("Por favor, completa la verificación de captcha.");
+      return;
+    }
+
+    // Doble chequeo de seguridad de contraseña
+    const passwordValidation = validatePassword(data.password);
+    if (!passwordValidation.isValid) {
+      setError(passwordValidation.message || "La contraseña no cumple con los requisitos de seguridad.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -58,7 +76,8 @@ export default function RegisterForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
-          location: fullLocation
+          location: fullLocation,
+          captchaToken
         }),
       });
 
@@ -243,13 +262,21 @@ export default function RegisterForm() {
             <input 
               {...register("password", { 
                 required: "La contraseña es obligatoria",
-                minLength: { value: 6, message: "Mínimo 6 caracteres" }
+                validate: (val) => validatePassword(val).isValid || "La contraseña debe cumplir todos los requisitos de seguridad"
               })}
               type="password"
               placeholder="••••••••"
               className={errors.password ? styles.inputError : ""}
             />
+            {errors.password && (
+              <span className={styles.inputErrorText} style={{ color: "#ff6b6b", fontSize: "0.78rem", marginTop: "4px", display: "block" }}>
+                {errors.password.message as string}
+              </span>
+            )}
+            <PasswordStrengthMeter password={password} />
           </div>
+
+          <TurnstileCaptcha onVerify={setCaptchaToken} action="register" />
 
           <button type="submit" disabled={loading} className={styles.btnSubmit}>
             {loading ? "Registrando..." : "Crear mi cuenta"}
