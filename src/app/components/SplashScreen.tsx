@@ -4,15 +4,28 @@ import { useEffect, useState } from "react";
 import styles from "./SplashScreen.module.css";
 
 export default function SplashScreen() {
-  const [isVisible, setIsVisible] = useState(true);
-  const [isMounted, setIsMounted] = useState(true);
+  // Initialize state dynamically. On client-side soft page navigations, 
+  // if already shown, we initialize directly to false. This prevents 
+  // React from ever rendering or mounting the splash screen during route changes.
+  const [isMounted, setIsMounted] = useState(() => {
+    if (typeof window !== "undefined") {
+      return !sessionStorage.getItem("splashShown");
+    }
+    return true; // Server-side rendering must include it in static HTML
+  });
+
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof window !== "undefined") {
+      return !sessionStorage.getItem("splashShown");
+    }
+    return true;
+  });
 
   useEffect(() => {
     // Check if the splash screen has already been shown in this browser session
     const hasBeenShown = sessionStorage.getItem("splashShown");
 
     if (hasBeenShown) {
-      // If it was already shown in the session, immediately unmount to avoid layout overlay overhead
       setIsMounted(false);
       setIsVisible(false);
       return;
@@ -20,6 +33,10 @@ export default function SplashScreen() {
 
     // Save immediately so internal page navigations don't repeat the animation
     sessionStorage.setItem("splashShown", "true");
+    try {
+      // Ensure the global class is added so any subsequent layout mounts are instantly hidden by CSS
+      document.documentElement.classList.add("splash-shown");
+    } catch (e) {}
 
     // Start fade out at 1.5 seconds
     const fadeTimer = setTimeout(() => {
@@ -29,11 +46,6 @@ export default function SplashScreen() {
     // Remove from the DOM completely after fade out transition (1.5s + 0.5s transition = 2s)
     const removeTimer = setTimeout(() => {
       setIsMounted(false);
-      
-      // Clean up the global class on first-load unmount so document tree stays pristine
-      try {
-        document.documentElement.classList.remove("splash-shown");
-      } catch (e) {}
     }, 2000);
 
     return () => {
