@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { sendVehicleApprovedEmail, sendVehicleRejectedEmail } from "@/lib/mailer";
 
 // Verica que la sesión actual sea Administrator antes de cualquier mutación
 async function verifyAdmin() {
@@ -21,14 +22,24 @@ export async function approveVehicle(vehicleId: string) {
     const expirationDate = new Date();
     expirationDate.setDate(expirationDate.getDate() + 45);
 
-    await prisma.vehicle.update({
+    const vehicle = await prisma.vehicle.update({
       where: { id: vehicleId },
       data: { 
         status: "APPROVED",
         approvedAt: new Date(),
         expiresAt: expirationDate
+      },
+      include: {
+        user: true
       }
     });
+
+    // Enviar correo de aprobación de forma asíncrona (background)
+    if (vehicle?.user?.email) {
+      sendVehicleApprovedEmail(vehicle.user.email, vehicle.brand, vehicle.model, vehicle.id).catch((err) => {
+        console.error("❌ Falló el envío de correo de aprobación de publicación:", err);
+      });
+    }
 
     revalidatePath("/admin");
     revalidatePath("/catalogo");
@@ -44,10 +55,20 @@ export async function rejectVehicle(vehicleId: string) {
   try {
     await verifyAdmin();
 
-    await prisma.vehicle.update({
+    const vehicle = await prisma.vehicle.update({
       where: { id: vehicleId },
-      data: { status: "REJECTED" }
+      data: { status: "REJECTED" },
+      include: {
+        user: true
+      }
     });
+
+    // Enviar correo de rechazo de forma asíncrona (background)
+    if (vehicle?.user?.email) {
+      sendVehicleRejectedEmail(vehicle.user.email, vehicle.brand, vehicle.model).catch((err) => {
+        console.error("❌ Falló el envío de correo de rechazo de publicación:", err);
+      });
+    }
 
     revalidatePath("/admin");
     revalidatePath("/catalogo");

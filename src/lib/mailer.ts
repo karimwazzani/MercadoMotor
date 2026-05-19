@@ -297,3 +297,256 @@ Asunto: 🔥 ¡Bajó de precio el ${vehicleName} que te interesa!
   `);
   return true;
 }
+
+/**
+ * Envía una confirmación de que la contraseña ha sido cambiada con éxito
+ */
+export async function sendPasswordChangedSuccessEmail(recipientEmail: string, reportLink: string) {
+  const title = "Tu contraseña ha sido cambiada";
+  const contentHtml = `
+    <h2 class="title" style="color: #ffffff;">🔐 Contraseña modificada con éxito</h2>
+    <p class="text">
+      Te notificamos que la contraseña de tu cuenta en MercadoMotor ha sido modificada recientemente con éxito.
+    </p>
+    <p class="text" style="font-size: 14px; background-color: #27272a; padding: 15px; border-radius: 8px; border: 1px solid #3f3f46; color: #a1a1aa; text-align: center;">
+      Fecha y hora del cambio: <strong>${new Date().toLocaleString("es-AR", { timeZone: "America/Argentina/Buenos_Aires" })} (Arg)</strong>
+    </p>
+    <p class="text" style="color: #f87171; font-weight: 500; text-align: center; margin-top: 25px;">
+      ⚠️ ¿No realizaste este cambio?
+    </p>
+    <p class="text" style="font-size: 14px; text-align: center;">
+      Si vos no solicitaste este cambio, es posible que alguien haya accedido a tu cuenta. Hacé clic en el siguiente botón para <strong>suspender tu cuenta preventivamente</strong> y proteger tus datos:
+    </p>
+    <div class="btn-container">
+      <a href="${reportLink}" class="btn" style="background-color: #ef4444 !important; color: #ffffff !important; transition: background-color 0.2s ease;">
+        ¡No fui yo! Bloquear mi cuenta
+      </a>
+    </div>
+  `;
+
+  const html = getEmailTemplate(title, contentHtml);
+
+  if (resend) {
+    try {
+      await resend.emails.send({
+        from: FROM_EMAIL,
+        to: recipientEmail,
+        subject: "🔐 Alerta de seguridad: Contraseña modificada - MercadoMotor",
+        html
+      });
+      return true;
+    } catch (error) {
+      console.error("❌ Error enviando email de confirmación de contraseña con Resend:", error);
+    }
+  }
+
+  console.log(`
+=========================================
+📧 E-MAIL SIMULADO: CONTRASEÑA MODIFICADA CON ÉXITO (MOCK)
+-----------------------------------------
+Para: ${recipientEmail}
+Asunto: 🔐 Alerta de seguridad: Contraseña modificada - MercadoMotor
+Enlace de suspensión: ${reportLink}
+=========================================
+  `);
+  return true;
+}
+
+/**
+ * Envía una alerta roja al administrador notificando un reporte de actividad sospechosa (hackeo)
+ */
+export async function sendSuspiciousActivityAlertToAdmins(affectedUserEmail: string, adminEmail: string) {
+  const title = "ALERTA: Reporte de Actividad Sospechosa";
+  const contentHtml = `
+    <h2 class="title" style="color: #ef4444;">🚨 ALERTA DE HACKEO / ACCESO NO AUTORIZADO</h2>
+    <p class="text" style="color: #ffffff;">
+      El sistema ha registrado un reporte de actividad no autorizada en MercadoMotor.
+    </p>
+    <div style="background-color: #ef444422; border: 1px solid #ef4444; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+      <p class="text" style="color: #fca5a5; margin: 0 0 10px 0;"><strong>Detalles del incidente:</strong></p>
+      <ul style="color: #e4e4e7; font-size: 14px; padding-left: 20px; margin: 0;">
+        <li>Usuario Afectado: <strong>${affectedUserEmail}</strong></li>
+        <li>Acción Tomada: <strong>Cuenta suspendida temporalmente de forma automática (status: SUSPENDED)</strong></li>
+        <li>Fecha del Reporte: <strong>${new Date().toLocaleString("es-AR", { timeZone: "America/Argentina/Buenos_Aires" })} (Arg)</strong></li>
+      </ul>
+    </div>
+    <p class="text" style="font-size: 14px;">
+      La cuenta de este usuario ha sido bloqueada de manera preventiva en la base de datos para impedir que el atacante publique vehículos o modifique información. 
+      Es necesario realizar una verificación de seguridad con el usuario antes de reactivar su estado a "ACTIVE".
+    </p>
+  `;
+
+  const html = getEmailTemplate(title, contentHtml);
+
+  if (resend) {
+    try {
+      await resend.emails.send({
+        from: FROM_EMAIL,
+        to: adminEmail,
+        subject: `🚨 ALERTA: Reporte de hackeo en cuenta ${affectedUserEmail}`,
+        html
+      });
+      return true;
+    } catch (error) {
+      console.error("❌ Error enviando email de alerta a administradores con Resend:", error);
+    }
+  }
+
+  console.log(`
+=========================================
+📧 E-MAIL SIMULADO: ALERTA DE HACKEO PARA ADMINS (MOCK)
+-----------------------------------------
+Para Administrador: ${adminEmail}
+Usuario Afectado: ${affectedUserEmail}
+=========================================
+  `);
+  return true;
+}
+
+/**
+ * Envía una notificación cuando se crea una publicación (pendiente de revisión)
+ */
+export async function sendVehiclePendingEmail(recipientEmail: string, brand: string, model: string) {
+  const title = "Recibimos tu publicación - MercadoMotor";
+  const contentHtml = `
+    <h2 class="title">🚗 Recibimos tu publicación</h2>
+    <p class="text">
+      ¡Gracias por publicar en MercadoMotor! Queremos avisarte que la publicación de tu <strong>${brand} ${model}</strong> se ha guardado correctamente y ya se encuentra en proceso de revisión por nuestro equipo de moderadores.
+    </p>
+    <p class="text" style="font-size: 14px; background-color: #27272a; padding: 15px; border-radius: 8px; border: 1px solid #3f3f46; color: #a1a1aa; text-align: center;">
+      ⏰ <strong>Plazo de revisión:</strong> Habitualmente revisamos las publicaciones en un plazo máximo de <strong>2 horas</strong>. Te notificaremos por correo electrónico en cuanto sea aprobada o requiera alguna modificación.
+    </p>
+    <div class="btn-container">
+      <a href="${process.env.NEXTAUTH_URL || 'https://mercadomotor.com.ar'}/dashboard" class="btn" style="transition: background-color 0.2s ease;">
+        Ir a mi Panel de Control
+      </a>
+    </div>
+  `;
+
+  const html = getEmailTemplate(title, contentHtml);
+
+  if (resend) {
+    try {
+      await resend.emails.send({
+        from: FROM_EMAIL,
+        to: recipientEmail,
+        subject: `🚗 Recibimos tu publicación de ${brand} ${model} - MercadoMotor`,
+        html
+      });
+      return true;
+    } catch (error) {
+      console.error("❌ Error enviando email de publicación pendiente con Resend:", error);
+    }
+  }
+
+  console.log(`
+=========================================
+📧 E-MAIL SIMULADO: PUBLICACIÓN CREADA / PENDIENTE (MOCK)
+-----------------------------------------
+Para: ${recipientEmail}
+Vehículo: ${brand} ${model}
+=========================================
+  `);
+  return true;
+}
+
+/**
+ * Envía una notificación cuando la publicación es aprobada y publicada en vivo
+ */
+export async function sendVehicleApprovedEmail(recipientEmail: string, brand: string, model: string, vehicleId: string) {
+  const title = "¡Tu publicación está activa! - MercadoMotor";
+  const vehicleLink = `${process.env.NEXTAUTH_URL || 'https://mercadomotor.com.ar'}/vehiculos/${vehicleId}`;
+  
+  const contentHtml = `
+    <h2 class="title" style="color: #ffffff;">🎉 ¡Excelentes noticias!</h2>
+    <p class="text">
+      Nos alegra informarte que la publicación de tu <strong>${brand} ${model}</strong> ha sido <strong>aprobada con éxito</strong> por nuestro equipo de moderación.
+    </p>
+    <p class="text" style="text-align: center; color: #b89759; font-weight: 600; font-size: 16px;">
+      ¡Ya se encuentra activa y visible para miles de compradores interesados en MercadoMotor!
+    </p>
+    <div class="btn-container" style="margin-top: 30px;">
+      <a href="${vehicleLink}" class="btn" style="transition: background-color 0.2s ease;">
+        Ver mi Publicación en Vivo
+      </a>
+    </div>
+  `;
+
+  const html = getEmailTemplate(title, contentHtml);
+
+  if (resend) {
+    try {
+      await resend.emails.send({
+        from: FROM_EMAIL,
+        to: recipientEmail,
+        subject: `🎉 ¡Publicación aprobada y activa! - ${brand} ${model}`,
+        html
+      });
+      return true;
+    } catch (error) {
+      console.error("❌ Error enviando email de publicación aprobada con Resend:", error);
+    }
+  }
+
+  console.log(`
+=========================================
+📧 E-MAIL SIMULADO: PUBLICACIÓN APROBADA (MOCK)
+-----------------------------------------
+Para: ${recipientEmail}
+Vehículo: ${brand} ${model}
+Enlace: ${vehicleLink}
+=========================================
+  `);
+  return true;
+}
+
+/**
+ * Envía una notificación cuando la publicación es rechazada y requiere revisión
+ */
+export async function sendVehicleRejectedEmail(recipientEmail: string, brand: string, model: string) {
+  const title = "Tu publicación requiere revisión - MercadoMotor";
+  const dashboardLink = `${process.env.NEXTAUTH_URL || 'https://mercadomotor.com.ar'}/dashboard`;
+  
+  const contentHtml = `
+    <h2 class="title" style="color: #f87171;">⚠️ Tu publicación requiere cambios</h2>
+    <p class="text">
+      Te informamos que la publicación de tu <strong>${brand} ${model}</strong> ha sido revisada por nuestro equipo y requiere que realices algunas modificaciones antes de que podamos aprobarla y publicarla en el catálogo.
+    </p>
+    <p class="text" style="font-size: 14px; background-color: #27272a; padding: 15px; border-radius: 8px; border: 1px solid #3f3f46; color: #a1a1aa;">
+      📌 <strong>¿Qué tenés que hacer?</strong><br>
+      Ingresá a tu Panel de Control, hacé clic en editar sobre esta publicación, y revisá que las fotos sean nítidas, que el precio esté correcto, y que la descripción cumpla con las normas de convivencia de MercadoMotor.
+    </p>
+    <div class="btn-container" style="margin-top: 30px;">
+      <a href="${dashboardLink}" class="btn" style="background-color: #b89759; color: #000000; transition: background-color 0.2s ease;">
+        Ir a mi Panel para Editar
+      </a>
+    </div>
+  `;
+
+  const html = getEmailTemplate(title, contentHtml);
+
+  if (resend) {
+    try {
+      await resend.emails.send({
+        from: FROM_EMAIL,
+        to: recipientEmail,
+        subject: `⚠️ Tu publicación de ${brand} ${model} requiere revisión`,
+        html
+      });
+      return true;
+    } catch (error) {
+      console.error("❌ Error enviando email de publicación rechazada con Resend:", error);
+    }
+  }
+
+  console.log(`
+=========================================
+📧 E-MAIL SIMULADO: PUBLICACIÓN RECHAZADA (MOCK)
+-----------------------------------------
+Para: ${recipientEmail}
+Vehículo: ${brand} ${model}
+Panel: ${dashboardLink}
+=========================================
+  `);
+  return true;
+}

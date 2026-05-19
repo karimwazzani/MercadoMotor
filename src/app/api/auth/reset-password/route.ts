@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
+import crypto from "crypto";
+import { sendPasswordChangedSuccessEmail } from "@/lib/mailer";
 
 export async function POST(req: Request) {
   try {
@@ -46,6 +48,28 @@ export async function POST(req: Request) {
     // 6. Eliminar el token de uso único
     await prisma.verificationToken.delete({
       where: { token }
+    });
+
+    // 7. Generar un token seguro para reporte de actividad sospechosa (Antihackeo)
+    const reportToken = crypto.randomBytes(32).toString("hex");
+    const expires = new Date();
+    expires.setDate(expires.getDate() + 7); // Válido por 7 días
+
+    await prisma.verificationToken.create({
+      data: {
+        identifier: `${email}:report`,
+        token: reportToken,
+        expires
+      }
+    });
+
+    // Enlace para reporte de hackeo
+    const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.com.ar";
+    const reportLink = `${siteUrl}/auth/report-suspicious?email=${encodeURIComponent(email)}&token=${reportToken}`;
+
+    // Enviar correo de éxito con botón "No fui yo" de forma asíncrona (background)
+    sendPasswordChangedSuccessEmail(email, reportLink).catch((err) => {
+      console.error("❌ Falló el envío de correo de confirmación de cambio de contraseña:", err);
     });
 
     return NextResponse.json({ message: "Contraseña restablecida con éxito." }, { status: 200 });

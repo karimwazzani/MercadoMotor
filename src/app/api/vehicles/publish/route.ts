@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma"; // Importar la instancia global
 import { uploadToCloud } from "@/lib/storage";
+import { sendVehiclePendingEmail } from "@/lib/mailer";
 
 export async function POST(req: Request) {
   try {
@@ -103,6 +104,13 @@ export async function POST(req: Request) {
         }
       }
     });
+
+    // Enviar correo de publicación en proceso de revisión en segundo plano (no bloqueante)
+    if (session.user.email) {
+      sendVehiclePendingEmail(session.user.email, brand, model).catch((err) => {
+        console.error("❌ Falló el envío de correo de confirmación de publicación:", err);
+      });
+    }
 
     return NextResponse.json({ message: "Vehículo publicado con éxito", vehicleId: newVehicle.id }, { status: 201 });
 
