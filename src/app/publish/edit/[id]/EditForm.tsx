@@ -230,12 +230,7 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
 
       <main className={`container ${styles.main}`}>
         <form onSubmit={handleSubmit} className={styles.formCard}>
-          <div className={styles.stepIndicator}>MODO DE EDICIÓN DIRECTA</div>
-          
-          <h1 className={styles.title} style={{ marginBottom: "0.5rem" }}>Modificar Publicación</h1>
-          <p className={styles.subtitle} style={{ marginBottom: "2.5rem", color: "var(--color-text-muted)" }}>
-            Realizá cualquier corrección en una sola pantalla y hacé clic en "Guardar Cambios" al final del formulario.
-          </p>
+          <h1 className={styles.title} style={{ marginBottom: "2rem" }}>Editar Publicación</h1>
 
           {error && <div className={styles.errorMessage} style={{ marginBottom: "2rem" }}>{error}</div>}
 
