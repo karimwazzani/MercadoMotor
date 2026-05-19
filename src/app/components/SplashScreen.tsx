@@ -29,6 +29,11 @@ export default function SplashScreen() {
     // Remove from the DOM completely after fade out transition (1.5s + 0.5s transition = 2s)
     const removeTimer = setTimeout(() => {
       setIsMounted(false);
+      
+      // Clean up the global class on first-load unmount so document tree stays pristine
+      try {
+        document.documentElement.classList.remove("splash-shown");
+      } catch (e) {}
     }, 2000);
 
     return () => {
@@ -46,16 +51,16 @@ export default function SplashScreen() {
     >
       {/* 
         This script tag executes synchronously as the browser parses the initial HTML.
-        If the user has already seen the splash screen in this session, we hide it 
-        instantly before the browser draws a single frame. This prevents layout flashing.
+        We add a helper class to the root HTML tag. CSS will read this class and instantly 
+        hide the splash screen, bypassing any React client-side hydration overrides to 
+        completely prevent flashing or blinking.
       */}
       <script
         dangerouslySetInnerHTML={{
           __html: `
             try {
               if (sessionStorage.getItem("splashShown")) {
-                var el = document.getElementById("MM_splash_screen");
-                if (el) el.style.display = "none";
+                document.documentElement.classList.add("splash-shown");
               }
             } catch (e) {
               console.error("Error in splash inline script:", e);
