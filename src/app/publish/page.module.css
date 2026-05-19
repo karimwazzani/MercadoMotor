@@ -242,6 +242,7 @@
   width: 20px;
   height: 20px;
   accent-color: var(--color-accent);
+  flex-shrink: 0;
 }
 
 /* EQUIPAMIENTO */
@@ -578,4 +579,5 @@
   height: 18px;
   accent-color: var(--color-accent);
   cursor: pointer;
+  flex-shrink: 0;
 }
