@@ -11,6 +11,7 @@ import prisma from "@/lib/prisma";
 import { formatLocation } from "@/lib/utils";
 import AdSlot from "@/app/components/AdSlot";
 import { Metadata } from "next";
+import { CATEGORIES } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Catálogo de Vehículos | MercadoMotor",
@@ -65,8 +66,25 @@ export default async function Catalogo({
   }
 
   // 2. Filtros Laterales Especializados
+  let activeCategory = "Todas";
   if (categoryParam && categoryParam !== "Todas") {
-    whereClause.category = categoryParam;
+    // Map URL slug categories to database category strings
+    const categoryMapping: { [key: string]: string } = {
+      "auto": "Autos",
+      "autos": "Autos",
+      "camioneta": "Camionetas / SUV",
+      "camionetas": "Camionetas / SUV",
+      "coleccion": "De colección",
+      "nautica": "Lanchas / Yate / Barco",
+      "moto": "Moto / UTV / Cuatriciclo",
+      "motos": "Moto / UTV / Cuatriciclo",
+      "chocado": "Chocado",
+      "chocados": "Chocado"
+    };
+
+    const dbCategory = categoryMapping[categoryParam.toLowerCase()] || categoryParam;
+    whereClause.category = dbCategory;
+    activeCategory = dbCategory;
   }
   
   if (brandParam && brandParam !== "") {
@@ -153,12 +171,11 @@ export default async function Catalogo({
 
                 <div className={styles.filterGroup}>
                   <label className={styles.filterLabel}>Categoría</label>
-                  <select name="categoria" className={styles.filterSelect} defaultValue={categoryParam || "Todas"}>
+                  <select name="categoria" className={styles.filterSelect} defaultValue={activeCategory}>
                     <option value="Todas">Todas las categorías</option>
-                    <option value="Autos">Autos y Camionetas</option>
-                    <option value="Utilitarios">Utilitarios</option>
-                    <option value="Motos">Motos</option>
-                    <option value="Náutica">Náutica</option>
+                    {CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
                   </select>
                 </div>
 
