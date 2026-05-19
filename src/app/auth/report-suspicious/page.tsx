@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 import styles from "./page.module.css";
 
 function ReportSuspiciousContent() {
@@ -35,6 +36,12 @@ function ReportSuspiciousContent() {
 
         if (response.ok) {
           setSuccess(true);
+          // Destruir la sesión activa local de forma inmediata
+          try {
+            await signOut({ redirect: false });
+          } catch (signOutErr) {
+            console.error("Error al invalidar sesión activa:", signOutErr);
+          }
         } else {
           setErrorMsg(data.message || "Ocurrió un error al procesar el reporte.");
         }
