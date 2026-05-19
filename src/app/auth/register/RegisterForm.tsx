@@ -12,8 +12,8 @@ import { LOCATION_DATA } from "@/lib/constants";
 export default function RegisterForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(false);
-  const [registeredName, setRegisteredName] = useState("");
+  const [isVerificationSent, setIsVerificationSent] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
   
   const router = useRouter();
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
@@ -68,31 +68,42 @@ export default function RegisterForm() {
         throw new Error(result.message || "Error al registrar");
       }
 
-      const loginRes = await signIn("credentials", {
-        email: data.email,
-        password: data.password,
-        redirect: false,
-      });
-
-      if (loginRes?.error) {
-        setError("Registrado correctamente, pero no pudimos iniciar sesión automáticamente.");
-        setLoading(false);
-      } else {
-        setRegisteredName(data.name);
-        setShowWelcome(true);
-      }
+      setRegisteredEmail(data.email);
+      setIsVerificationSent(true);
+      setLoading(false);
     } catch (err: any) {
       setError(err.message);
       setLoading(false);
     }
   };
 
-  if (showWelcome) {
+  if (isVerificationSent) {
     return (
-      <WelcomeScreen 
-        name={registeredName} 
-        onComplete={() => router.push("/")} 
-      />
+      <div className={styles.authContainer}>
+        <div className={styles.authCard} style={{ textAlign: "center", padding: "3rem" }}>
+          <div className={styles.logo}>
+            Mercado<span className={styles.logoAccent}>Motor</span>
+          </div>
+          <div style={{
+            fontSize: "4.5rem",
+            marginBottom: "1.5rem",
+            animation: "bounce 2s infinite"
+          }}>✉️</div>
+          <h1 className={styles.title}>¡Verificá tu correo!</h1>
+          <p className={styles.subtitle} style={{ marginBottom: "2.5rem", lineHeight: "1.6" }}>
+            Te enviamos un enlace de activación a <strong>{registeredEmail}</strong>.<br/><br/>
+            Por favor, revisá tu bandeja de entrada (y la carpeta de correo no deseado o spam) y hacé clic en el botón de confirmación para poder ingresar a MercadoMotor.
+          </p>
+          
+          <Link href="/auth/login" className={styles.btnSubmit} style={{
+            display: "block",
+            textDecoration: "none",
+            textAlign: "center"
+          }}>
+            Ir al inicio de sesión
+          </Link>
+        </div>
+      </div>
     );
   }
 
