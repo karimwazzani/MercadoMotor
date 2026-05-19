@@ -4,6 +4,13 @@ import styles from './page.module.css';
 import Image from 'next/image';
 import Link from 'next/link';
 import { formatLocation } from '@/lib/utils';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Comparar Vehículos | MercadoMotor",
+  description: "Compará el precio, año, kilometraje y especificaciones de tus vehículos favoritos en MercadoMotor.",
+};
+
 
 export default async function ComparePage({
   searchParams,

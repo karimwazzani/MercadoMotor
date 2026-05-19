@@ -10,6 +10,12 @@ import CompareToggleButton from "@/app/components/CompareToggleButton";
 import prisma from "@/lib/prisma";
 import { formatLocation } from "@/lib/utils";
 import AdSlot from "@/app/components/AdSlot";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Catálogo de Vehículos | MercadoMotor",
+  description: "Buscá y encontrá tu próximo auto, camioneta o moto en la plataforma premium de Argentina.",
+};
 
 
 export default async function Catalogo({

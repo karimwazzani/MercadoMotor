@@ -1,11 +1,16 @@
 "use client";
 
+import { useEffect } from "react";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 
 export default function LogoutPage() {
   const router = useRouter();
+
+  useEffect(() => {
+    document.title = "Cerrar Sesión | MercadoMotor";
+  }, []);
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/" });

@@ -48,6 +48,7 @@ export default function PublishForm() {
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   useEffect(() => {
+    document.title = "Publicar Vehículo | MercadoMotor";
     fetch('/api/profile').then(res => res.json()).then(data => {
       if (data?.accountType === "AGENCIA" && data.agencies?.[0]) {
         const agency = data.agencies[0];

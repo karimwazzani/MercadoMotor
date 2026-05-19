@@ -29,6 +29,7 @@ export default function ProfileSettingsPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
+    document.title = "Mi Perfil | MercadoMotor";
     fetchProfile();
   }, []);
 

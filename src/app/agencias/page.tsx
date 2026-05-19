@@ -2,6 +2,12 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./page.module.css";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Directorio de Agencias | MercadoMotor",
+  description: "Encontrá las mejores concesionarias y agencias del país en MercadoMotor.",
+};
 
 const capitalize = (str: string | null | undefined) => {
   if (!str) return "";

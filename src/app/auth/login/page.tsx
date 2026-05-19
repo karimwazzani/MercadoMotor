@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -8,6 +8,10 @@ import styles from "./page.module.css";
 
 export default function LoginPage() {
   const router = useRouter();
+
+  useEffect(() => {
+    document.title = "Iniciar Sesión | MercadoMotor";
+  }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");

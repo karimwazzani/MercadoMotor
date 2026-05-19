@@ -8,6 +8,12 @@ import RenewButton from "./RenewButton";
 import DeleteButton from "./DeleteButton";
 import NotificationCenter from "@/app/components/NotificationCenter";
 import prisma from "@/lib/prisma";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Mi Panel | MercadoMotor",
+  description: "Gestioná tus publicaciones y vehículos a la venta en MercadoMotor.",
+};
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
