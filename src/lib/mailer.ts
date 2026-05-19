@@ -455,7 +455,7 @@ Vehículo: ${brand} ${model}
  */
 export async function sendVehicleApprovedEmail(recipientEmail: string, brand: string, model: string, vehicleId: string) {
   const title = "¡Tu publicación está activa! - MercadoMotor";
-  const vehicleLink = `${process.env.NEXTAUTH_URL || 'https://mercadomotor.com.ar'}/vehiculos/${vehicleId}`;
+  const vehicleLink = `${process.env.NEXTAUTH_URL || 'https://mercadomotor.com.ar'}/catalogo/${vehicleId}`;
   
   const contentHtml = `
     <h2 class="title" style="color: #ffffff;">🎉 ¡Excelentes noticias!</h2>
