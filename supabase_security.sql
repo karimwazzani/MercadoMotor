@@ -80,9 +80,6 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('uploads', 'uploads', true)
 ON CONFLICT (id) DO UPDATE SET public = true;
 
--- Habilitamos RLS en las tablas de almacenamiento de Supabase (por si acaso no está activo)
-ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
-
 -- Eliminamos políticas viejas para el bucket 'uploads'
 DROP POLICY IF EXISTS "Permitir descargas públicas de uploads" ON storage.objects;
 DROP POLICY IF EXISTS "Permitir subidas de imágenes en uploads" ON storage.objects;
