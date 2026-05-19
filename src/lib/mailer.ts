@@ -4,7 +4,7 @@ import { Resend } from "resend";
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 // Email remitente por defecto (onboarding de Resend o tu dominio verificado)
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "MercadoMotor <onboarding@resend.dev>";
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "MercadoMotor <hola@mercadomotor.ar>";
 
 /**
  * Plantilla HTML compartida para mantener la estética premium dark/gold de MercadoMotor
