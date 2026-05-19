@@ -3,21 +3,20 @@ import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import crypto from "crypto";
 import { sendPasswordChangedSuccessEmail } from "@/lib/mailer";
-import { validatePassword } from "@/lib/passwordValidator";
+import { resetPasswordSchema } from "@/lib/schemas";
 
 export async function POST(req: Request) {
   try {
-    const { token, password } = await req.json();
+    const body = await req.json();
 
-    if (!token || !password) {
-      return NextResponse.json({ message: "Faltan campos obligatorios" }, { status: 400 });
+    // 1. Validar cuerpo de la petición mediante esquema Zod estricto
+    const validationResult = resetPasswordSchema.safeParse(body);
+    if (!validationResult.success) {
+      const firstErrorMessage = validationResult.error.issues[0]?.message || "Datos de restablecimiento inválidos";
+      return NextResponse.json({ message: firstErrorMessage }, { status: 400 });
     }
 
-    // Validar fortaleza de la contraseña
-    const passwordValidation = validatePassword(password);
-    if (!passwordValidation.isValid) {
-      return NextResponse.json({ message: passwordValidation.message }, { status: 400 });
-    }
+    const { token, password } = validationResult.data;
 
     // 1. Buscar el token en VerificationToken
     const verificationToken = await prisma.verificationToken.findUnique({

@@ -2,14 +2,20 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/mailer";
 import { verifyTurnstileToken } from "@/lib/captcha";
+import { forgotPasswordSchema } from "@/lib/schemas";
 
 export async function POST(req: Request) {
   try {
-    const { email, captchaToken } = await req.json();
-
-    if (!email) {
-      return NextResponse.json({ message: "El correo electrónico es obligatorio" }, { status: 400 });
+    const body = await req.json();
+    
+    // 1. Validar el cuerpo de la petición mediante esquema Zod
+    const validationResult = forgotPasswordSchema.safeParse(body);
+    if (!validationResult.success) {
+      const firstErrorMessage = validationResult.error.issues[0]?.message || "Datos inválidos";
+      return NextResponse.json({ message: firstErrorMessage }, { status: 400 });
     }
+
+    const { email, captchaToken } = validationResult.data;
 
     // Validar captcha de Turnstile primero para evitar spam masivo de correos
     const isCaptchaValid = await verifyTurnstileToken(captchaToken);

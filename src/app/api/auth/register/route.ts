@@ -3,17 +3,30 @@ import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { sendVerificationEmail } from "@/lib/mailer";
 import { verifyTurnstileToken } from "@/lib/captcha";
-import { validatePassword } from "@/lib/passwordValidator";
+import { registerSchema } from "@/lib/schemas";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, password, accountType, tradeName, lastName, phone, city, location, captchaToken } = body;
-
-    // 1. Validar campos obligatorios básicos
-    if (!name || !email || !password || !accountType) {
-      return NextResponse.json({ message: "Faltan campos obligatorios" }, { status: 400 });
+    
+    // 1. Validar cuerpo de la petición con esquema Zod estricto
+    const validationResult = registerSchema.safeParse(body);
+    if (!validationResult.success) {
+      const firstErrorMessage = validationResult.error.issues[0]?.message || "Datos de registro inválidos";
+      return NextResponse.json({ message: firstErrorMessage }, { status: 400 });
     }
+
+    const { 
+      name, 
+      email, 
+      password, 
+      accountType, 
+      tradeName, 
+      lastName, 
+      phone, 
+      location, 
+      captchaToken 
+    } = validationResult.data;
 
     // 2. Validar Turnstile Captcha
     const isCaptchaValid = await verifyTurnstileToken(captchaToken);
@@ -21,13 +34,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "La verificación de seguridad (Captcha) falló. Reintentalo." }, { status: 400 });
     }
 
-    // 3. Validar fortaleza de la contraseña
-    const passwordValidation = validatePassword(password);
-    if (!passwordValidation.isValid) {
-      return NextResponse.json({ message: passwordValidation.message }, { status: 400 });
-    }
-
-    if (accountType === "ADMINISTRADOR") {
+    if (accountType as string === "ADMINISTRADOR") {
       return NextResponse.json({ message: "Rol no permitido en registro público" }, { status: 403 });
     }
 
