@@ -134,7 +134,7 @@ export async function sendVerificationEmail(recipientEmail: string, verification
       await resend.emails.send({
         from: FROM_EMAIL,
         to: recipientEmail,
-        subject: "✉️ Confirma tu cuenta en MercadoMotor",
+        subject: "Confirma tu cuenta en MercadoMotor",
         html
       });
       console.log(`✉️ Email de verificación REAL enviado con éxito vía Resend a: ${recipientEmail}`);
@@ -150,7 +150,7 @@ export async function sendVerificationEmail(recipientEmail: string, verification
 📧 E-MAIL SIMULADO: VERIFICACIÓN DE CUENTA (MOCK)
 -----------------------------------------
 Para: ${recipientEmail}
-Asunto: ✉️ Confirma tu cuenta en MercadoMotor
+Asunto: Confirma tu cuenta en MercadoMotor
 Enlace: ${verificationLink}
 =========================================
   `);
@@ -186,7 +186,7 @@ export async function sendPasswordResetEmail(recipientEmail: string, resetLink: 
       await resend.emails.send({
         from: FROM_EMAIL,
         to: recipientEmail,
-        subject: "🔑 Restablece tu contraseña - MercadoMotor",
+        subject: "Restablece tu contraseña - MercadoMotor",
         html
       });
       console.log(`🔑 Email de restablecimiento REAL enviado con éxito vía Resend a: ${recipientEmail}`);
@@ -202,7 +202,7 @@ export async function sendPasswordResetEmail(recipientEmail: string, resetLink: 
 📧 E-MAIL SIMULADO: RECUPERACIÓN DE CONTRASEÑA (MOCK)
 -----------------------------------------
 Para: ${recipientEmail}
-Asunto: 🔑 Restablece tu contraseña - MercadoMotor
+Asunto: Restablece tu contraseña - MercadoMotor
 Enlace: ${resetLink}
 =========================================
   `);
@@ -232,7 +232,7 @@ export async function sendRenewalNotificationEmail(recipientEmail: string, vehic
       await resend.emails.send({
         from: FROM_EMAIL,
         to: recipientEmail,
-        subject: `⚠️ Tu publicación de ${vehicleName} está por caducar`,
+        subject: `Tu publicación de ${vehicleName} está por caducar`,
         html
       });
       return true;
@@ -246,7 +246,7 @@ export async function sendRenewalNotificationEmail(recipientEmail: string, vehic
 📧 E-MAIL SIMULADO: NOTIFICACIÓN DE RENOVAR (MOCK)
 -----------------------------------------
 Para: ${recipientEmail}
-Asunto: ⚠️ Tu publicación de ${vehicleName} está a punto de caducar
+Asunto: Tu publicación de ${vehicleName} está a punto de caducar
 =========================================
   `);
   return true;
@@ -278,7 +278,7 @@ export async function sendPriceDropEmail(recipientEmail: string, vehicleName: st
       await resend.emails.send({
         from: FROM_EMAIL,
         to: recipientEmail,
-        subject: `🔥 ¡Bajó de precio el ${vehicleName} que te interesa!`,
+        subject: `¡Bajó de precio el ${vehicleName} que te interesa!`,
         html
       });
       return true;
@@ -292,7 +292,7 @@ export async function sendPriceDropEmail(recipientEmail: string, vehicleName: st
 📧 E-MAIL SIMULADO: ¡BAJA DE PRECIO! (MOCK)
 -----------------------------------------
 Para: ${recipientEmail}
-Asunto: 🔥 ¡Bajó de precio el ${vehicleName} que te interesa!
+Asunto: ¡Bajó de precio el ${vehicleName} que te interesa!
 =========================================
   `);
   return true;
@@ -331,7 +331,7 @@ export async function sendPasswordChangedSuccessEmail(recipientEmail: string, re
       await resend.emails.send({
         from: FROM_EMAIL,
         to: recipientEmail,
-        subject: "🔐 Alerta de seguridad: Contraseña modificada - MercadoMotor",
+        subject: "Alerta de seguridad: Contraseña modificada - MercadoMotor",
         html
       });
       return true;
@@ -345,7 +345,7 @@ export async function sendPasswordChangedSuccessEmail(recipientEmail: string, re
 📧 E-MAIL SIMULADO: CONTRASEÑA MODIFICADA CON ÉXITO (MOCK)
 -----------------------------------------
 Para: ${recipientEmail}
-Asunto: 🔐 Alerta de seguridad: Contraseña modificada - MercadoMotor
+Asunto: Alerta de seguridad: Contraseña modificada - MercadoMotor
 Enlace de suspensión: ${reportLink}
 =========================================
   `);
@@ -383,7 +383,7 @@ export async function sendSuspiciousActivityAlertToAdmins(affectedUserEmail: str
       await resend.emails.send({
         from: FROM_EMAIL,
         to: adminEmail,
-        subject: `🚨 ALERTA: Reporte de hackeo en cuenta ${affectedUserEmail}`,
+        subject: `ALERTA: Reporte de hackeo en cuenta ${affectedUserEmail}`,
         html
       });
       return true;
@@ -430,7 +430,7 @@ export async function sendVehiclePendingEmail(recipientEmail: string, brand: str
       await resend.emails.send({
         from: FROM_EMAIL,
         to: recipientEmail,
-        subject: `🚗 Recibimos tu publicación de ${brand} ${model} - MercadoMotor`,
+        subject: `Recibimos tu publicación de ${brand} ${model} - MercadoMotor`,
         html
       });
       return true;
@@ -479,7 +479,7 @@ export async function sendVehicleApprovedEmail(recipientEmail: string, brand: st
       await resend.emails.send({
         from: FROM_EMAIL,
         to: recipientEmail,
-        subject: `🎉 ¡Publicación aprobada y activa! - ${brand} ${model}`,
+        subject: `¡Publicación aprobada y activa! - ${brand} ${model}`,
         html
       });
       return true;
@@ -530,7 +530,7 @@ export async function sendVehicleRejectedEmail(recipientEmail: string, brand: st
       await resend.emails.send({
         from: FROM_EMAIL,
         to: recipientEmail,
-        subject: `⚠️ Tu publicación de ${brand} ${model} requiere revisión`,
+        subject: `Tu publicación de ${brand} ${model} requiere revisión`,
         html
       });
       return true;
