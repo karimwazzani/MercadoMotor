@@ -118,7 +118,7 @@ export default async function Home() {
               El administrador no ha marcado ningún vehículo como destacado.
             </div>
           ) : (
-            <FeaturedCarousel featuredVehicles={featuredVehicles} />
+            <FeaturedCarousel featuredVehicles={featuredVehicles} small={true} />
           )}
         </section>
 
