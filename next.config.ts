@@ -29,7 +29,7 @@ const nextConfig: NextConfig = {
       form-action 'self';
       frame-src 'self' https://challenges.cloudflare.com https://accounts.google.com;
       connect-src 'self' https://*.supabase.co https://challenges.cloudflare.com;
-    `.replace(/\\s{2,}/g, ' ').trim();
+    `.replace(/\s{2,}/g, ' ').trim();
 
     return [
       {
