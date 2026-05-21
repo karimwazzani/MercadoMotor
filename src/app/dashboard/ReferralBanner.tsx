@@ -28,14 +28,14 @@ export default function ReferralBanner({ userId }: { userId: string }) {
       <div style={{ 
         display: 'flex', 
         alignItems: 'center', 
-        backgroundColor: 'var(--color-bg)', 
-        border: '1px solid var(--color-border)', 
-        borderRadius: '8px', 
-        overflow: 'hidden',
+        gap: '0.8rem',
         maxWidth: '600px'
       }}>
         <div style={{ 
-          padding: '0.8rem 1rem', 
+          padding: '0.8rem 1.2rem', 
+          backgroundColor: 'var(--color-bg)', 
+          border: '1px solid var(--color-border)', 
+          borderRadius: '2rem',
           color: 'var(--color-text-muted)', 
           flexGrow: 1, 
           overflow: 'hidden', 
@@ -51,6 +51,7 @@ export default function ReferralBanner({ userId }: { userId: string }) {
             backgroundColor: copied ? '#2ecc71' : 'var(--color-accent)', 
             color: '#000', 
             border: 'none', 
+            borderRadius: '2rem',
             padding: '0.8rem 1.5rem', 
             fontWeight: 600, 
             cursor: 'pointer',
