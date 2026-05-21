@@ -36,7 +36,7 @@ export default async function DashboardPage() {
       <header className={styles.header}>
         <div className={`container ${styles.headerContent}`}>
           <div className={styles.logo}>
-            Mercado<span className={styles.logoAccent}>Motor</span>
+            <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
           </div>
           <nav className={styles.nav}>
             <NotificationCenter />

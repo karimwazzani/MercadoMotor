@@ -169,7 +169,7 @@ export default async function VehicleDetail({
       <header className={styles.header}>
         <div className={`container ${styles.headerContent}`}>
           <Link href="/" className={styles.logo}>
-            Mercado<span className={styles.logoAccent}>Motor</span>
+            <img src="/logo.png" alt="MercadoMotor" style={{ height: "32px", width: "auto", display: "block" }} />
           </Link>
           <nav className={styles.nav}>
             <Link href="/catalogo" className={styles.navLink}>Catálogo</Link>

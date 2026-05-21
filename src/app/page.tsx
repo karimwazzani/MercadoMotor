@@ -50,7 +50,7 @@ export default async function Home() {
       <header className={styles.header}>
         <div className={`container ${styles.headerContent}`}>
           <div className={styles.logo}>
-            Mercado<span className={styles.logoAccent}>Motor</span>
+            <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
           </div>
           <nav className={styles.nav}>
             {session ? (
@@ -188,7 +188,7 @@ export default async function Home() {
       <footer className={styles.footer}>
         <div className="container">
           <div className={styles.footerTop}>
-            <div className={styles.footerLogo}>Mercado<span className={styles.logoAccent}>Motor</span></div>
+            <div className={styles.footerLogo}><img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} /></div>
             <div className={styles.footerLinks}>
               <Link href="/terminos">Términos</Link>
               <Link href="/privacidad">Privacidad</Link>

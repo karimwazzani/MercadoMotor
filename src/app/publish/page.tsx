@@ -233,7 +233,7 @@ export default function PublishForm() {
       <header className={styles.header}>
         <div className={`container ${styles.headerContent}`}>
           <Link href="/" className={styles.logo}>
-            Mercado<span className={styles.logoAccent}>Motor</span>
+            <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
           </Link>
           <div className={styles.navClose}>
             <Link href="/" className={styles.btnClose}>Cancelar y volver</Link>

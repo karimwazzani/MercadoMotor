@@ -107,7 +107,7 @@ export default function RegisterForm() {
       <div className={styles.authContainer}>
         <div className={styles.authCard} style={{ textAlign: "center", padding: "3rem" }}>
           <div className={styles.logo}>
-            Mercado<span className={styles.logoAccent}>Motor</span>
+            <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
           </div>
           <div style={{
             fontSize: "4.5rem",
@@ -136,7 +136,7 @@ export default function RegisterForm() {
     <div className={styles.authContainer}>
       <div className={styles.authCard}>
         <div className={styles.logo}>
-          Mercado<span className={styles.logoAccent}>Motor</span>
+          <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
         </div>
         <h1 className={styles.title}>Crear cuenta</h1>
         <p className={styles.subtitle}>Unite a la red de vehículos más grande del país.</p>

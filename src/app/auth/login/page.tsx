@@ -82,7 +82,7 @@ export default function LoginPage() {
     <div className={styles.authContainer}>
       <div className={styles.authCard}>
         <div className={styles.logo}>
-          Mercado<span className={styles.logoAccent}>Motor</span>
+          <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
         </div>
         <h1 className={styles.title}>Iniciar sesión</h1>
         <p className={styles.subtitle}>Accedé a tu panel para publicar y gestionar vehículos.</p>

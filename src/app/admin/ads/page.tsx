@@ -17,7 +17,7 @@ export default async function AdminAdsPage() {
       <header className={styles.header}>
         <div className={`container ${styles.headerContent}`}>
           <div className={styles.logo}>
-            Mercado<span className={styles.logoAccent}>Motor</span> <span className={styles.badge}>ADS</span>
+            <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} /> <span className={styles.badge}>ADS</span>
           </div>
           <nav className={styles.nav}>
             <Link href="/admin" className={styles.navLink}>Dashboard Principal</Link>

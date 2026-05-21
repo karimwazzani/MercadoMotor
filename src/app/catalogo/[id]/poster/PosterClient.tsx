@@ -53,7 +53,7 @@ export default function PosterClient({ vehicle, siteUrl }: PosterClientProps) {
 
         <footer className={styles.footer}>
           <div className={styles.logo}>
-            Mercado<span className={styles.logoAccent}>Motor</span>
+            <img src="/logo.png" alt="MercadoMotor" style={{ height: "32px", width: "auto", display: "block" }} />
           </div>
           <div className={styles.web}>mercadomotor.ar</div>
         </footer>

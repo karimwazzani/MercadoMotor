@@ -273,7 +273,7 @@ export default async function Catalogo({
       <header className={styles.header}>
         <div className={`container ${styles.headerContent}`}>
           <Link href="/" className={styles.logo}>
-            Mercado<span className={styles.logoAccent}>Motor</span>
+            <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
           </Link>
           <nav className={styles.nav}>
             <Link href="/" className={styles.navLink}>Inicio</Link>

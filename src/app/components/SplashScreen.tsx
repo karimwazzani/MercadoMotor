@@ -75,7 +75,7 @@ export default function SplashScreen() {
     >
       <div className={styles.logoContainer}>
         <div className={styles.logo}>
-          Mercado<span className={styles.logoAccent}>Motor</span>
+          <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
         </div>
         <div className={styles.loaderLine}></div>
       </div>
