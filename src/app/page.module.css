@@ -821,52 +821,54 @@
   .logo { font-size: 1.5rem; }
   
   .hero {
-    align-items: center;
+    align-items: flex-start;
+    padding-top: 6rem;
   }
 
   .heroTitle { font-size: 2.2rem; }
   
   .searchBar { 
-    display: grid;
-    grid-template-columns: 1fr auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     border-radius: var(--radius-md); 
-    padding: 0; 
-    overflow: hidden;
+    padding: 0.25rem; 
   }
   .searchFields { 
-    display: contents;
+    display: flex;
+    flex: 1;
+    min-width: 0;
   }
   .searchInput { 
-    grid-column: 1 / -1;
-    width: 100%; 
-    border-bottom: 1px solid rgba(0,0,0,0.1); 
-    padding: 0.8rem; 
-    text-align: left; 
-    font-size: 0.95rem;
+    flex: 1;
+    min-width: 50px;
+    border: none; 
+    padding: 0.6rem; 
+    font-size: 0.9rem;
   }
   .searchDivider { display: none; }
   .customSelectWrapper { 
-    grid-column: 1 / 2;
-    width: 100%; 
-    border-right: 1px solid rgba(0,0,0,0.1); 
+    width: auto;
+    border-left: 1px solid rgba(0,0,0,0.1); 
   }
   .customSelectTrigger { 
     justify-content: space-between; 
-    width: 100%; 
-    padding: 0.8rem; 
-    font-size: 0.95rem; 
+    padding: 0.6rem; 
+    font-size: 0.85rem; 
     height: 100%;
+  }
+  .categoryText {
+    max-width: 90px;
   }
   .customSelectOptions { left: 0; right: 0; width: 100%; top: 100%; position: absolute; }
   
   .searchButton { 
-    grid-column: 2 / 3;
-    justify-content: center; 
-    padding: 0 1rem; 
+    padding: 0; 
     margin-top: 0; 
-    width: auto;
-    border-radius: 0;
-    height: 100%;
+    margin-left: 0.25rem;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
   }
   
   .searchButtonText { display: none; }

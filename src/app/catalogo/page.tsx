@@ -38,6 +38,7 @@ export default async function Catalogo({
   const maxYearParam = typeof resolvedParams.maxYear === 'string' ? parseInt(resolvedParams.maxYear) : undefined;
   const minKmParam = typeof resolvedParams.minKm === 'string' ? parseInt(resolvedParams.minKm) : undefined;
   const maxKmParam = typeof resolvedParams.maxKm === 'string' ? parseInt(resolvedParams.maxKm) : undefined;
+  const isNovedades = resolvedParams.novedades === 'true';
   
   // Construir clausula WHERE dinamica
   const whereClause: any = {
@@ -123,6 +124,7 @@ export default async function Catalogo({
         user: true,
       },
       orderBy: { createdAt: "desc" },
+      take: isNovedades ? 16 : undefined,
     })
   ]);
 

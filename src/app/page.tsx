@@ -161,7 +161,7 @@ export default async function Home() {
         <section className={`container ${styles.newArrivals}`}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Recién Ingresados</h2>
-            <Link href="/catalogo" className={styles.linkAccent}>Ver novedades</Link>
+            <Link href="/catalogo?novedades=true" className={styles.linkAccent}>Ver novedades</Link>
           </div>
           <FeaturedCarousel featuredVehicles={newArrivals} small={true} />
         </section>
