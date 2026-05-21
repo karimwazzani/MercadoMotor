@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import styles from "./ContactActions.module.css";
 
 interface ContactActionsProps {
@@ -78,8 +79,8 @@ export default function ContactActions({ vehicleId, phone, brand, model }: Conta
 
   return (
     <>
-      {/* WARNING MODAL */}
-      {showWarning && (
+      {/* WARNING MODAL via Portal */}
+      {showWarning && typeof document !== "undefined" && createPortal(
         <div className={styles.warningOverlay} onClick={() => setShowWarning(false)}>
           <div className={styles.warningModal} onClick={(e) => e.stopPropagation()}>
             <h3 className={styles.warningTitle}>Consejos de Seguridad</h3>
@@ -98,7 +99,8 @@ export default function ContactActions({ vehicleId, phone, brand, model }: Conta
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <div className={styles.container}>

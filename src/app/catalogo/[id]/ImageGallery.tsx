@@ -114,12 +114,9 @@ export default function ImageGallery({ images, title }: { images: any[], title: 
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEndEvent}
           >
-            <Image 
+            <img 
               src={activeImage.url} 
               alt={title} 
-              fill
-              sizes="90vw"
-              style={{ objectFit: 'contain' }}
               className={styles.zoomImage} 
             />
             {images.length > 1 && (
