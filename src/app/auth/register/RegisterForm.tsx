@@ -14,6 +14,7 @@ import { validatePassword } from "@/lib/passwordValidator";
 
 export default function RegisterForm() {
   const [error, setError] = useState<string | null>(null);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isVerificationSent, setIsVerificationSent] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
@@ -51,6 +52,11 @@ export default function RegisterForm() {
   const localities = (province && municipality) ? (LOCATION_DATA[province][municipality] || []).sort() : [];
 
   const onSubmit = async (data: any) => {
+    if (!acceptedTerms) {
+      setError("Debés aceptar los Términos y Condiciones para continuar.");
+      return;
+    }
+
     // Si la llave del sitio está configurada, captchaToken es mandatorio
     if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !captchaToken) {
       setError("Por favor, completa la verificación de captcha.");
@@ -278,7 +284,21 @@ export default function RegisterForm() {
 
           <TurnstileCaptcha onVerify={setCaptchaToken} action="register" />
 
-          <button type="submit" disabled={loading} className={styles.btnSubmit}>
+          <label className={styles.termsCheckbox}>
+            <input
+              type="checkbox"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+            />
+            <span>
+              Leí y acepto los{" "}
+              <Link href="/terminos" target="_blank" className={styles.termsLink}>Términos y Condiciones</Link>
+              {" "}y la{" "}
+              <Link href="/privacidad" target="_blank" className={styles.termsLink}>Política de Privacidad</Link>
+            </span>
+          </label>
+
+          <button type="submit" disabled={loading || !acceptedTerms} className={styles.btnSubmit}>
             {loading ? "Registrando..." : "Crear mi cuenta"}
           </button>
         </form>

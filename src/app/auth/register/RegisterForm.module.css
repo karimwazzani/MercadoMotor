@@ -156,3 +156,34 @@
     padding: 2rem 1.5rem;
   }
 }
+
+.termsCheckbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  line-height: 1.5;
+  margin-top: -0.25rem;
+}
+
+.termsCheckbox input[type="checkbox"] {
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.termsLink {
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: underline;
+  transition: color var(--transition-fast);
+}
+
+.termsLink:hover {
+  color: var(--color-accent-hover);
+}

@@ -375,7 +375,13 @@ export default async function Catalogo({
 
       <footer className={styles.footer}>
         <div className="container">
-          <p>&copy; {new Date().getFullYear()} MercadoMotor. Todos los derechos reservados.</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <p style={{ margin: 0 }}>&copy; {new Date().getFullYear()} MercadoMotor. Todos los derechos reservados.</p>
+            <div style={{ display: 'flex', gap: '1.5rem' }}>
+              <Link href="/terminos" style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>Términos</Link>
+              <Link href="/privacidad" style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>Privacidad</Link>
+            </div>
+          </div>
         </div>
       </footer>
     </div>

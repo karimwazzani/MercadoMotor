@@ -581,3 +581,38 @@
   cursor: pointer;
   flex-shrink: 0;
 }
+
+.vehicleTermsCheckbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  line-height: 1.5;
+  padding: 1rem 1.25rem;
+  background-color: rgba(212, 175, 55, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.5rem;
+}
+
+.vehicleTermsCheckbox input[type="checkbox"] {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.vehicleTermsLink {
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: underline;
+  transition: color var(--transition-fast);
+}
+
+.vehicleTermsLink:hover {
+  color: var(--color-accent-hover);
+}

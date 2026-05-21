@@ -76,3 +76,103 @@
   from { opacity: 0; transform: translateY(-5px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* WARNING MODAL */
+.warningOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.warningModal {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+  border-top: 4px solid #f59e0b;
+}
+
+.warningIcon {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.warningTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.warningText {
+  font-size: 0.9rem;
+  color: var(--color-text);
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.warningList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.warningList li {
+  font-size: 0.875rem;
+  color: var(--color-text);
+  background: var(--color-bg-secondary);
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-sm);
+  line-height: 1.4;
+}
+
+.warningActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btnWarningCancel {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btnWarningCancel:hover {
+  background: var(--color-bg-secondary);
+}
+
+.btnWarningConfirm {
+  flex: 2;
+  padding: 0.75rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: #25D366;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.btnWarningConfirm:hover {
+  background: #128C7E;
+}

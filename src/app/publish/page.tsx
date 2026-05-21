@@ -20,6 +20,7 @@ export default function PublishForm() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [acceptedVehicleTerms, setAcceptedVehicleTerms] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
 
   const toggleCategoryExpand = (catName: string) => {
@@ -176,6 +177,10 @@ export default function PublishForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!acceptedVehicleTerms) {
+      setError("Debés declarar que la información es veraz y que estás autorizado a vender el vehículo.");
+      return;
+    }
     setLoading(true);
     setError("");
     
@@ -583,9 +588,21 @@ export default function PublishForm() {
                 className={styles.descriptionTextarea}
               />
 
+              <label className={styles.vehicleTermsCheckbox}>
+                <input
+                  type="checkbox"
+                  checked={acceptedVehicleTerms}
+                  onChange={(e) => setAcceptedVehicleTerms(e.target.checked)}
+                />
+                <span>
+                  Confirmo que el vehículo publicado es de mi propiedad o cuento con autorización para venderlo, y que <strong>toda la información declarada es veraz</strong>. Acepto los{" "}
+                  <Link href="/terminos" target="_blank" className={styles.vehicleTermsLink}>Términos y Condiciones</Link> de MercadoMotor.
+                </span>
+              </label>
+
               <div className={styles.actions}>
                 <button type="button" onClick={prevStep} className={styles.btnBack}>Atrás</button>
-                <button type="submit" onClick={handleSubmit} className={styles.btnSubmit} disabled={loading}>
+                <button type="submit" onClick={handleSubmit} className={styles.btnSubmit} disabled={loading || !acceptedVehicleTerms}>
                   {loading ? "Publicando..." : "Finalizar Publicación"}
                 </button>
               </div>
