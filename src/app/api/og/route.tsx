@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
             MercadoMotor
           </div>
         ),
-        { width: 1200, height: 630 }
+        { width: 1080, height: 1080 }
       );
     }
 
@@ -139,8 +139,8 @@ export async function GET(req: NextRequest) {
         </div>
       ),
       {
-        width: 1200,
-        height: 630,
+        width: 1080,
+        height: 1080,
       }
     );
   } catch (e: any) {
