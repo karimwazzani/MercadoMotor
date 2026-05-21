@@ -112,9 +112,46 @@ export default async function VehicleDetail({
     },
     take: 8
   });
+  const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.com.ar";
+  
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Vehicle',
+    name: `${vehicle.brand} ${vehicle.model} ${vehicle.version || ""}`.trim(),
+    image: mainImage ? (mainImage.url.startsWith('http') ? mainImage.url : `${siteUrl}${mainImage.url}`) : [],
+    description: vehicle.description || `Vehículo ${vehicle.brand} ${vehicle.model} a la venta en MercadoMotor.`,
+    brand: {
+      '@type': 'Brand',
+      name: vehicle.brand,
+    },
+    model: vehicle.model,
+    vehicleConfiguration: vehicle.version,
+    modelDate: vehicle.year,
+    mileageFromOdometer: {
+      '@type': 'QuantitativeValue',
+      value: vehicle.mileage,
+      unitCode: 'KMT',
+    },
+    itemCondition: vehicle.condition === '0KM' ? 'https://schema.org/NewCondition' : 'https://schema.org/UsedCondition',
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: vehicle.currency,
+      price: vehicle.price,
+      itemCondition: vehicle.condition === '0KM' ? 'https://schema.org/NewCondition' : 'https://schema.org/UsedCondition',
+      availability: 'https://schema.org/InStock',
+      seller: {
+        '@type': vehicle.agencyId ? 'Organization' : 'Person',
+        name: sellerName,
+      },
+    },
+  };
 
   return (
     <div className={styles.page}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <header className={styles.header}>
         <div className={`container ${styles.headerContent}`}>
           <Link href="/" className={styles.logo}>
