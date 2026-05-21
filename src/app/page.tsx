@@ -186,8 +186,8 @@ export default async function Home() {
           <div className={styles.footerTop}>
             <div className={styles.footerLogo}>Mercado<span className={styles.logoAccent}>Motor</span></div>
             <div className={styles.footerLinks}>
-              <Link href="#">Términos</Link>
-              <Link href="#">Privacidad</Link>
+              <Link href="/terminos">Términos</Link>
+              <Link href="/privacidad">Privacidad</Link>
               <Link href="#">Contacto</Link>
             </div>
           </div>
