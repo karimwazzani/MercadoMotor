@@ -123,7 +123,10 @@ export default async function VehicleDetail({
     },
     take: 8
   });
-  const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.ar";
+  const headersList = await headers();
+  const host = headersList.get("host") || "mercadomotor.ar";
+  const protocol = headersList.get("x-forwarded-proto") || "https";
+  const siteUrl = `${protocol}://${host}`;
   
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -156,11 +159,6 @@ export default async function VehicleDetail({
       },
     },
   };
-
-  const headersList = await headers();
-  const host = headersList.get("host") || "mercadomotor.ar";
-  const protocol = headersList.get("x-forwarded-proto") || "https";
-  const siteUrl = `${protocol}://${host}`;
 
   return (
     <div className={styles.page}>
