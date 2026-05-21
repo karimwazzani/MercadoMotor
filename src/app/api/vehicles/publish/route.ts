@@ -5,6 +5,9 @@ import prisma from "@/lib/prisma"; // Importar la instancia global
 import { uploadToCloud } from "@/lib/storage";
 import { sendVehiclePendingEmail } from "@/lib/mailer";
 
+// Allow up to 20MB body for photo uploads (Vercel default is 4.5MB)
+export const maxDuration = 60; // seconds
+
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -44,22 +47,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Faltan campos obligatorios" }, { status: 400 });
     }
 
-    // Procesar las imágenes
+    // Procesar las imágenes en paralelo para evitar timeouts
     const files = formData.getAll("images") as File[];
-    const uploadedImagesPaths: { url: string; order: number; isMain: boolean }[] = [];
+    let uploadedImagesPaths: { url: string; order: number; isMain: boolean }[] = [];
 
     if (files.length > 0) {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        if (file && file.name) {
-          const publicUrl = await uploadToCloud(file, "vehicles");
-          uploadedImagesPaths.push({
-            url: publicUrl,
+      const validFiles = files.filter(f => f && f.name);
+      const uploadResults = await Promise.all(
+        validFiles.map((file, i) =>
+          uploadToCloud(file, "vehicles").then(url => ({
+            url,
             order: i,
             isMain: i === 0,
-          });
-        }
-      }
+          }))
+        )
+      );
+      uploadedImagesPaths = uploadResults;
     } else {
       uploadedImagesPaths.push({ 
         url: category === "auto" ? "/auto.png" : category === "pickup" ? "/pickup.png" : "/suv.png", 

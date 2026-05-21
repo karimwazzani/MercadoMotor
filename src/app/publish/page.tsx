@@ -147,7 +147,42 @@ export default function PublishForm() {
     });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Compresses an image file to JPEG using the Canvas API (works in all browsers incl. iOS Safari)
+  const compressImage = (file: File, maxWidth = 1600, quality = 0.82): Promise<File> => {
+    return new Promise((resolve) => {
+      const img = new window.Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressed = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+              resolve(compressed);
+            } else {
+              resolve(file); // fallback: keep original
+            }
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+      img.onerror = () => { URL.revokeObjectURL(objectUrl); resolve(file); };
+      img.src = objectUrl;
+    });
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
       if (files.length + selectedFiles.length > 15) {
@@ -155,9 +190,10 @@ export default function PublishForm() {
         return;
       }
       setError("");
-      setFiles((prev) => [...prev, ...selectedFiles]);
-
-      const newUrls = selectedFiles.map(file => URL.createObjectURL(file));
+      // Compress each image before adding to state
+      const compressed = await Promise.all(selectedFiles.map(f => compressImage(f)));
+      setFiles((prev) => [...prev, ...compressed]);
+      const newUrls = compressed.map(file => URL.createObjectURL(file));
       setPreviewUrls((prev) => [...prev, ...newUrls]);
     }
   };
