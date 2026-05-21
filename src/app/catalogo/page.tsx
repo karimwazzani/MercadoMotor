@@ -53,16 +53,28 @@ export default async function Catalogo({
     whereClause.userId = vendedorParam;
   }
 
-  // 1. Busqueda global rapida (Afecta Marca, Modelo O Version)
+  // 1. Busqueda global rapida multipalabra (Afecta Marca, Modelo, Version, Descripcion, etc.)
   if (queryParam && queryParam.trim() !== '') {
     const searchTerms = queryParam.trim().split(/\s+/);
-    whereClause.AND = searchTerms.map(term => ({
-      OR: [
+    whereClause.AND = searchTerms.map(term => {
+      const termOrs: any[] = [
         { brand: { contains: term, mode: 'insensitive' } },
         { model: { contains: term, mode: 'insensitive' } },
-        { version: { contains: term, mode: 'insensitive' } }
-      ]
-    }));
+        { version: { contains: term, mode: 'insensitive' } },
+        { fuel: { contains: term, mode: 'insensitive' } },
+        { transmission: { contains: term, mode: 'insensitive' } },
+        { color: { contains: term, mode: 'insensitive' } },
+        { description: { contains: term, mode: 'insensitive' } },
+        { equipment: { contains: term, mode: 'insensitive' } }
+      ];
+      
+      const termAsInt = parseInt(term, 10);
+      if (!isNaN(termAsInt) && termAsInt > 1900 && termAsInt <= new Date().getFullYear() + 1) {
+        termOrs.push({ year: termAsInt });
+      }
+      
+      return { OR: termOrs };
+    });
   }
 
   // 2. Filtros Laterales Especializados
