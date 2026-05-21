@@ -55,15 +55,14 @@ export default async function Catalogo({
 
   // 1. Busqueda global rapida (Afecta Marca, Modelo O Version)
   if (queryParam && queryParam.trim() !== '') {
-    whereClause.AND = [
-      {
-        OR: [
-          { brand: { contains: queryParam, mode: 'insensitive' } },
-          { model: { contains: queryParam, mode: 'insensitive' } },
-          { version: { contains: queryParam, mode: 'insensitive' } }
-        ]
-      }
-    ];
+    const searchTerms = queryParam.trim().split(/\s+/);
+    whereClause.AND = searchTerms.map(term => ({
+      OR: [
+        { brand: { contains: term, mode: 'insensitive' } },
+        { model: { contains: term, mode: 'insensitive' } },
+        { version: { contains: term, mode: 'insensitive' } }
+      ]
+    }));
   }
 
   // 2. Filtros Laterales Especializados

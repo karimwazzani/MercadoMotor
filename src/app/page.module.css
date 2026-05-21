@@ -889,11 +889,11 @@
   .searchButtonIcon { display: block; }
   
   .agencyPremiumContainer {
-    justify-content: center;
+    justify-content: flex-end;
   }
   
   .agencyPremiumContent {
-    text-align: center;
+    text-align: right;
   }
   
   .btnSellNow {
