@@ -6,7 +6,7 @@ export const revalidate = 3600; // Cache for 1 hour
 
 export async function GET() {
   try {
-    const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.com.ar";
+    const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.ar";
 
     // Fetch all approved vehicles that are not expired
     const vehicles = await prisma.vehicle.findMany({

@@ -25,7 +25,7 @@ export default async function PosterPage({ params }: { params: Promise<{ id: str
     notFound();
   }
 
-  const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.com.ar";
+  const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.ar";
 
   return <PosterClient vehicle={vehicle} siteUrl={siteUrl} />;
 }

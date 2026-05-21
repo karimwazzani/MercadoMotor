@@ -8,7 +8,7 @@ export async function GET() {
       "Honda Prelude (Prueba)",
       "US$ 16.000",
       "US$ 15.000",
-      "https://mercadomotor.com.ar/catalogo/123"
+      "https://mercadomotor.ar/catalogo/123"
     );
 
     if (success) {

@@ -221,7 +221,7 @@ export async function sendRenewalNotificationEmail(recipientEmail: string, vehic
       Para que siga siendo visible para miles de compradores interesados, te sugerimos renovar tu publicación de forma gratuita ingresando a tu panel.
     </p>
     <div class="btn-container">
-      <a href="${process.env.NEXTAUTH_URL || 'https://mercadomotor.com.ar'}/dashboard" class="btn" target="_blank">Ir a Mi Panel</a>
+      <a href="${process.env.NEXTAUTH_URL || 'https://mercadomotor.ar'}/dashboard" class="btn" target="_blank">Ir a Mi Panel</a>
     </div>
   `;
 
@@ -417,7 +417,7 @@ export async function sendVehiclePendingEmail(recipientEmail: string, brand: str
       ⏰ <strong>Plazo de revisión:</strong> Habitualmente revisamos las publicaciones en un plazo máximo de <strong>2 horas</strong>. Te notificaremos por correo electrónico en cuanto sea aprobada o requiera alguna modificación.
     </p>
     <div class="btn-container">
-      <a href="${process.env.NEXTAUTH_URL || 'https://mercadomotor.com.ar'}/dashboard" class="btn" style="transition: background-color 0.2s ease;">
+      <a href="${process.env.NEXTAUTH_URL || 'https://mercadomotor.ar'}/dashboard" class="btn" style="transition: background-color 0.2s ease;">
         Ir a mi Panel de Control
       </a>
     </div>
@@ -455,7 +455,7 @@ Vehículo: ${brand} ${model}
  */
 export async function sendVehicleApprovedEmail(recipientEmail: string, brand: string, model: string, vehicleId: string) {
   const title = "¡Tu publicación está activa! - MercadoMotor";
-  const vehicleLink = `${process.env.NEXTAUTH_URL || 'https://mercadomotor.com.ar'}/catalogo/${vehicleId}`;
+  const vehicleLink = `${process.env.NEXTAUTH_URL || 'https://mercadomotor.ar'}/catalogo/${vehicleId}`;
   
   const contentHtml = `
     <h2 class="title" style="color: #ffffff;">🎉 ¡Excelentes noticias!</h2>
@@ -505,7 +505,7 @@ Enlace: ${vehicleLink}
  */
 export async function sendVehicleRejectedEmail(recipientEmail: string, brand: string, model: string) {
   const title = "Tu publicación requiere revisión - MercadoMotor";
-  const dashboardLink = `${process.env.NEXTAUTH_URL || 'https://mercadomotor.com.ar'}/dashboard`;
+  const dashboardLink = `${process.env.NEXTAUTH_URL || 'https://mercadomotor.ar'}/dashboard`;
   
   const contentHtml = `
     <h2 class="title" style="color: #f87171;">⚠️ Tu publicación requiere cambios</h2>

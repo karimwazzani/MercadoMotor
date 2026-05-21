@@ -5,7 +5,7 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
-    const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.com.ar";
+    const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.ar";
 
     if (!token) {
       return NextResponse.redirect(`${siteUrl}/auth/login?error=MissingToken`);
@@ -57,7 +57,7 @@ export async function GET(req: Request) {
 
   } catch (error) {
     console.error("Error Verification Callback:", error);
-    const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.com.ar";
+    const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.ar";
     return NextResponse.redirect(`${siteUrl}/auth/login?error=TechnicalError`);
   }
 }

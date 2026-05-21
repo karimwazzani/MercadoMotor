@@ -55,7 +55,7 @@ export async function POST(req: Request) {
     });
 
     // 5. Enviar el correo electrónico
-    const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.com.ar";
+    const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.ar";
     const resetLink = `${siteUrl}/auth/reset-password?token=${token}`;
     await sendPasswordResetEmail(email, resetLink);
 

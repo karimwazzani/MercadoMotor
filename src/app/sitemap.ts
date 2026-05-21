@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import prisma from '@/lib/prisma'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = process.env.NEXTAUTH_URL || 'https://mercadomotor.com.ar'
+  const siteUrl = process.env.NEXTAUTH_URL || 'https://mercadomotor.ar'
 
   // Fetch all vehicles
   const vehicles = await prisma.vehicle.findMany({

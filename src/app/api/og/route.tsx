@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
     const priceText = `${vehicle.currency === "ARS" ? "$" : "US$"} ${vehicle.price.toLocaleString()}`;
     const imageUrl = vehicle.images[0]?.url || "";
     // If it's a relative URL, we need to make it absolute for ImageResponse
-    const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.com.ar";
+    const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.ar";
     const absoluteImageUrl = imageUrl.startsWith('http') ? imageUrl : `${siteUrl}${imageUrl}`;
 
     return new ImageResponse(

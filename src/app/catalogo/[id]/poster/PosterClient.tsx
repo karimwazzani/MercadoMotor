@@ -55,7 +55,7 @@ export default function PosterClient({ vehicle, siteUrl }: PosterClientProps) {
           <div className={styles.logo}>
             Mercado<span className={styles.logoAccent}>Motor</span>
           </div>
-          <div className={styles.web}>mercadomotor.com.ar</div>
+          <div className={styles.web}>mercadomotor.ar</div>
         </footer>
       </div>
 

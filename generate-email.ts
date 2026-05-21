@@ -13,7 +13,7 @@ const contentHtml = `
     <strong style="color: #2ecc71; font-size: 18px;">Ahora: US$ 15.000</strong>
   </div>
   <div class="btn-container">
-    <a href="https://mercadomotor.com.ar/catalogo/123" class="btn" target="_blank">Ver publicación</a>
+    <a href="https://mercadomotor.ar/catalogo/123" class="btn" target="_blank">Ver publicación</a>
   </div>
 `;
 

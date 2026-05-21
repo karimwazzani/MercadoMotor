@@ -63,7 +63,7 @@ export async function POST(req: Request) {
         });
 
         // 3. Enviar el correo de verificación
-        const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.com.ar";
+        const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.ar";
         const verificationLink = `${siteUrl}/api/auth/verify?token=${token}`;
         await sendVerificationEmail(email, verificationLink);
 
@@ -140,7 +140,7 @@ export async function POST(req: Request) {
     });
 
     // --- ENVIAR EL CORREO DE VERIFICACIÓN ---
-    const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.com.ar";
+    const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.ar";
     const verificationLink = `${siteUrl}/api/auth/verify?token=${token}`;
     await sendVerificationEmail(email, verificationLink);
 

@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     });
 
     // Enlace para reporte de hackeo
-    const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.com.ar";
+    const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.ar";
     const reportLink = `${siteUrl}/auth/report-suspicious?email=${encodeURIComponent(email)}&token=${reportToken}`;
 
     // Enviar correo de éxito con botón "No fui yo" de forma asíncrona (background)

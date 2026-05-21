@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (!vehicle) return { title: "Vehículo no encontrado | MercadoMotor" };
 
   const headersList = await headers();
-  const host = headersList.get("host") || "mercadomotor.com.ar";
+  const host = headersList.get("host") || "mercadomotor.ar";
   const protocol = headersList.get("x-forwarded-proto") || "https";
   const siteUrl = `${protocol}://${host}`;
   
@@ -123,7 +123,7 @@ export default async function VehicleDetail({
     },
     take: 8
   });
-  const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.com.ar";
+  const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.ar";
   
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -158,7 +158,7 @@ export default async function VehicleDetail({
   };
 
   const headersList = await headers();
-  const host = headersList.get("host") || "mercadomotor.com.ar";
+  const host = headersList.get("host") || "mercadomotor.ar";
   const protocol = headersList.get("x-forwarded-proto") || "https";
   const siteUrl = `${protocol}://${host}`;
 

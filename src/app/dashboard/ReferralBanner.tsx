@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function ReferralBanner({ userId }: { userId: string }) {
   const [copied, setCopied] = useState(false);
-  const referralUrl = `https://mercadomotor.com.ar/publish?ref=${userId}`;
+  const referralUrl = `https://mercadomotor.ar/publish?ref=${userId}`;
 
   const handleCopy = async () => {
     try {
@@ -57,7 +57,8 @@ export default function ReferralBanner({ userId }: { userId: string }) {
             transition: 'background-color 0.2s',
             display: 'flex',
             alignItems: 'center',
-            gap: '0.5rem'
+            gap: '0.5rem',
+            whiteSpace: 'nowrap'
           }}
         >
           {copied ? (
