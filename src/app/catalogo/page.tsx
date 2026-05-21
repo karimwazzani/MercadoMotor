@@ -122,7 +122,7 @@ export default async function Catalogo({
   }
 
   // Execute session verification and vehicles search in parallel to optimize TTFB
-  const [session, vehicles] = await Promise.all([
+  let [session, vehicles] = await Promise.all([
     sessionPromise,
     prisma.vehicle.findMany({
       where: whereClause,
@@ -138,6 +138,57 @@ export default async function Catalogo({
       take: isNovedades ? 16 : undefined,
     })
   ]);
+
+  let isFuzzyMatch = false;
+
+  if (vehicles.length === 0 && queryParam && queryParam.trim() !== '') {
+    const searchTerms = queryParam.trim().split(/\s+/);
+    const fuzzyTermsOrs = searchTerms.map(term => {
+      const termOrs: any[] = [
+        { brand: { contains: term, mode: 'insensitive' } },
+        { model: { contains: term, mode: 'insensitive' } },
+        { version: { contains: term, mode: 'insensitive' } },
+        { fuel: { contains: term, mode: 'insensitive' } },
+        { transmission: { contains: term, mode: 'insensitive' } },
+        { color: { contains: term, mode: 'insensitive' } },
+        { description: { contains: term, mode: 'insensitive' } },
+        { equipment: { contains: term, mode: 'insensitive' } }
+      ];
+      
+      const termAsInt = parseInt(term, 10);
+      if (!isNaN(termAsInt) && termAsInt > 1900 && termAsInt <= new Date().getFullYear() + 1) {
+        termOrs.push({ year: termAsInt });
+      }
+      return termOrs;
+    }).flat();
+
+    const fuzzyWhereClause = { ...whereClause };
+    delete fuzzyWhereClause.AND;
+    
+    fuzzyWhereClause.AND = [
+      {
+        OR: fuzzyTermsOrs
+      }
+    ];
+
+    vehicles = await prisma.vehicle.findMany({
+      where: fuzzyWhereClause,
+      include: {
+        images: {
+          where: { isMain: true },
+          take: 1
+        },
+        agency: true,
+        user: true,
+      },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+    });
+
+    if (vehicles.length > 0) {
+      isFuzzyMatch = true;
+    }
+  }
 
   const isAdmin = session && (session.user as any).accountType === "ADMINISTRADOR";
   
@@ -279,6 +330,12 @@ export default async function Catalogo({
         </FilterToggle>
 
         <section className={styles.resultsSection}>
+
+          {isFuzzyMatch && (
+            <div style={{ background: 'rgba(212, 175, 55, 0.1)', border: '1px solid var(--color-accent)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+              <p style={{ margin: 0, color: 'var(--color-primary)', fontSize: '0.95rem' }}>No encontramos resultados exactos para "<strong>{queryParam}</strong>", pero te mostramos opciones similares que podrían interesarte.</p>
+            </div>
+          )}
 
           {vehicles.length === 0 ? (
             <div className={styles.emptyState}>
