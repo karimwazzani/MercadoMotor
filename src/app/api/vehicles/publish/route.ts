@@ -112,6 +112,34 @@ export async function POST(req: Request) {
       });
     }
 
+    // Procesar programa de referidos
+    const referralCode = formData.get("referralCode") as string;
+    if (referralCode && referralCode !== userId) {
+      try {
+        // Buscar el último vehículo aprobado del usuario que invitó
+        const referrerLastVehicle = await prisma.vehicle.findFirst({
+          where: { userId: referralCode, status: "APPROVED" },
+          orderBy: { createdAt: "desc" }
+        });
+
+        if (referrerLastVehicle) {
+          const expiresAt = new Date();
+          expiresAt.setDate(expiresAt.getDate() + 7);
+          
+          await prisma.vehicle.update({
+            where: { id: referrerLastVehicle.id },
+            data: { 
+              isHighlighted: true,
+              highlightExpiresAt: expiresAt
+            }
+          });
+          console.log(`[Referral] Bono de destacado otorgado a ${referralCode} por el auto de ${userId}`);
+        }
+      } catch (err) {
+        console.error("Error processing referral bonus:", err);
+      }
+    }
+
     return NextResponse.json({ message: "Vehículo publicado con éxito", vehicleId: newVehicle.id }, { status: 201 });
 
   } catch (error: any) {

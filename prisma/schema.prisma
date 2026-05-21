@@ -147,6 +147,7 @@ model Vehicle {
   approvedAt        DateTime?
   expiresAt         DateTime?
   isHighlighted     Boolean   @default(false)
+  highlightExpiresAt DateTime?
   
   views             Int       @default(0)
   whatsappClicks    Int       @default(0)

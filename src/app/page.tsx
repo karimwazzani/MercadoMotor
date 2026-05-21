@@ -17,7 +17,11 @@ export default async function Home() {
     prisma.vehicle.findMany({
       where: { 
         isHighlighted: true,
-        status: "APPROVED"
+        status: "APPROVED",
+        OR: [
+          { highlightExpiresAt: null },
+          { highlightExpiresAt: { gt: new Date() } }
+        ]
       },
       include: {
         images: {

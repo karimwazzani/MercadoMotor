@@ -25,9 +25,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   if (!vehicle) return { title: "Vehículo no encontrado | MercadoMotor" };
 
-  const mainImage = vehicle.images.find(img => img.isMain) || vehicle.images[0];
   const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.com.ar";
-  const imageUrl = mainImage ? (mainImage.url.startsWith('http') ? mainImage.url : `${siteUrl}${mainImage.url}`) : "";
+  const imageUrl = `${siteUrl}/api/og?id=${resolvedParams.id}`;
   
   const title = `${vehicle.brand} ${vehicle.model} ${vehicle.version || ""} | MercadoMotor`;
   const description = `Mirá este ${vehicle.brand} ${vehicle.model} en MercadoMotor. ${vehicle.year} • ${vehicle.mileage.toLocaleString()} km • ${vehicle.currency === "ARS" ? "$" : "US$"} ${vehicle.price.toLocaleString()}`;
@@ -38,7 +37,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     openGraph: {
       title,
       description,
-      images: imageUrl ? [imageUrl] : [],
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+        }
+      ],
       type: "website",
       url: `${siteUrl}/catalogo/${resolvedParams.id}`,
     },
@@ -46,7 +51,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       card: "summary_large_image",
       title,
       description,
-      images: imageUrl ? [imageUrl] : [],
+      images: [imageUrl],
     }
   };
 }

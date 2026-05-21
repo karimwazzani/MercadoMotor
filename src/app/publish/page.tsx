@@ -56,9 +56,16 @@ export default function PublishForm() {
 
   const [files, setFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = "Publicar Vehículo | MercadoMotor";
+    
+    // Check for referral code
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    if (ref) setReferralCode(ref);
+
     fetch('/api/profile').then(res => res.json()).then(data => {
       if (data?.accountType === "AGENCIA" && data.agencies?.[0]) {
         const agency = data.agencies[0];
@@ -199,6 +206,10 @@ export default function PublishForm() {
       files.forEach((file) => {
         uploadData.append("images", file);
       });
+
+      if (referralCode) {
+        uploadData.append("referralCode", referralCode);
+      }
 
       const res = await fetch("/api/vehicles/publish", {
         method: "POST",
