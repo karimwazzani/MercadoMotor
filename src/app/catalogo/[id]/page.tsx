@@ -16,6 +16,8 @@ import ContactActions from "./ContactActions";
 import { formatLocation } from "@/lib/utils";
 import AdSlot from "@/app/components/AdSlot";
 
+import { headers } from "next/headers";
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
   const vehicle = await prisma.vehicle.findUnique({
@@ -25,7 +27,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   if (!vehicle) return { title: "Vehículo no encontrado | MercadoMotor" };
 
-  const siteUrl = process.env.NEXTAUTH_URL || "https://mercadomotor.com.ar";
+  const headersList = await headers();
+  const host = headersList.get("host") || "mercadomotor.com.ar";
+  const protocol = headersList.get("x-forwarded-proto") || "https";
+  const siteUrl = `${protocol}://${host}`;
+  
   const imageUrl = `${siteUrl}/api/og?id=${resolvedParams.id}`;
   
   const title = `${vehicle.brand} ${vehicle.model} ${vehicle.version || ""} | MercadoMotor`;
@@ -151,6 +157,11 @@ export default async function VehicleDetail({
     },
   };
 
+  const headersList = await headers();
+  const host = headersList.get("host") || "mercadomotor.com.ar";
+  const protocol = headersList.get("x-forwarded-proto") || "https";
+  const siteUrl = `${protocol}://${host}`;
+
   return (
     <div className={styles.page}>
       <script
@@ -274,7 +285,7 @@ export default async function VehicleDetail({
 
               <ShareButtons 
                 title={`${vehicle.brand} ${vehicle.model} ${vehicle.version || ""}`} 
-                url={`https://mercadomotor.com.ar/catalogo/${vehicle.id}`} 
+                url={`${siteUrl}/catalogo/${vehicle.id}`} 
               />
             </div>
 
