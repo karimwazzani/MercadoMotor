@@ -115,9 +115,12 @@ export async function POST(req: Request) {
       });
     }
 
-    // Procesar programa de referidos
+    // Procesar programa de referidos (nunca debe interrumpir la publicación)
     const referralCode = formData.get("referralCode") as string;
-    if (referralCode && referralCode !== userId) {
+    const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const isValidReferral = referralCode && UUID_REGEX.test(referralCode) && referralCode !== userId;
+
+    if (isValidReferral) {
       try {
         // Buscar el último vehículo aprobado del usuario que invitó
         const referrerLastVehicle = await prisma.vehicle.findFirst({
@@ -142,6 +145,7 @@ export async function POST(req: Request) {
         console.error("Error processing referral bonus:", err);
       }
     }
+
 
     return NextResponse.json({ message: "Vehículo publicado con éxito", vehicleId: newVehicle.id }, { status: 201 });
 
