@@ -640,10 +640,21 @@
   .categoryItem {
     flex-shrink: 0;
     padding: 0.5rem 1rem;
+    background: transparent;
+    border-radius: 0;
+    margin-right: 0;
+    position: relative;
     border-right: none;
-    background: rgba(0,0,0,0.03);
-    margin-right: 0.5rem;
-    border-radius: 20px;
+  }
+  
+  .categoryItem:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 20%;
+    bottom: 20%;
+    width: 1px;
+    background-color: var(--color-accent);
   }
   
   .sellContainer {
