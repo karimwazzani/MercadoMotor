@@ -160,6 +160,10 @@ model Vehicle {
   @@index([isHighlighted])
   @@index([category])
   @@index([userId])
+  @@index([brand])
+  @@index([model])
+  @@index([price])
+  @@index([year])
 }
 
 model Image {

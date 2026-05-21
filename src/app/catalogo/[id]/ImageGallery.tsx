@@ -39,9 +39,13 @@ export default function ImageGallery({ images, title }: { images: any[], title: 
         style={{cursor: 'zoom-in'}} 
         onClick={() => setIsZoomed(true)}
       >
-        <img 
+        <Image 
           src={activeImage.url} 
           alt={title} 
+          fill
+          priority
+          sizes="(max-width: 992px) 100vw, 60vw"
+          style={{ objectFit: 'cover' }}
           className={styles.mainImage} 
         />
         
@@ -71,16 +75,19 @@ export default function ImageGallery({ images, title }: { images: any[], title: 
           ))}
         </div>
       )}
-
+ 
       {/* Modal de Zoom */}
       {isZoomed && (
         <div className={styles.zoomModal}>
           <button className={styles.zoomCloseBtn} onClick={() => setIsZoomed(false)}>&times;</button>
           
           <div className={styles.zoomMainArea}>
-            <img 
+            <Image 
               src={activeImage.url} 
               alt={title} 
+              fill
+              sizes="90vw"
+              style={{ objectFit: 'contain' }}
               className={styles.zoomImage} 
             />
             {images.length > 1 && (
