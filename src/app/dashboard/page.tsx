@@ -6,6 +6,7 @@ import Link from "next/link";
 import styles from "./page.module.css";
 import RenewButton from "./RenewButton";
 import DeleteButton from "./DeleteButton";
+import ReferralBanner from "./ReferralBanner";
 import NotificationCenter from "@/app/components/NotificationCenter";
 import prisma from "@/lib/prisma";
 import { Metadata } from "next";
@@ -68,24 +69,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Banner de Referidos */}
-        <div style={{ backgroundColor: 'var(--color-bg-secondary)', padding: '1.5rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-accent)', marginBottom: '2rem' }}>
-          <h2 style={{ color: 'var(--color-accent)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span>⭐</span> ¡Ganá 7 días de Destacado GRATIS!
-          </h2>
-          <p style={{ color: 'var(--color-text)', marginBottom: '1rem', lineHeight: 1.5 }}>
-            Invitá a un amigo a publicar su auto en MercadoMotor. Cuando su auto sea aprobado, <strong>tu publicación más reciente se destacará automáticamente en la página principal durante 7 días</strong>.
-          </p>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            <input 
-              type="text" 
-              readOnly 
-              value={`https://mercadomotor.com.ar/publish?ref=${userId}`}
-              style={{ padding: '0.8rem', borderRadius: '4px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg)', color: 'var(--color-text)', width: '100%', maxWidth: '400px', cursor: 'text' }}
-            />
-            <span style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Copiá este enlace y pasáselo a tus amigos.</span>
-          </div>
-        </div>
+        <ReferralBanner userId={userId} />
 
         {myVehicles.length === 0 ? (
           <div className={styles.emptyState}>
