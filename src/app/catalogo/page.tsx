@@ -142,7 +142,8 @@ export default async function Catalogo({
   let isFuzzyMatch = false;
 
   if (vehicles.length === 0 && queryParam && queryParam.trim() !== '') {
-    const searchTerms = queryParam.trim().split(/\s+/);
+    const searchTerms = queryParam.trim().split(/\s+/).map(t => t.toLowerCase());
+    
     const fuzzyTermsOrs = searchTerms.map(term => {
       const termOrs: any[] = [
         { brand: { contains: term, mode: 'insensitive' } },
@@ -171,7 +172,7 @@ export default async function Catalogo({
       }
     ];
 
-    vehicles = await prisma.vehicle.findMany({
+    let fuzzyVehicles = await prisma.vehicle.findMany({
       where: fuzzyWhereClause,
       include: {
         images: {
@@ -182,10 +183,75 @@ export default async function Catalogo({
         user: true,
       },
       orderBy: { createdAt: "desc" },
-      take: 20,
+      take: 200, // Fetch more to rank them in memory
     });
 
-    if (vehicles.length > 0) {
+    if (fuzzyVehicles.length > 0) {
+      // Rank them based on user priority
+      fuzzyVehicles.forEach((v: any) => {
+        let score = 0;
+        const brandStr = (v.brand || '').toLowerCase();
+        const modelStr = (v.model || '').toLowerCase();
+        const versionStr = (v.version || '').toLowerCase();
+        const colorStr = (v.color || '').toLowerCase();
+        const transStr = (v.transmission || '').toLowerCase();
+        const descStr = (v.description || '').toLowerCase();
+        
+        searchTerms.forEach(term => {
+          if (brandStr.includes(term)) score += 100;
+          if (modelStr.includes(term)) score += 80;
+          if (versionStr.includes(term)) score += 50;
+          
+          const termAsInt = parseInt(term, 10);
+          if (!isNaN(termAsInt) && v.year === termAsInt) score += 40;
+          
+          if (colorStr.includes(term)) score += 10;
+          if (transStr.includes(term)) score += 10;
+          if (descStr.includes(term)) score += 1;
+        });
+        v._searchScore = score;
+      });
+      
+      // Sort by score DESC, then createdAt DESC
+      fuzzyVehicles.sort((a: any, b: any) => {
+        if (b._searchScore !== a._searchScore) {
+          return b._searchScore - a._searchScore;
+        }
+        return b.createdAt.getTime() - a.createdAt.getTime();
+      });
+      
+      vehicles = fuzzyVehicles.slice(0, 16);
+      isFuzzyMatch = true;
+    }
+    
+    // Fallback: If absolutely nothing matches, find random cars or similar years
+    if (vehicles.length === 0) {
+      const numericTerms = searchTerms.map(t => parseInt(t, 10)).filter(n => !isNaN(n) && n > 1900 && n <= new Date().getFullYear() + 1);
+      
+      let randomWhere: any = {
+        status: "APPROVED",
+        OR: [
+          { expiresAt: null },
+          { expiresAt: { gt: new Date() } }
+        ]
+      };
+      
+      if (numericTerms.length > 0) {
+        const year = numericTerms[0];
+        randomWhere.year = { gte: year - 2, lte: year + 2 };
+      }
+      
+      vehicles = await prisma.vehicle.findMany({
+        where: randomWhere,
+        include: {
+          images: { where: { isMain: true }, take: 1 },
+          agency: true,
+          user: true,
+        },
+        orderBy: { createdAt: "desc" },
+        take: 16,
+      });
+      
       isFuzzyMatch = true;
     }
   }
