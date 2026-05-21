@@ -657,12 +657,15 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  width: 100%;
 }
 
 .zoomImage {
-  max-width: 90vw;
-  max-height: 80vh;
+  max-width: 90vw !important;
+  max-height: 80vh !important;
   object-fit: contain;
+  border-radius: var(--radius-md);
+  margin: auto;
 }
 
 .zoomThumbnails {

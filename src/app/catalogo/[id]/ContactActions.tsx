@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./ContactActions.module.css";
 
 interface ContactActionsProps {
@@ -14,6 +14,16 @@ export default function ContactActions({ vehicleId, phone, brand, model }: Conta
   const [showPhone, setShowPhone] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const [warningFor, setWarningFor] = useState<"whatsapp" | "phone">("whatsapp");
+  const [hasSeenWarning, setHasSeenWarning] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const seen = localStorage.getItem("mercadomotor_warning_seen");
+      if (seen) {
+        setHasSeenWarning(true);
+      }
+    }
+  }, []);
 
   const trackAction = async (action: "whatsapp" | "phone") => {
     try {
@@ -27,19 +37,8 @@ export default function ContactActions({ vehicleId, phone, brand, model }: Conta
     }
   };
 
-  const handleShowPhone = () => {
-    setWarningFor("phone");
-    setShowWarning(true);
-  };
-
-  const handleWhatsAppClick = () => {
-    setWarningFor("whatsapp");
-    setShowWarning(true);
-  };
-
-  const handleConfirm = () => {
-    setShowWarning(false);
-    if (warningFor === "whatsapp") {
+  const processAction = (action: "whatsapp" | "phone") => {
+    if (action === "whatsapp") {
       trackAction("whatsapp");
       const cleanPhone = phone.replace(/\D/g, "");
       const message = encodeURIComponent(`Hola! Vi tu anuncio en MercadoMotor de la ${brand} ${model}. ¿Sigue disponible?`);
@@ -50,28 +49,51 @@ export default function ContactActions({ vehicleId, phone, brand, model }: Conta
     }
   };
 
+  const handleShowPhone = () => {
+    if (hasSeenWarning) {
+      processAction("phone");
+    } else {
+      setWarningFor("phone");
+      setShowWarning(true);
+    }
+  };
+
+  const handleWhatsAppClick = () => {
+    if (hasSeenWarning) {
+      processAction("whatsapp");
+    } else {
+      setWarningFor("whatsapp");
+      setShowWarning(true);
+    }
+  };
+
+  const handleConfirm = () => {
+    setShowWarning(false);
+    setHasSeenWarning(true);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("mercadomotor_warning_seen", "true");
+    }
+    processAction(warningFor);
+  };
+
   return (
     <>
       {/* WARNING MODAL */}
       {showWarning && (
         <div className={styles.warningOverlay} onClick={() => setShowWarning(false)}>
           <div className={styles.warningModal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.warningIcon}>⚠️</div>
             <h3 className={styles.warningTitle}>Consejos de Seguridad</h3>
             <p className={styles.warningText}>
               <strong>MercadoMotor no participa en esta transacción.</strong> Recordá siempre:
             </p>
             <ul className={styles.warningList}>
-              <li>🚫 No envíes señas ni dinero por adelantado sin ver el auto en persona</li>
-              <li>📋 Verificá la documentación y realizá la verificación policial antes de comprar</li>
-              <li>👥 Coordiná el encuentro en un lugar público y concurrido</li>
-              <li>🏦 Realizá los pagos en efectivo o transferencia directa en el momento de la firma</li>
+              <li>No envíes señas ni dinero por adelantado sin ver el auto en persona</li>
+              <li>Verificá la documentación y realizá la verificación policial antes de comprar</li>
+              <li>Coordiná el encuentro en un lugar público y concurrido</li>
+              <li>Realizá los pagos en efectivo o transferencia directa en el momento de la firma</li>
             </ul>
             <div className={styles.warningActions}>
-              <button className={styles.btnWarningCancel} onClick={() => setShowWarning(false)}>
-                Cancelar
-              </button>
-              <button className={styles.btnWarningConfirm} onClick={handleConfirm}>
+              <button className={styles.btnWarningConfirm} onClick={handleConfirm} style={{ width: '100%' }}>
                 {warningFor === "whatsapp" ? "Entendido, contactar" : "Entendido, ver teléfono"}
               </button>
             </div>

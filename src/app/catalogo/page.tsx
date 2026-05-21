@@ -57,9 +57,9 @@ export default async function Catalogo({
     whereClause.AND = [
       {
         OR: [
-          { brand: { contains: queryParam } },
-          { model: { contains: queryParam } },
-          { version: { contains: queryParam } }
+          { brand: { contains: queryParam, mode: 'insensitive' } },
+          { model: { contains: queryParam, mode: 'insensitive' } },
+          { version: { contains: queryParam, mode: 'insensitive' } }
         ]
       }
     ];
