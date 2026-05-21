@@ -282,10 +282,12 @@ export default async function VehicleDetail({
               )}
 
               {/* Nuevos datos de contacto segmentados */}
-              <div className={styles.sellerContactInfo}>
-                {vehicle.agencyId && <p><strong>Ubicación:</strong> {formatLocation(vehicle.agency?.city)}</p>}
-                {vehicle.agencyId && vehicle.agency?.address && <p><strong>Dirección:</strong> {formatLocation(vehicle.agency.address)}</p>}
-              </div>
+              {(vehicle.agencyId && (vehicle.agency?.city || vehicle.agency?.address)) && (
+                <div className={styles.sellerContactInfo}>
+                  {vehicle.agency?.city && <p><strong>Ubicación:</strong> {formatLocation(vehicle.agency.city)}</p>}
+                  {vehicle.agency?.address && <p><strong>Dirección:</strong> {formatLocation(vehicle.agency.address)}</p>}
+                </div>
+              )}
               <Link 
                 href={vehicle.agencyId && vehicle.agency?.slug ? `/agencia/${vehicle.agency.slug}` : `/catalogo?vendedor=${vehicle.userId}`} 
                 className={styles.btnOutline}

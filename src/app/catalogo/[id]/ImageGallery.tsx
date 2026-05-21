@@ -8,6 +8,9 @@ export default function ImageGallery({ images, title }: { images: any[], title: 
   // Encontramos el index de la principal
   const initialIndex = images.findIndex(img => img.isMain);
   const [currentIndex, setCurrentIndex] = useState(initialIndex >= 0 ? initialIndex : 0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isZoomed, setIsZoomed] = useState(false);
 
   if (!images || images.length === 0) {
     return (
@@ -29,7 +32,29 @@ export default function ImageGallery({ images, title }: { images: any[], title: 
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  const [isZoomed, setIsZoomed] = useState(false);
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEndEvent = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe) {
+      handleNext();
+    }
+    if (isRightSwipe) {
+      handlePrev();
+    }
+  };
 
   return (
     <>
@@ -38,6 +63,9 @@ export default function ImageGallery({ images, title }: { images: any[], title: 
         className={styles.mainImageContainer} 
         style={{cursor: 'zoom-in'}} 
         onClick={() => setIsZoomed(true)}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEndEvent}
       >
         <Image 
           src={activeImage.url} 
@@ -50,14 +78,14 @@ export default function ImageGallery({ images, title }: { images: any[], title: 
         />
         
         {images.length > 1 && (
-          <>
+          <div className={styles.navArrowsDesktopOnly}>
             <button className={`${styles.navCircle} ${styles.navLeft}`} onClick={handlePrev}>
               &#10094;
             </button>
             <button className={`${styles.navCircle} ${styles.navRight}`} onClick={handleNext}>
               &#10095;
             </button>
-          </>
+          </div>
         )}
       </div>
       
@@ -81,7 +109,11 @@ export default function ImageGallery({ images, title }: { images: any[], title: 
         <div className={styles.zoomModal}>
           <button className={styles.zoomCloseBtn} onClick={() => setIsZoomed(false)}>&times;</button>
           
-          <div className={styles.zoomMainArea}>
+          <div className={styles.zoomMainArea}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEndEvent}
+          >
             <Image 
               src={activeImage.url} 
               alt={title} 
@@ -91,14 +123,14 @@ export default function ImageGallery({ images, title }: { images: any[], title: 
               className={styles.zoomImage} 
             />
             {images.length > 1 && (
-              <>
+              <div className={styles.navArrowsDesktopOnly}>
                 <button className={`${styles.navCircle} ${styles.navLeft}`} onClick={handlePrev}>
                   &#10094;
                 </button>
                 <button className={`${styles.navCircle} ${styles.navRight}`} onClick={handleNext}>
                   &#10095;
                 </button>
-              </>
+              </div>
             )}
           </div>
           

@@ -718,3 +718,12 @@
   .zoomModal .navRight { right: 20%; }
 }
 
+.navArrowsDesktopOnly {
+  display: block;
+}
+@media (max-width: 992px) {
+  .navArrowsDesktopOnly {
+    display: none;
+  }
+}
+
