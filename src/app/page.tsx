@@ -37,7 +37,7 @@ export default async function Home() {
         }
       },
       orderBy: { createdAt: "desc" },
-      take: 8
+      take: 16
     })
   ]);
 

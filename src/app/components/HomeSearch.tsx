@@ -60,7 +60,7 @@ export default function HomeSearch() {
                   className={styles.customSelectTrigger} 
                   onClick={() => setIsOpen(!isOpen)}
                 >
-                  <span>{category === "Todas" ? "Todas las categorías" : category}</span>
+                  <span className={styles.categoryText}>{category === "Todas" ? "Todas las categorías" : category}</span>
                   <svg 
                     className={`${styles.customSelectArrow} ${isOpen ? styles.arrowOpen : ""}`} 
                     width="10" 
@@ -105,7 +105,11 @@ export default function HomeSearch() {
           )}
         </div>
         <button type="submit" className={styles.searchButton}>
-          BUSCAR
+          <span className={styles.searchButtonText}>BUSCAR</span>
+          <svg className={styles.searchButtonIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
         </button>
       </form>
     </div>

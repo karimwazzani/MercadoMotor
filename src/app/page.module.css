@@ -312,6 +312,14 @@
   background-color: var(--color-accent-hover);
 }
 
+.searchButtonText {
+  display: block;
+}
+
+.searchButtonIcon {
+  display: none;
+}
+
 .arrowIcon {
   font-size: 1.2rem;
 }
@@ -813,19 +821,57 @@
   .logo { font-size: 1.5rem; }
   
   .hero {
-    align-items: flex-end;
-    padding-bottom: 2rem;
+    align-items: center;
   }
 
   .heroTitle { font-size: 2.2rem; }
-  .searchBar { flex-direction: column; border-radius: var(--radius-md); padding: 0.5rem; }
-  .searchFields { flex-direction: column; align-items: stretch; width: 100%; }
-  .searchInput { width: 100%; border-bottom: 1px solid rgba(0,0,0,0.1); padding: 1rem; text-align: center; }
+  
+  .searchBar { 
+    display: grid;
+    grid-template-columns: 1fr auto;
+    border-radius: var(--radius-md); 
+    padding: 0; 
+    overflow: hidden;
+  }
+  .searchFields { 
+    display: contents;
+  }
+  .searchInput { 
+    grid-column: 1 / -1;
+    width: 100%; 
+    border-bottom: 1px solid rgba(0,0,0,0.1); 
+    padding: 0.8rem; 
+    text-align: left; 
+    font-size: 0.95rem;
+  }
   .searchDivider { display: none; }
-  .customSelectWrapper { width: 100%; border-top: 1px solid rgba(0,0,0,0.08); }
-  .customSelectTrigger { justify-content: center; width: 100%; padding: 1rem; }
+  .customSelectWrapper { 
+    grid-column: 1 / 2;
+    width: 100%; 
+    border-right: 1px solid rgba(0,0,0,0.1); 
+  }
+  .customSelectTrigger { 
+    justify-content: space-between; 
+    width: 100%; 
+    padding: 0.8rem; 
+    font-size: 0.95rem; 
+    height: 100%;
+  }
   .customSelectOptions { left: 0; right: 0; width: 100%; top: 100%; position: absolute; }
-  .searchButton { justify-content: center; padding: 1rem; margin-top: 0.5rem; width: 100%; }
+  
+  .searchButton { 
+    grid-column: 2 / 3;
+    justify-content: center; 
+    padding: 0 1rem; 
+    margin-top: 0; 
+    width: auto;
+    border-radius: 0;
+    height: 100%;
+  }
+  
+  .searchButtonText { display: none; }
+  .searchButtonIcon { display: block; }
+  
   .footerTop { flex-direction: column; gap: 2rem; }
 }
 
