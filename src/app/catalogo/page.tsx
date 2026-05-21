@@ -140,6 +140,7 @@ export default async function Catalogo({
   ]);
 
   let isFuzzyMatch = false;
+  let isRandomMatch = false;
 
   if (vehicles.length === 0 && queryParam && queryParam.trim() !== '') {
     const searchTerms = queryParam.trim().split(/\s+/).map(t => t.toLowerCase());
@@ -252,7 +253,7 @@ export default async function Catalogo({
         take: 16,
       });
       
-      isFuzzyMatch = true;
+      isRandomMatch = true;
     }
   }
 
@@ -397,9 +398,15 @@ export default async function Catalogo({
 
         <section className={styles.resultsSection}>
 
-          {isFuzzyMatch && (
+          {isFuzzyMatch && !isRandomMatch && (
             <div style={{ background: 'rgba(212, 175, 55, 0.1)', border: '1px solid var(--color-accent)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
               <p style={{ margin: 0, color: 'var(--color-primary)', fontSize: '0.95rem' }}>No encontramos resultados exactos para "<strong>{queryParam}</strong>", pero te mostramos opciones similares que podrían interesarte.</p>
+            </div>
+          )}
+
+          {isRandomMatch && (
+            <div style={{ background: 'rgba(28, 25, 23, 0.05)', border: '1px solid rgba(0,0,0,0.1)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+              <p style={{ margin: 0, color: 'var(--color-primary)', fontSize: '0.95rem' }}>No encontramos coincidencias para "<strong>{queryParam}</strong>". Aquí tienes otras publicaciones disponibles.</p>
             </div>
           )}
 
