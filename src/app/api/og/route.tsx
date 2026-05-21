@@ -2,8 +2,7 @@ import { ImageResponse } from 'next/og';
 import prisma from '@/lib/prisma';
 import { NextRequest } from 'next/server';
 
-export const runtime = 'edge';
-
+export const dynamic = 'force-dynamic';
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -57,11 +56,24 @@ export async function GET(req: NextRequest) {
             alignItems: 'center',
             justifyContent: 'center',
             flexDirection: 'column',
-            backgroundImage: `url(${absoluteImageUrl})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundColor: '#111',
+            position: 'relative',
           }}
         >
+          {absoluteImageUrl && (
+            <img
+              src={absoluteImageUrl}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              }}
+            />
+          )}
+
           {/* Dark overlay */}
           <div
             style={{
@@ -70,7 +82,7 @@ export async function GET(req: NextRequest) {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.6)',
+              backgroundColor: 'rgba(0, 0, 0, 0.65)',
             }}
           />
 
@@ -85,11 +97,12 @@ export async function GET(req: NextRequest) {
           >
             <div
               style={{
-                fontSize: 40,
+                fontSize: 45,
                 fontWeight: 'bold',
                 color: '#b89759',
                 marginBottom: 20,
                 letterSpacing: '-0.04em',
+                display: 'flex',
               }}
             >
               Mercado<span style={{ color: 'white' }}>Motor</span>
@@ -97,12 +110,13 @@ export async function GET(req: NextRequest) {
 
             <div
               style={{
-                fontSize: 70,
+                fontSize: 75,
                 fontWeight: 800,
                 color: 'white',
                 textAlign: 'center',
                 maxWidth: 1000,
                 marginBottom: 40,
+                lineHeight: 1.1,
               }}
             >
               {title}
@@ -112,9 +126,9 @@ export async function GET(req: NextRequest) {
               style={{
                 display: 'flex',
                 background: '#b89759',
-                padding: '20px 40px',
+                padding: '15px 40px',
                 borderRadius: 12,
-                fontSize: 50,
+                fontSize: 45,
                 fontWeight: 'bold',
                 color: 'black',
               }}
