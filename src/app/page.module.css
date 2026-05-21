@@ -840,36 +840,36 @@
   
   .searchBar { 
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     align-items: center;
     border-radius: var(--radius-md); 
     padding: 0.25rem; 
   }
   .searchFields { 
-    display: flex;
-    flex: 1;
-    min-width: 0;
+    display: contents;
   }
   .searchInput { 
-    flex: 1;
-    min-width: 50px;
+    width: 100%;
+    flex: 0 0 100%;
     border: none; 
-    padding: 0.6rem; 
+    border-bottom: 1px solid rgba(0,0,0,0.1); 
+    padding: 0.8rem 0.6rem; 
     font-size: 0.9rem;
   }
   .searchDivider { display: none; }
   .customSelectWrapper { 
-    width: auto;
-    border-left: 1px solid rgba(0,0,0,0.1); 
+    flex: 1;
+    border-left: none; 
   }
   .customSelectTrigger { 
     justify-content: space-between; 
-    padding: 0.6rem; 
+    padding: 0.8rem 0.6rem; 
     font-size: 0.85rem; 
     height: 100%;
   }
   .categoryText {
-    max-width: 90px;
+    max-width: none;
   }
   .customSelectOptions { left: 0; right: 0; width: 100%; top: 100%; position: absolute; }
   
@@ -879,11 +879,30 @@
     margin-left: 0.25rem;
     width: 44px;
     height: 44px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .searchButtonText { display: none; }
   .searchButtonIcon { display: block; }
+  
+  .agencyPremiumContainer {
+    justify-content: center;
+  }
+  
+  .agencyPremiumContent {
+    text-align: center;
+  }
+  
+  .btnSellNow {
+    font-size: 0.85rem;
+    padding: 1rem 0.5rem;
+    white-space: nowrap;
+    width: 100%;
+    text-align: center;
+  }
   
   .footerTop { flex-direction: column; gap: 2rem; }
 }
