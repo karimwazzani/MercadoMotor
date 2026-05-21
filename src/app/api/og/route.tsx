@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
             MercadoMotor
           </div>
         ),
-        { width: 1080, height: 1080 }
+        { width: 600, height: 600 }
       );
     }
 
@@ -97,10 +97,10 @@ export async function GET(req: NextRequest) {
           >
             <div
               style={{
-                fontSize: 45,
+                fontSize: 26,
                 fontWeight: 'bold',
                 color: '#b89759',
-                marginBottom: 20,
+                marginBottom: 12,
                 letterSpacing: '-0.04em',
                 display: 'flex',
               }}
@@ -110,12 +110,12 @@ export async function GET(req: NextRequest) {
 
             <div
               style={{
-                fontSize: 75,
+                fontSize: 42,
                 fontWeight: 800,
                 color: 'white',
                 textAlign: 'center',
-                maxWidth: 1000,
-                marginBottom: 40,
+                maxWidth: 550,
+                marginBottom: 24,
                 lineHeight: 1.1,
               }}
             >
@@ -126,9 +126,9 @@ export async function GET(req: NextRequest) {
               style={{
                 display: 'flex',
                 background: '#b89759',
-                padding: '15px 40px',
-                borderRadius: 12,
-                fontSize: 45,
+                padding: '10px 24px',
+                borderRadius: 8,
+                fontSize: 26,
                 fontWeight: 'bold',
                 color: 'black',
               }}
@@ -139,8 +139,8 @@ export async function GET(req: NextRequest) {
         </div>
       ),
       {
-        width: 1080,
-        height: 1080,
+        width: 600,
+        height: 600,
       }
     );
   } catch (e: any) {
