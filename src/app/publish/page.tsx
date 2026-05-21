@@ -595,7 +595,7 @@ export default function PublishForm() {
                   onChange={(e) => setAcceptedVehicleTerms(e.target.checked)}
                 />
                 <span>
-                  Confirmo que el vehículo publicado es de mi propiedad o cuento con autorización para venderlo, y que <strong>toda la información declarada es veraz</strong>. Acepto los{" "}
+                  Confirmo que soy el titular del vehículo o cuento con autorización expresa para publicarlo en nombre del propietario o de la agencia que represento, y que <strong>toda la información declarada es veraz y exacta</strong>. Acepto los{" "}
                   <Link href="/terminos" target="_blank" className={styles.vehicleTermsLink}>Términos y Condiciones</Link> de MercadoMotor.
                 </span>
               </label>
