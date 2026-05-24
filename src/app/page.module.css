@@ -133,7 +133,6 @@
   flex: 1;
 }
 
-/* HERO SECTION */
 .hero {
   position: relative;
   min-height: 85dvh;
@@ -141,7 +140,6 @@
   align-items: center;
   padding-top: 10rem;
   padding-bottom: 6rem;
-  border-bottom: 1px solid var(--color-border);
   z-index: 1;
 }
 
