@@ -58,7 +58,7 @@ export default async function Home() {
                 <NotificationCenter />
                 <span className={styles.navLink}>Hola, {session.user?.name}</span>
                 {(session.user as any)?.accountType === "ADMINISTRADOR" && (
-                  <Link href="/admin" className={styles.navLink} style={{ color: "var(--color-accent)", fontWeight: "bold", display: "inline-flex", alignItems: "center" }}>
+                  <Link href="/admin" className={styles.adminLink}>
                     <svg className={styles.adminIcon} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
                       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
                     </svg>

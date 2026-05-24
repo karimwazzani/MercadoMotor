@@ -46,6 +46,20 @@
   color: var(--color-accent);
 }
 
+.adminLink {
+  color: var(--color-accent);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.adminLink:hover {
+  color: var(--color-accent-hover);
+}
+
 .logoImg {
   height: 38px;
   width: auto;
@@ -966,8 +980,9 @@
     gap: 0.75rem;
   }
   
-  .navLink {
-    display: none; /* Hide desktop nav links on mobile floating bar to keep it compact */
+  .navLink,
+  .adminLink {
+    display: none !important; /* Hide desktop links on mobile floating bar to keep it compact */
   }
   
   .btnAccent { padding: 0.5rem 1rem; font-size: 0.9rem; }
@@ -976,8 +991,40 @@
   .hero {
     align-items: center;
     padding-top: 8rem;
-    padding-bottom: 4rem;
-    min-height: auto;
+    padding-bottom: 2rem;
+    min-height: 480px; /* Tall enough to display the car background */
+  }
+  
+  .categorySection {
+    margin-top: -2rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .categoryGrid {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    width: 100%;
+    max-width: 100%;
+    border-radius: var(--radius-md);
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .categoryGrid::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome, Safari, Opera */
+  }
+  
+  .categoryItem {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    flex-shrink: 0;
   }
 
   .heroTitle { 
