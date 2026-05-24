@@ -49,16 +49,21 @@ export default async function Home() {
     <div className={styles.page}>
       <header className={styles.header}>
         <div className={`container ${styles.headerContent}`}>
-          <div className={styles.logo}>
-            <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
-          </div>
+          <Link href="/" className={styles.logo}>
+            <img src="/logo-dark.svg" alt="MercadoMotor" className={styles.logoImg} />
+          </Link>
           <nav className={styles.nav}>
             {session ? (
               <>
                 <NotificationCenter />
                 <span className={styles.navLink}>Hola, {session.user?.name}</span>
                 {(session.user as any)?.accountType === "ADMINISTRADOR" && (
-                  <Link href="/admin" className={styles.navLink} style={{ color: "var(--color-accent)", fontWeight: "bold" }}>⚡ Centro Admin</Link>
+                  <Link href="/admin" className={styles.navLink} style={{ color: "var(--color-accent)", fontWeight: "bold", display: "inline-flex", alignItems: "center" }}>
+                    <svg className={styles.adminIcon} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
+                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                    </svg>
+                    Centro Admin
+                  </Link>
                 )}
                 <Link href="/dashboard" className={styles.navLink}>Mi Panel</Link>
                 <Link href="/api/auth/signout" className={styles.navLink} style={{ opacity: 0.7 }}>Cerrar sesión</Link>
@@ -66,7 +71,15 @@ export default async function Home() {
             ) : (
               <Link href="/auth/login" className={styles.navLink}>Ingresar</Link>
             )}
-            <Link href="/publish" className="btnPublish">PUBLICAR GRATIS</Link>
+            <Link href="/publish" className="btnPublish">
+              <span>Publicar Gratis</span>
+              <span className="btnArrowWrapper">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </span>
+            </Link>
           </nav>
         </div>
       </header>
@@ -113,7 +126,10 @@ export default async function Home() {
 
         <section className={`container ${styles.categories}`}>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Vehículos Destacados</h2>
+            <div>
+              <span className="eyebrow">[ Colección Privada ]</span>
+              <h2 className={styles.sectionTitle}>Vehículos Destacados</h2>
+            </div>
             <Link href="/catalogo" className={styles.linkAccent}>Ver catálogo completo</Link>
           </div>
           
@@ -135,22 +151,36 @@ export default async function Home() {
             <div className={styles.agencyPremiumContent}>
               {session && (session.user as any)?.accountType === "AGENCIA" ? (
                 <>
+                  <span className="eyebrow" style={{ color: 'var(--color-accent)' }}>[ Beneficios de Agencia ]</span>
                   <h2 className={styles.sellTitle}>Potenciá tu Agencia</h2>
                   <p className={styles.sellText}>
                     Personalizá tu minisitio, subí tu logo y mostrá tu stock de forma profesional.
                   </p>
                   <Link href="/dashboard/agency/setup" className={styles.btnSellNow}>
-                    CONFIGURAR MI MINISITIO
+                    <span>Configurar mi minisitio</span>
+                    <span className="btnArrowWrapper">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                      </svg>
+                    </span>
                   </Link>
                 </>
               ) : (
                 <>
+                  <span className="eyebrow" style={{ color: 'var(--color-accent)' }}>[ Sumate a la red ]</span>
                   <h2 className={styles.sellTitle}>¿Sos una agencia?</h2>
                   <p className={styles.sellText}>
                     Sumá tu inventario a nuestra plataforma y llegá a miles de compradores.
                   </p>
                   <Link href="/auth/register-agency" className={styles.btnSellNow}>
-                    REGISTRAR MI CONCESIONARIA
+                    <span>Registrar mi concesionaria</span>
+                    <span className="btnArrowWrapper">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                      </svg>
+                    </span>
                   </Link>
                 </>
               )}
@@ -164,7 +194,10 @@ export default async function Home() {
 
         <section className={`container ${styles.newArrivals}`}>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Recién Ingresados</h2>
+            <div>
+              <span className="eyebrow">[ Novedades de la Semana ]</span>
+              <h2 className={styles.sectionTitle}>Recién Ingresados</h2>
+            </div>
             <Link href="/catalogo?novedades=true" className={styles.linkAccent}>Ver novedades</Link>
           </div>
           <FeaturedCarousel featuredVehicles={newArrivals} small={true} />
@@ -173,12 +206,19 @@ export default async function Home() {
         <section className={styles.sellSection}>
           <div className={`container ${styles.sellContainer}`}>
             <div className={styles.sellContent}>
+              <span className="eyebrow" style={{ color: 'var(--color-accent)' }}>[ Transacciones sin intermediarios ]</span>
               <h2 className={styles.sellTitle}>Vendé tu auto</h2>
               <p className={styles.sellText}>
                 Publicá gratis y conectá con compradores interesados. Sin vueltas, sin comisiones ocultas.
               </p>
               <Link href="/publish" className={styles.btnSellNow}>
-                PUBLICAR MI AUTO GRATIS
+                <span>Publicar mi auto gratis</span>
+                <span className="btnArrowWrapper">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </span>
               </Link>
             </div>
           </div>
@@ -188,7 +228,9 @@ export default async function Home() {
       <footer className={styles.footer}>
         <div className="container">
           <div className={styles.footerTop}>
-            <div className={styles.footerLogo}><img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} /></div>
+            <Link href="/" className={styles.footerLogo}>
+              <img src="/logo-dark.svg" alt="MercadoMotor" className={styles.footerLogoImg} />
+            </Link>
             <div className={styles.footerLinks}>
               <Link href="/terminos">Términos</Link>
               <Link href="/privacidad">Privacidad</Link>

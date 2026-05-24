@@ -1,9 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useServerInsertedHTML } from "next/navigation";
 import styles from "./SplashScreen.module.css";
 
 export default function SplashScreen() {
+  useServerInsertedHTML(() => (
+    <script
+      id="splash-state-check"
+      dangerouslySetInnerHTML={{
+        __html: `
+          try {
+            if (sessionStorage.getItem("splashShown")) {
+              document.documentElement.classList.add("splash-shown");
+            }
+          } catch (e) {}
+        `
+      }}
+    />
+  ));
+
   // Initialize state dynamically. On client-side soft page navigations, 
   // if already shown, we initialize directly to false. This prevents 
   // React from ever rendering or mounting the splash screen during route changes.
@@ -75,7 +91,7 @@ export default function SplashScreen() {
     >
       <div className={styles.logoContainer}>
         <div className={styles.logo}>
-          <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
+          <img src="/logo.svg" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
         </div>
         <div className={styles.loaderLine}></div>
       </div>

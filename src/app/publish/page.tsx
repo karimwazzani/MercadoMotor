@@ -269,7 +269,7 @@ export default function PublishForm() {
       <header className={styles.header}>
         <div className={`container ${styles.headerContent}`}>
           <Link href="/" className={styles.logo}>
-            <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
+            <img src="/logo-dark.svg" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
           </Link>
           <div className={styles.navClose}>
             <Link href="/" className={styles.btnClose}>Cancelar y volver</Link>

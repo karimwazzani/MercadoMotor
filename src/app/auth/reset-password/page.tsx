@@ -74,7 +74,7 @@ export default function ResetPasswordPage() {
     <div className={styles.authContainer}>
       <div className={styles.authCard}>
         <div className={styles.logo}>
-          <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
+          <img src="/logo-dark.svg" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
         </div>
         <h1 className={styles.title}>Restablecer contraseña</h1>
         <p className={styles.subtitle}>

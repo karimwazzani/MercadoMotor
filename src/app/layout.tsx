@@ -21,18 +21,6 @@ export default function RootLayout({
   return (
     <html lang="es" className={inter.variable}>
       <head>
-        {/* Synchronous inline script: adds splash-shown to html tag before body parses */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                if (sessionStorage.getItem("splashShown")) {
-                  document.documentElement.classList.add("splash-shown");
-                }
-              } catch (e) {}
-            `,
-          }}
-        />
         {/* Synchronous inline style: hides splash screen instantly if class is present */}
         <style
           dangerouslySetInnerHTML={{

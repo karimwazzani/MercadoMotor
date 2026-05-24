@@ -28,7 +28,7 @@ export default async function AdminAgenciesPage() {
       <header className={styles.header}>
         <div className={`container ${styles.headerContent}`}>
           <div className={styles.logo}>
-            <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} /> <span className={styles.badge}>ADMIN</span>
+            <img src="/logo-dark.svg" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} /> <span className={styles.badge}>ADMIN</span>
           </div>
           <nav className={styles.nav}>
             <Link href="/admin" className={styles.navLink}>Dashboard Principal</Link>

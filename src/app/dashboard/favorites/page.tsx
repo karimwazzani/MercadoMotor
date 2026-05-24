@@ -36,7 +36,7 @@ export default async function FavoritesPage() {
       <header className={styles.header}>
         <div className={`container ${styles.headerContent}`}>
           <Link href="/" className={styles.logo} style={{ textDecoration: 'none' }}>
-            <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
+            <img src="/logo-dark.svg" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
           </Link>
           <nav className={styles.nav}>
             <Link href="/dashboard" className={styles.navLink}>Mis Publicaciones</Link>

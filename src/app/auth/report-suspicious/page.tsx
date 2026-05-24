@@ -60,7 +60,7 @@ function ReportSuspiciousContent() {
       <div className={styles.card}>
         <div className={styles.logo}>
           <Link href="/">
-            <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
+            <img src="/logo-dark.svg" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
           </Link>
         </div>
 

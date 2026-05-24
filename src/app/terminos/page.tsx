@@ -14,7 +14,7 @@ export default function TerminosPage() {
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <Link href="/" className={styles.logo}>
-            <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
+            <img src="/logo-dark.svg" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
           </Link>
           <nav className={styles.nav}>
             <Link href="/catalogo" className={styles.navLink}>Catálogo</Link>
@@ -150,7 +150,7 @@ export default function TerminosPage() {
       <footer className={styles.footer}>
         <div className={styles.footerTop}>
           <Link href="/" className={styles.footerLogo}>
-            <img src="/logo.png" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
+            <img src="/logo-dark.svg" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
           </Link>
           <div className={styles.footerLinks}>
             <Link href="/terminos">Términos</Link>
