@@ -72,7 +72,8 @@ export default async function Home() {
               <Link href="/auth/login" className={styles.navLink}>Ingresar</Link>
             )}
             <Link href="/publish" className="btnPublish">
-              <span>Publicar Gratis</span>
+              <span className="btnTextDesktop">Publicar Gratis</span>
+              <span className="btnTextMobile">Publicar</span>
               <span className="btnArrowWrapper">
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"></line>

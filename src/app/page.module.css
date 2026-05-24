@@ -989,15 +989,20 @@
   .btnPrimary { padding: 0.5rem 1rem; font-size: 0.9rem; }
   
   .hero {
-    align-items: center;
+    display: flex;
+    align-items: flex-end; /* Push search box to the bottom! */
     padding-top: 8rem;
     padding-bottom: 2rem;
-    min-height: 480px; /* Tall enough to display the car background */
+    min-height: 520px; /* Tall enough to display the car background beautifully */
+  }
+  
+  .heroBgImage {
+    object-position: center 62% !important; /* Centers the body of the Pagani Utopia in the crop box */
   }
   
   .categorySection {
-    margin-top: -2rem;
-    margin-bottom: 2rem;
+    margin-top: 1.5rem; /* Lowered out of the hero into the next section */
+    margin-bottom: 2.5rem;
     width: 100%;
     overflow: hidden;
   }
@@ -1080,6 +1085,25 @@
   
   .searchButtonText { display: none; }
   .searchButtonIcon { display: block; }
+  
+  /* Overrides when agencies tab is active on mobile */
+  .searchBarAgencies .searchButton {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-top: 0.5rem !important;
+    padding: 0.8rem 1.5rem !important;
+    height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+  }
+  
+  .searchBarAgencies .searchButtonText {
+    display: inline !important;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
   
   .agencyPremiumContainer {
     justify-content: center;

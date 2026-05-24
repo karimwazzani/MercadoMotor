@@ -19,7 +19,10 @@ export default function TerminosPage() {
           <nav className={styles.nav}>
             <Link href="/catalogo" className={styles.navLink}>Catálogo</Link>
             <Link href="/auth/login" className={styles.navLink}>Ingresar</Link>
-            <Link href="/publish" className={styles.btnPrimary}>PUBLICAR GRATIS</Link>
+            <Link href="/publish" className={styles.btnPrimary}>
+              <span className={styles.btnTextDesktop}>PUBLICAR GRATIS</span>
+              <span className={styles.btnTextMobile}>Publicar</span>
+            </Link>
           </nav>
         </div>
       </header>

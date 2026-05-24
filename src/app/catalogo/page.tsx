@@ -285,7 +285,10 @@ export default async function Catalogo({
             ) : (
               <Link href="/auth/login" className={styles.navLink}>Ingresar</Link>
             )}
-            <Link href="/publish" className="btnPublish">PUBLICAR GRATIS</Link>
+            <Link href="/publish" className="btnPublish">
+              <span className="btnTextDesktop">PUBLICAR GRATIS</span>
+              <span className="btnTextMobile">Publicar</span>
+            </Link>
           </nav>
         </div>
       </header>

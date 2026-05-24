@@ -398,9 +398,37 @@
 }
 
 @media (max-width: 768px) {
-  .headerContent { flex-direction: column; gap: 1rem; padding: 0.5rem; }
-  .nav { flex-wrap: wrap; justify-content: center; gap: 1rem; }
-  .logo { font-size: 1.5rem; }
+  .header {
+    padding: 0.6rem 0 !important;
+  }
+  
+  .headerContent {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    padding: 0 16px !important;
+  }
+  
+  .logo img {
+    height: 24px !important;
+  }
+  
+  .nav {
+    flex-wrap: nowrap !important;
+    justify-content: flex-end !important;
+    gap: 0.5rem !important;
+  }
+  
+  .navLink {
+    display: none !important; /* Hide Catálogo, Ingresar, Inicio, etc. on mobile header */
+  }
+  
+  .btnPublish {
+    padding: 0.4rem 0.8rem !important;
+    font-size: 0.8rem !important;
+    border-radius: var(--radius-sm) !important;
+  }
 }
 
 @media (max-width: 600px) {

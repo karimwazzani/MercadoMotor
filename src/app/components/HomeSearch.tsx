@@ -42,7 +42,7 @@ export default function HomeSearch() {
         </button>
       </div>
 
-      <form onSubmit={handleSearch} className={styles.searchBar}>
+      <form onSubmit={handleSearch} className={`${styles.searchBar} ${searchType === "AGENCIES" ? styles.searchBarAgencies : ""}`}>
         <div className={styles.searchFields}>
           <input 
             type="text" 
