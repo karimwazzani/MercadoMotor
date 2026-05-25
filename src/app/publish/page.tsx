@@ -54,7 +54,7 @@ export default function PublishForm() {
     equipment: [] as string[],
   });
 
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<(File | Blob)[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [referralCode, setReferralCode] = useState<string | null>(null);
 
@@ -148,7 +148,7 @@ export default function PublishForm() {
   };
 
   // Compresses an image file to JPEG using the Canvas API (works in all browsers incl. iOS Safari)
-  const compressImage = (file: File, maxWidth = 1600, quality = 0.82): Promise<File> => {
+  const compressImage = (file: File, maxWidth = 1600, quality = 0.82): Promise<File | Blob> => {
     return new Promise((resolve) => {
       const img = new window.Image();
       const objectUrl = URL.createObjectURL(file);
@@ -167,7 +167,13 @@ export default function PublishForm() {
         canvas.toBlob(
           (blob) => {
             if (blob) {
-              const compressed = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+              const name = file.name ? file.name.replace(/\.[^.]+$/, '.jpg') : 'image.jpg';
+              // Use Object.assign to decorate the Blob with name and lastModified properties
+              // to act like a File object and bypass the iOS/Safari new File() WebKit constructor bug.
+              const compressed = Object.assign(blob, {
+                name: name,
+                lastModified: Date.now()
+              });
               resolve(compressed);
             } else {
               resolve(file); // fallback: keep original
@@ -240,7 +246,8 @@ export default function PublishForm() {
       uploadData.append("equipment", JSON.stringify(formData.equipment));
 
       files.forEach((file) => {
-        uploadData.append("images", file);
+        const filename = (file as any).name || "image.jpg";
+        uploadData.append("images", file, filename);
       });
 
       if (referralCode) {
