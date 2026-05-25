@@ -204,8 +204,20 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
         body: uploadData,
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      let data: any = {};
+      const contentType = res.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        console.error("Server non-JSON response:", text);
+        if (res.status === 413) {
+          throw new Error("Las imágenes son demasiado pesadas. Por favor, intentá subir menos fotos o fotos de menor tamaño.");
+        }
+        throw new Error(`Error de comunicación con el servidor (Código ${res.status}). Por favor, intentá de nuevo.`);
+      }
+
+      if (!res.ok) throw new Error(data.message || "Error al actualizar la publicación");
 
       router.push("/publish/success"); 
     } catch (err: any) {

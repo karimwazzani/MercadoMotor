@@ -148,10 +148,24 @@ export default function PublishForm() {
   };
 
   // Compresses an image file to JPEG using the Canvas API (works in all browsers incl. iOS Safari)
-  const compressImage = (file: File, maxWidth = 1600, quality = 0.82): Promise<File | Blob> => {
+  const compressImage = (file: File, maxWidth = 1200, quality = 0.75): Promise<File | Blob> => {
     return new Promise((resolve) => {
+      // Helper to convert data URL to Blob (safest fallback for Safari)
+      const dataURLtoBlob = (dataurl: string): Blob => {
+        const arr = dataurl.split(',');
+        const mime = arr[0].match(/:(.*?);/)![1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
+      };
+
       const img = new window.Image();
       const objectUrl = URL.createObjectURL(file);
+      
       img.onload = () => {
         URL.revokeObjectURL(objectUrl);
         const canvas = document.createElement('canvas');
@@ -164,26 +178,50 @@ export default function PublishForm() {
         canvas.height = height;
         const ctx = canvas.getContext('2d')!;
         ctx.drawImage(img, 0, 0, width, height);
-        canvas.toBlob(
-          (blob) => {
-            if (blob) {
-              const name = file.name ? file.name.replace(/\.[^.]+$/, '.jpg') : 'image.jpg';
-              // Use Object.assign to decorate the Blob with name and lastModified properties
-              // to act like a File object and bypass the iOS/Safari new File() WebKit constructor bug.
-              const compressed = Object.assign(blob, {
-                name: name,
-                lastModified: Date.now()
-              });
-              resolve(compressed);
-            } else {
-              resolve(file); // fallback: keep original
-            }
-          },
-          'image/jpeg',
-          quality
-        );
+
+        const resolveCompressed = (blob: Blob) => {
+          const name = file.name ? file.name.replace(/\.[^.]+$/, '.jpg') : 'image.jpg';
+          // Use Object.assign to decorate the Blob with name and lastModified properties
+          // to act like a File object and bypass the iOS/Safari new File() WebKit constructor bug.
+          const compressed = Object.assign(blob, {
+            name: name,
+            lastModified: Date.now()
+          });
+          resolve(compressed);
+        };
+
+        try {
+          if (canvas.toBlob) {
+            canvas.toBlob(
+              (blob) => {
+                if (blob) {
+                  resolveCompressed(blob);
+                } else {
+                  // Fallback to toDataURL if toBlob returned null
+                  try {
+                    const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    resolveCompressed(dataURLtoBlob(dataUrl));
+                  } catch (e) {
+                    resolve(file); // fallback: keep original
+                  }
+                }
+              },
+              'image/jpeg',
+              quality
+            );
+          } else {
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            resolveCompressed(dataURLtoBlob(dataUrl));
+          }
+        } catch (e) {
+          resolve(file); // fallback: keep original
+        }
       };
-      img.onerror = () => { URL.revokeObjectURL(objectUrl); resolve(file); };
+      
+      img.onerror = () => { 
+        URL.revokeObjectURL(objectUrl); 
+        resolve(file); // fallback: keep original
+      };
       img.src = objectUrl;
     });
   };
@@ -259,7 +297,19 @@ export default function PublishForm() {
         body: uploadData,
       });
 
-      const data = await res.json();
+      let data: any = {};
+      const contentType = res.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        console.error("Server non-JSON response:", text);
+        if (res.status === 413) {
+          throw new Error("Las imágenes son demasiado pesadas. Por favor, intentá subir menos fotos o fotos de menor tamaño.");
+        }
+        throw new Error(`Error de comunicación con el servidor (Código ${res.status}). Por favor, intentá de nuevo.`);
+      }
+
       if (!res.ok) throw new Error(data.message || "Error al guardar el vehículo");
 
       router.push("/publish/success");
