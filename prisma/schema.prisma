@@ -244,3 +244,16 @@ model Advertisement {
   @@index([areaKey, isActive])
 }
 
+model PageVisit {
+  id         String   @id @default(uuid())
+  path       String   // e.g., '/', '/catalogo', '/contacto', '/catalogo/123'
+  referrer   String?  // e.g., 'google.com', 'instagram.com', 'facebook.com', 'direct'
+  userAgent  String?  // Para identificar si es Móvil o Escritorio
+  ipHash     String   // IP Hasheada para contar visitantes únicos respetando la privacidad (Ley 25.326)
+  createdAt  DateTime @default(now())
+
+  @@index([path])
+  @@index([createdAt])
+  @@index([referrer])
+}
+

@@ -13,6 +13,7 @@ import { Providers } from "./providers";
 import CompareBar from "./components/CompareBar";
 import SplashScreen from "./components/SplashScreen";
 import CookieConsent from "./components/CookieConsent";
+import { AnalyticsTracker } from "./components/AnalyticsTracker";
 
 export default function RootLayout({
   children,
@@ -36,6 +37,7 @@ export default function RootLayout({
       <body>
         <Providers>
           <SplashScreen />
+          <AnalyticsTracker />
           {children}
           <CompareBar />
           <CookieConsent />

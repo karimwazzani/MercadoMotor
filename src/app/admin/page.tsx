@@ -60,8 +60,9 @@ export default async function AdminPage() {
             <img src="/logo-dark.svg" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} /> <span className={styles.badge}>ADMIN</span>
           </div>
           <nav className={styles.nav}>
+            <Link href="/admin/metrics" className={styles.navLink} style={{ marginRight: "1rem", color: "var(--color-accent)", fontWeight: "bold" }}>Estadísticas y KPIs</Link>
             <Link href="/admin/agencies" className={styles.navLink} style={{ marginRight: "1rem" }}>Gestión de Agencias</Link>
-            <Link href="/admin/ads" className={styles.navLink} style={{ marginRight: "1rem", color: "var(--color-accent)" }}>Gestión de Publicidad</Link>
+            <Link href="/admin/ads" className={styles.navLink} style={{ marginRight: "1rem" }}>Gestión de Publicidad</Link>
             <Link href="/" className={styles.navLink}>Ir al Sitio Público</Link>
             <Link href="/api/auth/signout" className={styles.navLink} style={{ marginLeft: "1rem", opacity: 0.7 }}>Cerrar sesión</Link>
           </nav>
