@@ -187,40 +187,81 @@ export default function ShareButtons({
       }
     }
 
-    // 6. Text Info: Brand, Model, Version (moved up slightly)
+    // Helper for wrapping text nicely on Canvas
+    const wrapText = (context: CanvasRenderingContext2D, text: string, maxWidth: number): string[] => {
+      const words = text.split(" ");
+      if (words.length <= 1) return [text];
+      
+      const lines: string[] = [];
+      let currentLine = words[0];
+
+      for (let i = 1; i < words.length; i++) {
+        const word = words[i];
+        const width = context.measureText(currentLine + " " + word).width;
+        if (width < maxWidth) {
+          currentLine += " " + word;
+        } else {
+          lines.push(currentLine);
+          currentLine = word;
+        }
+      }
+      lines.push(currentLine);
+      return lines;
+    };
+
+    // 6. Text Info: Brand, Model, Version (moved up slightly and dynamic wrapped)
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "center";
 
     // Brand + Model
-    ctx.font = "bold 76px sans-serif";
     const vTitle = `${brand || ""} ${model || ""}`.trim();
-    ctx.fillText(vTitle, 540, 1170);
+    let fontSize = 72;
+    ctx.font = `bold ${fontSize}px sans-serif`;
+    
+    let titleLines = wrapText(ctx, vTitle, 900);
+    
+    // Scale down if it exceeds 2 lines to fit elegantly
+    if (titleLines.length > 2) {
+      fontSize = 58;
+      ctx.font = `bold ${fontSize}px sans-serif`;
+      titleLines = wrapText(ctx, vTitle, 900);
+    }
+
+    let textY = 1170;
+    const lineHeight = fontSize + 12;
+    
+    titleLines.slice(0, 2).forEach((line, index) => {
+      ctx.fillText(line, 540, textY + index * lineHeight);
+    });
+
+    // Dynamic offset based on title height
+    const offset = (titleLines.slice(0, 2).length - 1) * lineHeight;
 
     // Version
     if (version) {
-      ctx.font = "500 44px sans-serif";
+      ctx.font = "500 42px sans-serif";
       ctx.fillStyle = "#A1A1AA";
-      ctx.fillText(version, 540, 1260);
+      ctx.fillText(version, 540, 1260 + offset);
     }
 
     // Year & Mileage
-    ctx.font = "600 42px sans-serif";
+    ctx.font = "600 40px sans-serif";
     ctx.fillStyle = "#D4D4D8";
     const specsText = `${year || ""}  •  ${mileage ? mileage.toLocaleString() : 0} km`;
-    ctx.fillText(specsText, 540, 1360);
+    ctx.fillText(specsText, 540, 1360 + offset);
 
     // 7. Gold Price Capsule
     const priceX = 540;
-    const priceY = 1500;
+    const priceY = 1490 + offset;
     const priceText = `${currency === "ARS" ? "$" : "US$"} ${price ? price.toLocaleString() : 0}`;
 
-    ctx.font = "bold 72px sans-serif";
+    ctx.font = "bold 68px sans-serif";
     const textWidth = ctx.measureText(priceText).width;
-    const capW = textWidth + 100;
-    const capH = 130;
+    const capW = textWidth + 80;
+    const capH = 118;
     const capX = priceX - capW / 2;
     const capY = priceY - capH / 2;
-    const capR = 28;
+    const capR = 26;
 
     ctx.fillStyle = "#B89759";
     ctx.beginPath();
