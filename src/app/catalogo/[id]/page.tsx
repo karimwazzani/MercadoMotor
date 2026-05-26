@@ -191,6 +191,23 @@ export default async function VehicleDetail({
         </div>
       </header>
 
+      {vehicle.status === "SOLD" && (
+        <div style={{
+          backgroundColor: "#10b981",
+          color: "#ffffff",
+          padding: "0.8rem 1.5rem",
+          textAlign: "center",
+          fontWeight: 700,
+          fontSize: "0.85rem",
+          letterSpacing: "1px",
+          textTransform: "uppercase",
+          width: "100%",
+          boxShadow: "0 2px 10px rgba(16, 185, 129, 0.15)"
+        }}>
+          Vehículo vendido - Publicación finalizada
+        </div>
+      )}
+
       <div className={styles.breadcrumbs}>
         <div className={styles.breadcrumbsContainer}>
           <Link href="/catalogo">Catálogo</Link>
@@ -280,12 +297,14 @@ export default async function VehicleDetail({
                 </div>
               )}
               
-              <ContactActions 
-                vehicleId={vehicle.id} 
-                phone={vehicle.agencyId ? vehicle.agency?.phone || "" : vehicle.user.phone || ""} 
-                brand={vehicle.brand}
-                model={vehicle.model}
-              />
+              {!(vehicle.status === "SOLD" && !vehicle.agencyId) && (
+                <ContactActions 
+                  vehicleId={vehicle.id} 
+                  phone={vehicle.agencyId ? vehicle.agency?.phone || "" : vehicle.user.phone || ""} 
+                  brand={vehicle.brand}
+                  model={vehicle.model}
+                />
+              )}
               
               <div className={styles.tags}>
                 {vehicle.acceptsTradeIn && <span className={styles.tag}>Acepta Permuta</span>}

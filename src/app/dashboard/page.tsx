@@ -156,7 +156,7 @@ export default async function DashboardPage() {
                         <RenewButton vehicleId={vehicle.id} isExpired={isExpired} />
                       )}
 
-                      <DeleteButton vehicleId={vehicle.id} />
+                      <DeleteButton vehicleId={vehicle.id} status={vehicle.status} />
 
                       {isPending && (
                         <span className={styles.waitingText}>⏳ En revisión por moderadores.</span>

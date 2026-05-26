@@ -39,13 +39,22 @@ export default async function Catalogo({
   const minKmParam = typeof resolvedParams.minKm === 'string' ? parseInt(resolvedParams.minKm) : undefined;
   const maxKmParam = typeof resolvedParams.maxKm === 'string' ? parseInt(resolvedParams.maxKm) : undefined;
   const isNovedades = resolvedParams.novedades === 'true';
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
   
   // Construir clausula WHERE dinamica
   const whereClause: any = {
-    status: "APPROVED",
     OR: [
-      { expiresAt: null },
-      { expiresAt: { gt: new Date() } }
+      {
+        status: "APPROVED",
+        OR: [
+          { expiresAt: null },
+          { expiresAt: { gt: new Date() } }
+        ]
+      },
+      {
+        status: "SOLD",
+        finishedAt: { gte: twentyFourHoursAgo }
+      }
     ]
   };
 
@@ -230,10 +239,18 @@ export default async function Catalogo({
       const numericTerms = searchTerms.map(t => parseInt(t, 10)).filter(n => !isNaN(n) && n > 1900 && n <= new Date().getFullYear() + 1);
       
       let randomWhere: any = {
-        status: "APPROVED",
         OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } }
+          {
+            status: "APPROVED",
+            OR: [
+              { expiresAt: null },
+              { expiresAt: { gt: new Date() } }
+            ]
+          },
+          {
+            status: "SOLD",
+            finishedAt: { gte: twentyFourHoursAgo }
+          }
         ]
       };
       
@@ -427,6 +444,25 @@ export default async function Catalogo({
                     <div className={styles.card}>
                       <Link href={`/catalogo/${vehicle.id}`} className={styles.cardInternalLink}>
                         <div className={styles.imageContainer} style={{ position: 'relative' }}>
+                          {vehicle.status === "SOLD" && (
+                            <div style={{
+                              position: "absolute",
+                              top: "10px",
+                              left: "10px",
+                              zIndex: 10,
+                              backgroundColor: "#10b981",
+                              color: "#ffffff",
+                              padding: "0.3rem 0.75rem",
+                              borderRadius: "6px",
+                              fontSize: "0.75rem",
+                              fontWeight: 700,
+                              letterSpacing: "0.5px",
+                              textTransform: "uppercase",
+                              boxShadow: "0 2px 8px rgba(16, 185, 129, 0.25)"
+                            }}>
+                              Vehículo vendido
+                            </div>
+                          )}
                           <FavoriteButton 
                             vehicleId={vehicle.id} 
                             initialIsFavorite={favoriteIds.has(vehicle.id)} 

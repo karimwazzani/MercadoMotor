@@ -147,6 +147,8 @@ model Vehicle {
   updatedAt         DateTime  @updatedAt
   approvedAt        DateTime?
   expiresAt         DateTime?
+  finishedAt        DateTime?
+  endReason         String?
   isHighlighted     Boolean   @default(false)
   highlightExpiresAt DateTime?
   
