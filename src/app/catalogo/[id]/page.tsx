@@ -284,6 +284,15 @@ export default async function VehicleDetail({
               <ShareButtons 
                 title={`${vehicle.brand} ${vehicle.model} ${vehicle.version || ""}`} 
                 url={`${siteUrl}/catalogo/${vehicle.id}`} 
+                vehicleId={vehicle.id}
+                brand={vehicle.brand}
+                model={vehicle.model}
+                version={vehicle.version || ""}
+                year={vehicle.year}
+                mileage={vehicle.mileage}
+                price={vehicle.price}
+                currency={vehicle.currency}
+                mainImageUrl={mainImage ? (mainImage.url.startsWith('http') ? mainImage.url : `${siteUrl}${mainImage.url}`) : ""}
               />
             </div>
 
