@@ -483,12 +483,6 @@ export default function ShareButtons({
         </button>
       </div>
 
-      {status !== "APPROVED" && (
-        <div style={{ marginTop: "1rem", fontSize: "0.82rem", color: "#f59e0b", backgroundColor: "rgba(245, 158, 11, 0.08)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid rgba(245, 158, 11, 0.15)", display: "flex", alignItems: "center", gap: "0.4rem", width: "100%", boxSizing: "border-box" }}>
-          <span>⚠️</span>
-          <span>Las tarjetas promocionales estarán disponibles cuando se apruebe la publicación.</span>
-        </div>
-      )}
 
       {/* Instagram Story Generation Modal */}
       {showIgModal && (
