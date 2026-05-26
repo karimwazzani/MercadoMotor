@@ -439,3 +439,125 @@
     display: none; /* Keep clean admin links stack */
   }
 }
+
+/* Filter Widget */
+.filterWidget {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 2rem;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 2rem;
+}
+
+.filterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.filterTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filterBadge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  background-color: rgba(184, 151, 89, 0.08);
+  border: 1px solid rgba(184, 151, 89, 0.15);
+  padding: 0.3rem 0.75rem;
+  border-radius: 4px;
+}
+
+.filterFormRow {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.selectWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.selectLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.periodSelect {
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-base);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  min-width: 220px;
+  transition: all var(--transition-fast);
+}
+
+.periodSelect:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(184, 151, 89, 0.1);
+}
+
+.customDateForm {
+  flex: 1;
+}
+
+.dateInputs {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.dateInput {
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-base);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.dateInput:focus {
+  border-color: var(--color-accent);
+}
+
+.filterBtn {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: 1px solid var(--color-primary);
+  padding: 0.6rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filterBtn:hover {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+}

@@ -3,8 +3,15 @@
 import React, { useState } from "react";
 import styles from "./page.module.css";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface AdminMetricsClientProps {
+  currentPeriod: {
+    period: string;
+    start: string;
+    end: string;
+    label: string;
+  };
   trafficData: {
     totalPageViews: number;
     uniqueVisitors: number;
@@ -51,6 +58,7 @@ interface AdminMetricsClientProps {
 }
 
 export default function AdminMetricsClient({
+  currentPeriod,
   trafficData,
   publicationsData,
   usersData,
@@ -58,7 +66,27 @@ export default function AdminMetricsClient({
   adsData,
   dbAuditData,
 }: AdminMetricsClientProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"traffic" | "publications" | "leads" | "system">("traffic");
+  
+  const [customRange, setCustomRange] = useState({
+    start: currentPeriod.start || "",
+    end: currentPeriod.end || "",
+  });
+
+  const handlePeriodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    if (val !== "custom") {
+      router.push(`/admin/metrics?period=${val}`);
+    }
+  };
+
+  const handleCustomSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (customRange.start) {
+      router.push(`/admin/metrics?period=custom&start=${customRange.start}&end=${customRange.end}`);
+    }
+  };
 
   // Helper para formatear números de forma legible
   const formatNum = (num: number) => num.toLocaleString();
@@ -154,8 +182,65 @@ export default function AdminMetricsClient({
 
   return (
     <div className={styles.metricsContainer}>
+      {/* SECCIÓN SUPERIOR DE FILTRO TEMPORAL */}
+      <div className={styles.filterWidget}>
+        <div className={styles.filterHeader}>
+          <div className={styles.filterTitle}>📆 Período de Análisis Activo:</div>
+          <div className={styles.filterBadge}>{currentPeriod.label}</div>
+        </div>
+        
+        <div className={styles.filterFormRow}>
+          <div className={styles.selectWrapper}>
+            <label className={styles.selectLabel}>Rango Preestablecido:</label>
+            <select 
+              value={currentPeriod.period} 
+              onChange={handlePeriodChange} 
+              className={styles.periodSelect}
+            >
+              <option value="today">Hoy (Últimas 24hs)</option>
+              <option value="yesterday">Ayer</option>
+              <option value="7days">Últimos 7 días</option>
+              <option value="15days">Últimos 15 días</option>
+              <option value="30days">Últimos 30 días</option>
+              <option value="6months">Últimos 6 meses</option>
+              <option value="1year">Último año</option>
+              <option value="all">Histórico Completo (Todo)</option>
+              <option value="custom">Personalizado...</option>
+            </select>
+          </div>
+
+          {currentPeriod.period === "custom" && (
+            <form onSubmit={handleCustomSubmit} className={styles.customDateForm}>
+              <div className={styles.dateInputs}>
+                <div>
+                  <label className={styles.selectLabel}>Desde:</label>
+                  <input 
+                    type="date" 
+                    value={customRange.start} 
+                    onChange={e => setCustomRange(prev => ({ ...prev, start: e.target.value }))}
+                    className={styles.dateInput}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className={styles.selectLabel}>Hasta:</label>
+                  <input 
+                    type="date" 
+                    value={customRange.end} 
+                    onChange={e => setCustomRange(prev => ({ ...prev, end: e.target.value }))}
+                    className={styles.dateInput}
+                    required
+                  />
+                </div>
+                <button type="submit" className={styles.filterBtn}>Aplicar</button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+
       {/* TABS SELECTOR */}
-      <div className={styles.tabsSelector}>
+      <div className={styles.tabsSelector} style={{ marginTop: "2rem" }}>
         <button
           className={`${styles.tabBtn} ${activeTab === "traffic" ? styles.tabBtnActive : ""}`}
           onClick={() => setActiveTab("traffic")}
@@ -194,24 +279,24 @@ export default function AdminMetricsClient({
               <div className={styles.kpiValue} style={{ color: "var(--color-primary)" }}>
                 {formatNum(trafficData.totalPageViews)}
               </div>
-              <div className={styles.kpiTrend}>Páginas cargadas globales</div>
+              <div className={styles.kpiTrend}>En período: {currentPeriod.label}</div>
             </div>
             <div className={styles.kpiCard}>
               <span className={styles.kpiLabel}>Visitantes Únicos</span>
               <div className={styles.kpiValue} style={{ color: "var(--color-accent)" }}>
                 {formatNum(trafficData.uniqueVisitors)}
               </div>
-              <div className={styles.kpiTrend}>IPs únicas por telemetría</div>
+              <div className={styles.kpiTrend}>En período: {currentPeriod.label}</div>
             </div>
             <div className={styles.kpiCard}>
               <span className={styles.kpiLabel}>Páginas por Visitante</span>
               <div className={styles.kpiValue}>{viewsPerVisitor}</div>
-              <div className={styles.kpiTrend}>Promedio de navegación</div>
+              <div className={styles.kpiTrend}>Promedio en período</div>
             </div>
             <div className={styles.kpiCard}>
               <span className={styles.kpiLabel}>Uso desde Dispositivo Móvil</span>
               <div className={styles.kpiValue}>{mobilePercentage}%</div>
-              <div className={styles.kpiTrend}>{mobileCount} Móvil vs. {desktopCount} Escritorio</div>
+              <div className={styles.kpiTrend}>Ratio en período ({currentPeriod.label})</div>
             </div>
           </div>
 
@@ -346,31 +431,31 @@ export default function AdminMetricsClient({
           {/* CATALOG GENERAL KPIs */}
           <div className={styles.kpiGrid}>
             <div className={styles.kpiCard}>
-              <span className={styles.kpiLabel}>Inventario Activo</span>
+              <span className={styles.kpiLabel}>Nuevas Publicaciones</span>
               <div className={styles.kpiValue} style={{ color: "var(--color-primary)" }}>
-                {publicationsData.activeVehicles}
+                {publicationsData.totalVehicles}
               </div>
-              <div className={styles.kpiTrend}>{publicationsData.totalVehicles} cargados totales</div>
+              <div className={styles.kpiTrend}>Registrados en: {currentPeriod.label}</div>
             </div>
             <div className={styles.kpiCard}>
-              <span className={styles.kpiLabel}>Valor de Catálogo</span>
+              <span className={styles.kpiLabel}>Valor de Catálogo [USD]</span>
               <div className={styles.kpiValue} style={{ color: "var(--color-accent)", fontSize: "1.6rem" }}>
                 {formatMoney(
                   publicationsData.pricesByCurrency.find(p => p.currency === "USD")?.totalValue || 0,
                   "USD"
                 )}
               </div>
-              <div className={styles.kpiTrend}>Inventario público en dólares</div>
+              <div className={styles.kpiTrend}>Stock aprobado hoy (Histórico)</div>
             </div>
             <div className={styles.kpiCard}>
               <span className={styles.kpiLabel}>Completeness Score</span>
               <div className={styles.kpiValue}>{completenessScore}%</div>
-              <div className={styles.kpiTrend}>Publicaciones con info premium</div>
+              <div className={styles.kpiTrend}>Evaluación del stock activo hoy</div>
             </div>
             <div className={styles.kpiCard}>
               <span className={styles.kpiLabel}>Destacados Activos</span>
               <div className={styles.kpiValue}>{publicationsData.highlightedVehicles}</div>
-              <div className={styles.kpiTrend}>Vehículos en carrusel principal</div>
+              <div className={styles.kpiTrend}>Stock destacado hoy (Histórico)</div>
             </div>
           </div>
 
@@ -470,28 +555,28 @@ export default function AdminMetricsClient({
           {/* GENERAL LEADS KPIs */}
           <div className={styles.kpiGrid}>
             <div className={styles.kpiCard}>
-              <span className={styles.kpiLabel}>Interacciones de Clientes (Leads)</span>
+              <span className={styles.kpiLabel}>Interacciones Totales</span>
               <div className={styles.kpiValue} style={{ color: "var(--color-primary)" }}>
                 {formatNum(totalLeads)}
               </div>
-              <div className={styles.kpiTrend}>{leadsData.totalConsultations} Consultas / {leadsData.whatsappClicks} WhatsApps</div>
+              <div className={styles.kpiTrend}>WhatsApp/Llamadas (Histórico) + Consultas ({currentPeriod.label})</div>
             </div>
             <div className={styles.kpiCard}>
               <span className={styles.kpiLabel}>Tasa de Conversión Global</span>
               <div className={styles.kpiValue} style={{ color: "var(--color-accent)" }}>
                 {leadConversionRate.toFixed(2)}%
               </div>
-              <div className={styles.kpiTrend}>Leads concretados por visualización</div>
+              <div className={styles.kpiTrend}>Basado en vistas e interacciones (Histórico)</div>
             </div>
             <div className={styles.kpiCard}>
               <span className={styles.kpiLabel}>Rotación de Inventario</span>
               <div className={styles.kpiValue}>{averageDaysToSell} días</div>
-              <div className={styles.kpiTrend}>Tiempo promedio para vender un auto</div>
+              <div className={styles.kpiTrend}>Tiempo promedio de ventas en: {currentPeriod.label}</div>
             </div>
             <div className={styles.kpiCard}>
-              <span className={styles.kpiLabel}>Usuarios Registrados</span>
+              <span className={styles.kpiLabel}>Nuevos Usuarios</span>
               <div className={styles.kpiValue}>{usersData.totalUsers}</div>
-              <div className={styles.kpiTrend}>{usersData.totalAgencies} Agencias / {usersData.totalUsers - usersData.totalAgencies} Particulares</div>
+              <div className={styles.kpiTrend}>Registrados en: {currentPeriod.label}</div>
             </div>
           </div>
 

@@ -6,164 +6,239 @@ import Link from "next/link";
 import styles from "./page.module.css";
 import AdminMetricsClient from "./AdminMetricsClient";
 
-export default async function AdminMetricsPage() {
+interface PageProps {
+  searchParams: {
+    period?: string;
+    start?: string;
+    end?: string;
+  };
+}
+
+export default async function AdminMetricsPage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
 
   if (!session || (session.user as any).accountType !== "ADMINISTRADOR") {
     redirect("/");
   }
 
-  // Carga de datos masiva en paralelo para velocidad óptima
+  // 1. CÁLCULO DE RANGOS DE FECHA EN SERVIDOR (Next.js SSR Params)
+  const period = searchParams.period || "30days";
+  let startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 30 días por defecto
+  let endDate = new Date();
+  let periodLabel = "Últimos 30 días";
+  
+  const now = new Date();
+
+  if (period === "today") {
+    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    startDate.setHours(0, 0, 0, 0);
+    periodLabel = "Hoy (24hs)";
+  } else if (period === "yesterday") {
+    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+    startDate.setHours(0, 0, 0, 0);
+    endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    endDate.setHours(0, 0, 0, 0);
+    periodLabel = "Ayer (Período completo)";
+  } else if (period === "7days") {
+    startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    periodLabel = "Últimos 7 días";
+  } else if (period === "15days") {
+    startDate = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
+    periodLabel = "Últimos 15 días";
+  } else if (period === "30days") {
+    startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    periodLabel = "Últimos 30 días";
+  } else if (period === "6months") {
+    startDate = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000);
+    periodLabel = "Últimos 6 meses";
+  } else if (period === "1year") {
+    startDate = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
+    periodLabel = "Último año";
+  } else if (period === "all") {
+    startDate = new Date(0); // Desde el principio de los tiempos
+    periodLabel = "Histórico (Todo el tiempo)";
+  } else if (period === "custom" && searchParams.start) {
+    startDate = new Date(searchParams.start);
+    startDate.setHours(0, 0, 0, 0);
+    if (searchParams.end) {
+      endDate = new Date(searchParams.end);
+      endDate.setHours(23, 59, 59, 999);
+    }
+    periodLabel = `Personalizado (${startDate.toLocaleDateString("es-AR")} - ${endDate.toLocaleDateString("es-AR")})`;
+  }
+
+  // Objeto base para filtros de fecha
+  const dateFilter = {
+    createdAt: {
+      gte: startDate,
+      lte: endDate,
+    },
+  };
+
+  // Carga de datos paralela súper optimizada aplicando filtros temporales reales
   const [
-    // Tráfico & Telemetría General
+    // --- 1. TELEMETRÍA DE TRÁFICO EN EL PERÍODO ---
     totalPageViews,
     uniqueVisitorsResult,
     deviceTypeResult,
     referrerResult,
     pagePathResult,
-    dailyTrafficResult,
+    trafficForChart,
 
-    // Publicaciones & Inventario
-    totalVehicles,
-    activeVehicles,
-    rejectedVehicles,
-    pausedVehicles,
-    soldVehicles,
-    categoryResult,
-    conditionResult,
-    brandResult,
-    modelResult,
-    priceMetricsResult,
-    highlightedVehicles,
-    priceDropsCount,
+    // --- 2. PUBLICACIONES (NUEVAS & VENTAS EN EL PERÍODO) ---
+    totalVehiclesCreated, // Vehículos creados en el período
+    activeStockCount,     // Conteo estático: cuántos autos hay aprobados HOY en catálogo
+    rejectedCount,        // Conteo del período
+    pausedCount,          // Conteo del período
+    soldVehiclesInPeriod, // Autos vendidos en el período
+    categoryResult,       // Categorías de autos creados en el período
+    conditionResult,      // Condición de autos creados en el período
+    brandResult,          // Marcas de autos creados en el período
+    modelResult,          // Modelos de autos creados en el período
+    priceMetricsResult,   // Precios promedio del stock activo hoy
+    highlightedCount,     // Destacados activos hoy (histórico)
+    priceDropsCount,      // Rebajas activas hoy (histórico)
 
-    // Usuarios & Cuentas
-    totalUsers,
+    // --- 3. USUARIOS EN EL PERÍODO ---
+    totalUsersCreated,
     usersByTypeResult,
     agenciesResult,
 
-    // Leads & Conversión
-    vehicleSumStats,
+    // --- 4. LEADS & CONVERSIÓN EN EL PERÍODO ---
     totalConsultations,
-    totalFavorites,
+    totalFavoritesCreated,
+    vehicleClicksSum,     // Clicks e impresiones acumulados de todo el catálogo (Lifetime)
 
-    // Anuncios & Publicidad
+    // --- 5. PUBLICIDAD BANNER ---
     allAds,
 
-    // Auditoría de DB (Row Counts)
-    branchCount,
-    imageCount,
-    notificationCount
+    // --- 6. AUDITORÍA FÍSICA DE DB (ROW COUNTS HISTÓRICOS GENERALES) ---
+    dbCounts
   ] = await Promise.all([
-    // 1. Telemetría de Tráfico
-    prisma.pageVisit.count(),
+    // Tráfico filtrado por fecha
+    prisma.pageVisit.count({ where: dateFilter }),
     prisma.pageVisit.groupBy({
       by: ["ipHash"],
+      where: dateFilter
     }),
     prisma.pageVisit.groupBy({
       by: ["userAgent"],
       _count: { id: true },
+      where: dateFilter
     }),
     prisma.pageVisit.groupBy({
       by: ["referrer"],
       _count: { id: true },
+      where: dateFilter
     }),
     prisma.pageVisit.groupBy({
       by: ["path"],
       _count: { id: true },
+      where: dateFilter
     }),
-    // Tráfico de los últimos 30 días para evolución temporal
+    // Tráfico crudo para armar la evolución dinámica
     prisma.pageVisit.findMany({
-      where: {
-        createdAt: {
-          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-        },
-      },
+      where: dateFilter,
       select: { createdAt: true },
     }),
 
-    // 2. Publicaciones
-    prisma.vehicle.count(),
-    prisma.vehicle.count({ where: { status: "APPROVED" } }),
-    prisma.vehicle.count({ where: { status: "REJECTED" } }),
-    prisma.vehicle.count({ where: { status: "PAUSED" } }),
+    // Publicaciones en el período
+    prisma.vehicle.count({ where: dateFilter }),
+    prisma.vehicle.count({ where: { status: "APPROVED" } }), // Histórico activo hoy
+    prisma.vehicle.count({ where: { status: "REJECTED", ...dateFilter } }),
+    prisma.vehicle.count({ where: { status: "PAUSED", ...dateFilter } }),
     prisma.vehicle.findMany({
-      where: { status: "SOLD" },
+      where: { 
+        status: "SOLD",
+        finishedAt: { gte: startDate, lte: endDate } // Ventas cerradas en este período
+      },
       select: { createdAt: true, finishedAt: true, endReason: true, price: true, currency: true, category: true },
     }),
     prisma.vehicle.groupBy({
       by: ["category"],
       _count: { id: true },
+      where: dateFilter
     }),
     prisma.vehicle.groupBy({
       by: ["condition"],
       _count: { id: true },
+      where: dateFilter
     }),
     prisma.vehicle.groupBy({
       by: ["brand"],
       _count: { id: true },
+      where: dateFilter
     }),
     prisma.vehicle.groupBy({
       by: ["brand", "model"],
       _count: { id: true },
+      where: dateFilter
     }),
     prisma.vehicle.groupBy({
       by: ["currency"],
       _avg: { price: true },
       _sum: { price: true },
-      where: { status: "APPROVED" }
+      where: { status: "APPROVED" } // Estadísticas de precios globales del stock hoy
     }),
-    prisma.vehicle.count({ where: { isHighlighted: true, status: "APPROVED" } }),
+    prisma.vehicle.count({ where: { isHighlighted: true, status: "APPROVED" } }), // Histórico activo hoy
     prisma.vehicle.count({
       where: {
         status: "APPROVED",
         previousPrice: { not: null },
         price: { lt: prisma.vehicle.fields.previousPrice }
       }
-    }),
+    }), // Histórico activo hoy
 
-    // 3. Usuarios & Agencias
-    prisma.user.count(),
+    // Usuarios y Agencias en el período
+    prisma.user.count({ where: dateFilter }),
     prisma.user.groupBy({
       by: ["accountType"],
       _count: { id: true },
+      where: dateFilter
     }),
     prisma.agency.findMany({
+      where: dateFilter,
       select: { status: true, createdAt: true },
     }),
 
-    // 4. Leads & Clicks
+    // Leads & Clics en el período
+    prisma.consultation.count({ where: dateFilter }),
+    prisma.favorite.count({ where: dateFilter }),
     prisma.vehicle.aggregate({
       _sum: {
         views: true,
         whatsappClicks: true,
         phoneClicks: true,
       },
-    }),
-    prisma.consultation.count(),
-    prisma.favorite.count(),
+    }), // Histórico acumulado
 
-    // 5. Publicidad
+    // Publicidad
     prisma.advertisement.findMany(),
 
-    // 6. DB Row Counts
-    prisma.branch.count(),
-    prisma.image.count(),
-    prisma.notification.count()
+    // Auditoría de DB (Conteos Históricos de Fila Generales)
+    Promise.all([
+      prisma.user.count(),
+      prisma.vehicle.count(),
+      prisma.agency.count(),
+      prisma.branch.count(),
+      prisma.image.count(),
+      prisma.favorite.count(),
+      prisma.consultation.count(),
+      prisma.notification.count(),
+      prisma.pageVisit.count(),
+      prisma.advertisement.count()
+    ])
   ]);
 
-  // FORMATEAR Y ORDENAR DATOS EN MEMORIA (Seguridad y Compatibilidad)
-  
-  // Visitantes únicos reales (basados en hashing IP)
+  // 2. FORMATEO Y AGRUPACIÓN DE MÉTRICAS FILTRADAS
+
   const uniqueVisitors = uniqueVisitorsResult.length;
 
-  // Dispositivos (User Agent)
   const devices = deviceTypeResult.map(d => ({
     name: d.userAgent || "Escritorio",
     count: d._count.id,
   }));
 
-  // Orígenes de tráfico
   const referrers = referrerResult
     .map(r => ({
       name: r.referrer || "Directo",
@@ -171,7 +246,6 @@ export default async function AdminMetricsPage() {
     }))
     .sort((a, b) => b.count - a.count);
 
-  // Páginas más visitadas
   const pagePaths = pagePathResult
     .map(p => ({
       path: p.path,
@@ -180,19 +254,16 @@ export default async function AdminMetricsPage() {
     .sort((a, b) => b.count - a.count)
     .slice(0, 10);
 
-  // Categorías de vehículos
   const categories = categoryResult.map(c => ({
     category: c.category,
     count: c._count.id,
   }));
 
-  // Condición
   const conditions = conditionResult.map(c => ({
     condition: c.condition,
     count: c._count.id,
   }));
 
-  // Marcas Top
   const topBrands = brandResult
     .map(b => ({
       brand: b.brand,
@@ -201,7 +272,6 @@ export default async function AdminMetricsPage() {
     .sort((a, b) => b.count - a.count)
     .slice(0, 8);
 
-  // Modelos Top
   const topModels = modelResult
     .map(m => ({
       name: `${m.brand} ${m.model}`,
@@ -210,34 +280,44 @@ export default async function AdminMetricsPage() {
     .sort((a, b) => b.count - a.count)
     .slice(0, 8);
 
-  // Usuarios agrupados por tipo
   const usersByType = usersByTypeResult.map(u => ({
     type: u.accountType,
     count: u._count.id,
   }));
 
-  // Promedio de precios y valor total de inventario
   const pricesByCurrency = priceMetricsResult.map(p => ({
     currency: p.currency,
     average: p._avg.price || 0,
     totalValue: p._sum.price || 0
   }));
 
-  // Consolidar datos de analítica de tráfico de 30 días en intervalos diarios
-  const trafficByDay: { [key: string]: number } = {};
-  dailyTrafficResult.forEach(pv => {
-    const dayStr = pv.createdAt.toISOString().split("T")[0]; // YYYY-MM-DD
-    trafficByDay[dayStr] = (trafficByDay[dayStr] || 0) + 1;
+  // 3. AGRUPACIÓN DINÁMICA DE TRÁFICO PARA EL GRÁFICO SVG
+  // Si filtramos hoy/ayer: agrupamos por hora
+  // Si filtramos 6 meses / 1 año / histórico: agrupamos por mes
+  // Si filtramos 7/15/30 días: agrupamos por día (MM-DD)
+  const trafficByInterval: { [key: string]: number } = {};
+  
+  trafficForChart.forEach(pv => {
+    const dateObj = new Date(pv.createdAt);
+    let intervalStr = "";
+    
+    if (period === "today" || period === "yesterday") {
+      intervalStr = `${dateObj.getHours().toString().padStart(2, "0")}:00`;
+    } else if (period === "6months" || period === "1year" || period === "all") {
+      intervalStr = `${dateObj.getFullYear()}-${(dateObj.getMonth() + 1).toString().padStart(2, "0")}`;
+    } else {
+      intervalStr = `${(dateObj.getMonth() + 1).toString().padStart(2, "0")}-${dateObj.getDate().toString().padStart(2, "0")}`;
+    }
+    
+    trafficByInterval[intervalStr] = (trafficByInterval[intervalStr] || 0) + 1;
   });
 
-  // Ordenar fechas cronológicamente
-  const dailyTrafficSorted = Object.keys(trafficByDay)
+  const dailyTrafficSorted = Object.keys(trafficByInterval)
     .sort()
-    .map(day => ({
-      date: day.substring(5), // MM-DD para legibilidad
-      views: trafficByDay[day],
-    }))
-    .slice(-15); // Mostrar los últimos 15 días activos
+    .map(interval => ({
+      date: interval,
+      views: trafficByInterval[interval],
+    }));
 
   return (
     <div className={styles.adminPage}>
@@ -263,14 +343,20 @@ export default async function AdminMetricsPage() {
           <div>
             <h1 className={styles.title}>Estadísticas y KPIs Avanzados</h1>
             <p className={styles.subtitle}>
-              Análisis completo de tráfico web, rotación de stock, interacción de usuarios y telemetría de ventas.
+              Telemetría interactiva del portal. Rango activo: <strong style={{ color: "var(--color-primary)" }}>{periodLabel}</strong>
             </p>
           </div>
           <span className={styles.liveBadge}>● LIVE TELEMETRY</span>
         </div>
 
-        {/* CLIENT COMPONENT FOR TABS, METRICS & INTERACTIVE SVG CHARTS */}
+        {/* CLIENT DASHBOARD CON FILTROS INTEGRADOS Y SELECCIONADOR DE FECHAS */}
         <AdminMetricsClient
+          currentPeriod={{
+            period,
+            start: searchParams.start || "",
+            end: searchParams.end || "",
+            label: periodLabel
+          }}
           trafficData={{
             totalPageViews,
             uniqueVisitors,
@@ -280,49 +366,49 @@ export default async function AdminMetricsPage() {
             dailyTraffic: dailyTrafficSorted,
           }}
           publicationsData={{
-            totalVehicles,
-            activeVehicles,
-            rejectedVehicles,
-            pausedVehicles,
-            soldVehiclesCount: soldVehicles.length,
+            totalVehicles: totalVehiclesCreated, // Creados en el período
+            activeVehicles: activeStockCount,     // Snapshot actual (Histórico público)
+            rejectedVehicles: rejectedCount,
+            pausedVehicles: pausedCount,
+            soldVehiclesCount: soldVehiclesInPeriod.length, // Ventas del período
             categories,
             conditions,
             topBrands,
             topModels,
             pricesByCurrency,
-            highlightedVehicles,
+            highlightedVehicles: highlightedCount,
             priceDropsCount,
-            soldVehiclesDetails: soldVehicles
+            soldVehiclesDetails: soldVehiclesInPeriod
           }}
           usersData={{
-            totalUsers,
+            totalUsers: totalUsersCreated, // Creados en el período
             usersByType,
             totalAgencies: agenciesResult.length,
             approvedAgencies: agenciesResult.filter(a => a.status === "APPROVED").length,
             pendingAgencies: agenciesResult.filter(a => a.status === "PENDING").length,
           }}
           leadsData={{
-            views: vehicleSumStats._sum.views || 0,
-            whatsappClicks: vehicleSumStats._sum.whatsappClicks || 0,
-            phoneClicks: vehicleSumStats._sum.phoneClicks || 0,
-            totalConsultations,
-            totalFavorites,
+            views: vehicleClicksSum._sum.views || 0, // Acumulado
+            whatsappClicks: vehicleClicksSum._sum.whatsappClicks || 0, // Acumulado
+            phoneClicks: vehicleClicksSum._sum.phoneClicks || 0, // Acumulado
+            totalConsultations, // Consultas en el período
+            totalFavorites: totalFavoritesCreated, // Favoritos en el período
           }}
           adsData={{
             allAds,
           }}
           dbAuditData={{
             counts: {
-              users: totalUsers,
-              vehicles: totalVehicles,
-              agencies: agenciesResult.length,
-              branches: branchCount,
-              images: imageCount,
-              favorites: totalFavorites,
-              consultations: totalConsultations,
-              notifications: notificationCount,
-              pageVisits: totalPageViews,
-              advertisements: allAds.length,
+              users: dbCounts[0],
+              vehicles: dbCounts[1],
+              agencies: dbCounts[2],
+              branches: dbCounts[3],
+              images: dbCounts[4],
+              favorites: dbCounts[5],
+              consultations: dbCounts[6],
+              notifications: dbCounts[7],
+              pageVisits: dbCounts[8],
+              advertisements: dbCounts[9],
             }
           }}
         />
