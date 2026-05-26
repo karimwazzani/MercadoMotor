@@ -59,6 +59,11 @@
   border-color: #E1306C;
 }
 
+.downloadCard:hover {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
 .generic:hover {
   background-color: var(--color-accent);
   border-color: var(--color-accent);
