@@ -89,26 +89,25 @@ export default function ShareButtons({
     ctx.fillStyle = radialGlow;
     ctx.fillRect(0, 0, 1080, 1920);
 
-    // 3. Draw upper gold decorative line
-    ctx.strokeStyle = "#B89759";
-    ctx.lineWidth = 6;
-    ctx.beginPath();
-    ctx.moveTo(100, 120);
-    ctx.lineTo(980, 120);
-    ctx.stroke();
-
-    // 4. Logo: MercadoMotor
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = "bold 44px sans-serif";
+    // 4. Logo: MercadoMotor (Centered beautifully without horizontal lines)
+    ctx.font = "bold 52px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    const baseText = "MERCADO";
-    const accentText = "MOTOR";
-    const baseWidth = ctx.measureText(baseText).width;
+    
+    // We measure carefully to split colored logo parts and center it as one unit
+    const logoBaseText = "MERCADO";
+    const logoAccentText = "MOTOR";
+    ctx.font = "bold 52px sans-serif";
+    const wBase = ctx.measureText(logoBaseText).width;
+    const wAccent = ctx.measureText(logoAccentText).width;
+    const wTotal = wBase + wAccent + 12; // 12px space between parts
+    const startX = 540 - wTotal / 2;
+
+    ctx.textAlign = "left";
     ctx.fillStyle = "#FFFFFF";
-    ctx.fillText(baseText, 540 - 50, 180);
+    ctx.fillText(logoBaseText, startX, 150);
     ctx.fillStyle = "#B89759";
-    ctx.fillText(accentText, 540 + baseWidth / 2 + 10, 180);
+    ctx.fillText(logoAccentText, startX + wBase + 12, 150);
 
     // 5. Draw vehicle image with rounded corners and a premium gold border
     if (mainImageUrl) {
@@ -125,9 +124,9 @@ export default function ShareButtons({
 
         // Image boundary layout
         const x = 90;
-        const y = 300;
+        const y = 260;
         const w = 900;
-        const h = 750;
+        const h = 820;
         const r = 32; // border radius
 
         ctx.save();
@@ -183,44 +182,44 @@ export default function ShareButtons({
         console.error("Error loading image for canvas:", e);
         // Fallback: draw placeholder box
         ctx.fillStyle = "#27272A";
-        ctx.fillRect(90, 300, 900, 750);
+        ctx.fillRect(90, 260, 900, 820);
       }
     }
 
-    // 6. Text Info: Brand, Model, Version
+    // 6. Text Info: Brand, Model, Version (moved up slightly)
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "center";
 
     // Brand + Model
-    ctx.font = "bold 72px sans-serif";
+    ctx.font = "bold 76px sans-serif";
     const vTitle = `${brand || ""} ${model || ""}`.trim();
-    ctx.fillText(vTitle, 540, 1140);
+    ctx.fillText(vTitle, 540, 1170);
 
     // Version
     if (version) {
-      ctx.font = "500 42px sans-serif";
+      ctx.font = "500 44px sans-serif";
       ctx.fillStyle = "#A1A1AA";
-      ctx.fillText(version, 540, 1220);
+      ctx.fillText(version, 540, 1260);
     }
 
     // Year & Mileage
-    ctx.font = "600 40px sans-serif";
+    ctx.font = "600 42px sans-serif";
     ctx.fillStyle = "#D4D4D8";
     const specsText = `${year || ""}  •  ${mileage ? mileage.toLocaleString() : 0} km`;
-    ctx.fillText(specsText, 540, 1310);
+    ctx.fillText(specsText, 540, 1360);
 
     // 7. Gold Price Capsule
     const priceX = 540;
-    const priceY = 1420;
+    const priceY = 1500;
     const priceText = `${currency === "ARS" ? "$" : "US$"} ${price ? price.toLocaleString() : 0}`;
 
-    ctx.font = "bold 64px sans-serif";
+    ctx.font = "bold 72px sans-serif";
     const textWidth = ctx.measureText(priceText).width;
-    const capW = textWidth + 80;
-    const capH = 110;
+    const capW = textWidth + 100;
+    const capH = 130;
     const capX = priceX - capW / 2;
     const capY = priceY - capH / 2;
-    const capR = 24;
+    const capR = 28;
 
     ctx.fillStyle = "#B89759";
     ctx.beginPath();
@@ -232,33 +231,12 @@ export default function ShareButtons({
     ctx.fill();
 
     ctx.fillStyle = "#0F0F11";
-    ctx.fillText(priceText, priceX, priceY + 5);
+    ctx.fillText(priceText, priceX, priceY + 6);
 
-    // 8. Bottom QR Code
-    try {
-      const qrImg = new Image();
-      qrImg.crossOrigin = "anonymous";
-      const qrLoaded = new Promise<void>((resolve, reject) => {
-        qrImg.onload = () => resolve();
-        qrImg.onerror = () => reject();
-      });
-      qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&color=b89759&bgcolor=0c0c0e&data=${encodeURIComponent(url)}`;
-      await qrLoaded;
-
-      ctx.drawImage(qrImg, 540 - 90, 1590, 180, 180);
-
-      // QR outer thin border
-      ctx.strokeStyle = "rgba(184, 151, 89, 0.3)";
-      ctx.lineWidth = 3;
-      ctx.strokeRect(540 - 95, 1590 - 5, 190, 190);
-    } catch (e) {
-      console.error("Error loading QR code:", e);
-    }
-
-    // Call to action text
-    ctx.fillStyle = "#A1A1AA";
-    ctx.font = "500 28px sans-serif";
-    ctx.fillText("Escaneá para ver la publicación en MercadoMotor", 540, 1820);
+    // Bottom decorative tagline
+    ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
+    ctx.font = "bold 26px sans-serif";
+    ctx.fillText("M E R C A D O M O T O R . A R", 540, 1780);
 
     return new Promise<Blob | null>((resolve) => {
       canvas.toBlob((blob) => resolve(blob), "image/png");
