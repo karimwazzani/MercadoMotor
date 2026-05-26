@@ -310,7 +310,7 @@ export default function AdminDashboardClient({ allVehicles, allUsers, pendingCou
                       disabled={isPending}
                       style={{ fontSize: "0.8rem", padding: "0.45rem 1.2rem", borderRadius: "8px", backgroundColor: "#ef4444", color: "#fff", cursor: "pointer", border: "none", fontWeight: 600 }}
                     >
-                      {isPending ? "Procesando..." : "Confirmar Rechazo ❌"}
+                      {isPending ? "Procesando..." : "Confirmar Rechazo"}
                     </button>
                   </div>
                 </div>

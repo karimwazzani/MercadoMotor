@@ -107,12 +107,12 @@ export default function AdManagerClient() {
         </div>
         <div className={styles.kpiCard}>
           <span className={styles.kpiLabel}>Alcance Total</span>
-          <div className={styles.kpiValue}>👁️ {ads.reduce((acc, ad) => acc + ad.views, 0).toLocaleString()}</div>
+          <div className={styles.kpiValue}>{ads.reduce((acc, ad) => acc + ad.views, 0).toLocaleString()}</div>
           <div className={styles.kpiTrend}>Impresiones totales</div>
         </div>
         <div className={styles.kpiCard}>
           <span className={styles.kpiLabel}>Clics Totales</span>
-          <div className={styles.kpiValue}>🖱️ {ads.reduce((acc, ad) => acc + ad.clicks, 0).toLocaleString()}</div>
+          <div className={styles.kpiValue}>{ads.reduce((acc, ad) => acc + ad.clicks, 0).toLocaleString()}</div>
           <div className={styles.kpiTrend}>Interacción directa</div>
         </div>
       </section>
@@ -171,7 +171,7 @@ export default function AdManagerClient() {
                   </div>
                 </td>
                 <td>
-                  <div style={{ fontSize: "0.85rem" }}>👁️ {ad.views} / 🖱️ {ad.clicks}</div>
+                  <div style={{ fontSize: "0.85rem" }}>Vistas: {ad.views} / Clics: {ad.clicks}</div>
                 </td>
                 <td>
                   <div className={styles.actionsCell}>
@@ -217,7 +217,7 @@ export default function AdManagerClient() {
                       )
                     ) : (
                       <>
-                        <span style={{ fontSize: "2rem" }}>📁</span>
+                        <span style={{ fontSize: "1rem", color: "var(--color-primary)", fontWeight: "bold", marginBottom: "0.25rem" }}>Seleccionar Archivo</span>
                         <span style={{ fontSize: "0.8rem", color: "#666" }}>Clic para seleccionar archivo</span>
                       </>
                     )}

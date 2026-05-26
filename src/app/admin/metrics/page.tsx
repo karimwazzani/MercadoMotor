@@ -7,11 +7,11 @@ import styles from "./page.module.css";
 import AdminMetricsClient from "./AdminMetricsClient";
 
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     period?: string;
     start?: string;
     end?: string;
-  };
+  }>;
 }
 
 export default async function AdminMetricsPage({ searchParams }: PageProps) {
@@ -21,8 +21,10 @@ export default async function AdminMetricsPage({ searchParams }: PageProps) {
     redirect("/");
   }
 
+  const resolvedParams = await searchParams;
+
   // 1. CÁLCULO DE RANGOS DE FECHA EN SERVIDOR (Next.js SSR Params)
-  const period = searchParams.period || "30days";
+  const period = resolvedParams.period || "30days";
   let startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 30 días por defecto
   let endDate = new Date();
   let periodLabel = "Últimos 30 días";
@@ -57,11 +59,11 @@ export default async function AdminMetricsPage({ searchParams }: PageProps) {
   } else if (period === "all") {
     startDate = new Date(0); // Desde el principio de los tiempos
     periodLabel = "Histórico (Todo el tiempo)";
-  } else if (period === "custom" && searchParams.start) {
-    startDate = new Date(searchParams.start);
+  } else if (period === "custom" && resolvedParams.start) {
+    startDate = new Date(resolvedParams.start);
     startDate.setHours(0, 0, 0, 0);
-    if (searchParams.end) {
-      endDate = new Date(searchParams.end);
+    if (resolvedParams.end) {
+      endDate = new Date(resolvedParams.end);
       endDate.setHours(23, 59, 59, 999);
     }
     periodLabel = `Personalizado (${startDate.toLocaleDateString("es-AR")} - ${endDate.toLocaleDateString("es-AR")})`;
@@ -353,8 +355,8 @@ export default async function AdminMetricsPage({ searchParams }: PageProps) {
         <AdminMetricsClient
           currentPeriod={{
             period,
-            start: searchParams.start || "",
-            end: searchParams.end || "",
+            start: resolvedParams.start || "",
+            end: resolvedParams.end || "",
             label: periodLabel
           }}
           trafficData={{

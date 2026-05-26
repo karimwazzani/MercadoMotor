@@ -77,14 +77,14 @@ export default function AdminMetricsClient({
   const handlePeriodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
     if (val !== "custom") {
-      router.push(`/admin/metrics?period=${val}`);
+      window.location.href = `/admin/metrics?period=${val}`;
     }
   };
 
   const handleCustomSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (customRange.start) {
-      router.push(`/admin/metrics?period=custom&start=${customRange.start}&end=${customRange.end}`);
+      window.location.href = `/admin/metrics?period=custom&start=${customRange.start}&end=${customRange.end}`;
     }
   };
 
@@ -185,7 +185,7 @@ export default function AdminMetricsClient({
       {/* SECCIÓN SUPERIOR DE FILTRO TEMPORAL */}
       <div className={styles.filterWidget}>
         <div className={styles.filterHeader}>
-          <div className={styles.filterTitle}>📆 Período de Análisis Activo:</div>
+          <div className={styles.filterTitle}>Período de Análisis Activo:</div>
           <div className={styles.filterBadge}>{currentPeriod.label}</div>
         </div>
         
@@ -245,25 +245,25 @@ export default function AdminMetricsClient({
           className={`${styles.tabBtn} ${activeTab === "traffic" ? styles.tabBtnActive : ""}`}
           onClick={() => setActiveTab("traffic")}
         >
-          🌐 Tráfico y Visitas
+          Tráfico y Visitas
         </button>
         <button
           className={`${styles.tabBtn} ${activeTab === "publications" ? styles.tabBtnActive : ""}`}
           onClick={() => setActiveTab("publications")}
         >
-          🚗 Publicaciones y Stock
+          Publicaciones y Stock
         </button>
         <button
           className={`${styles.tabBtn} ${activeTab === "leads" ? styles.tabBtnActive : ""}`}
           onClick={() => setActiveTab("leads")}
         >
-          📈 Interacciones y Ventas
+          Interacciones y Ventas
         </button>
         <button
           className={`${styles.tabBtn} ${activeTab === "system" ? styles.tabBtnActive : ""}`}
           onClick={() => setActiveTab("system")}
         >
-          ⚙️ Publicidad y Auditoría
+          Publicidad y Auditoría
         </button>
       </div>
 
@@ -479,12 +479,12 @@ export default function AdminMetricsClient({
                       <div key={idx} className={styles.progressRow}>
                         <div className={styles.progressLabels}>
                           <span className={styles.progressPath} style={{ textTransform: 'capitalize' }}>
-                            {capCategory === "Auto" ? "🚗 Autos Sedán / Hatch" : ""}
-                            {capCategory === "Camioneta" ? "🛻 Camionetas / Pickups" : ""}
-                            {capCategory === "Suv" ? "🚙 SUVs y Crossovers" : ""}
-                            {capCategory === "Moto" ? "🏍️ Motocicletas" : ""}
-                            {capCategory === "Utilitario" ? "🚐 Utilitarios / Furgones" : ""}
-                            {!["Auto", "Camioneta", "Suv", "Moto", "Utilitario"].includes(capCategory) ? `📦 ${capCategory}` : ""}
+                            {capCategory === "Auto" ? "Autos Sedán / Hatch" : ""}
+                            {capCategory === "Camioneta" ? "Camionetas / Pickups" : ""}
+                            {capCategory === "Suv" ? "SUVs y Crossovers" : ""}
+                            {capCategory === "Moto" ? "Motocicletas" : ""}
+                            {capCategory === "Utilitario" ? "Utilitarios / Furgones" : ""}
+                            {!["Auto", "Camioneta", "Suv", "Moto", "Utilitario"].includes(capCategory) ? capCategory : ""}
                           </span>
                           <span className={styles.progressVal}>{c.count} unidades</span>
                         </div>
@@ -590,7 +590,7 @@ export default function AdminMetricsClient({
                 {/* WhatsApp Clicks */}
                 <div className={styles.progressRow}>
                   <div className={styles.progressLabels}>
-                    <span>🟢 Clics a WhatsApp de Vendedores</span>
+                    <span>Clics a WhatsApp de Vendedores</span>
                     <span className={styles.progressVal}>{leadsData.whatsappClicks} ({totalLeads > 0 ? ((leadsData.whatsappClicks / totalLeads) * 100).toFixed(0) : 0}%)</span>
                   </div>
                   <div className={styles.progressBarBg}>
@@ -601,7 +601,7 @@ export default function AdminMetricsClient({
                 {/* Consultations Form */}
                 <div className={styles.progressRow} style={{ marginTop: "1rem" }}>
                   <div className={styles.progressLabels}>
-                    <span>📧 Formularios de Consultas Web</span>
+                    <span>Formularios de Consultas Web</span>
                     <span className={styles.progressVal}>{leadsData.totalConsultations} ({totalLeads > 0 ? ((leadsData.totalConsultations / totalLeads) * 100).toFixed(0) : 0}%)</span>
                   </div>
                   <div className={styles.progressBarBg}>
@@ -612,7 +612,7 @@ export default function AdminMetricsClient({
                 {/* Phone Clicks */}
                 <div className={styles.progressRow} style={{ marginTop: "1rem" }}>
                   <div className={styles.progressLabels}>
-                    <span>📞 Clics a Teléfono / Llamadas</span>
+                    <span>Clics a Teléfono / Llamadas</span>
                     <span className={styles.progressVal}>{leadsData.phoneClicks} ({totalLeads > 0 ? ((leadsData.phoneClicks / totalLeads) * 100).toFixed(0) : 0}%)</span>
                   </div>
                   <div className={styles.progressBarBg}>
@@ -681,7 +681,7 @@ export default function AdminMetricsClient({
               </div>
 
               <div style={{ marginTop: "1.5rem", padding: "1rem", backgroundColor: "rgba(184,151,89,0.06)", borderRadius: "var(--radius-sm)", border: "1px solid rgba(184,151,89,0.15)" }}>
-                💡 <strong>Análisis de Liquidez:</strong> Los vehículos de gama baja tienen la velocidad de rotación más rápida, con un promedio de <strong>{avgDaysLow} días</strong> desde la publicación hasta la firma de venta.
+                <strong>Análisis de Liquidez:</strong> Los vehículos de gama baja tienen la velocidad de rotación más rápida, con un promedio de <strong>{avgDaysLow} días</strong> desde la publicación hasta la firma de venta.
               </div>
             </div>
           </div>
@@ -780,43 +780,43 @@ export default function AdminMetricsClient({
                   </thead>
                   <tbody>
                     <tr>
-                      <td>👤 Usuarios Registrados (`User`)</td>
+                      <td>Usuarios Registrados (`User`)</td>
                       <td style={{ textAlign: "right" }}><strong>{formatNum(dbAuditData.counts.users)}</strong></td>
                     </tr>
                     <tr>
-                      <td>🚗 Vehículos de Catálogo (`Vehicle`)</td>
+                      <td>Vehículos de Catálogo (`Vehicle`)</td>
                       <td style={{ textAlign: "right" }}><strong>{formatNum(dbAuditData.counts.vehicles)}</strong></td>
                     </tr>
                     <tr>
-                      <td>🏢 Agencias Automotrices (`Agency`)</td>
+                      <td>Agencias Automotrices (`Agency`)</td>
                       <td style={{ textAlign: "right" }}><strong>{formatNum(dbAuditData.counts.agencies)}</strong></td>
                     </tr>
                     <tr>
-                      <td>📍 Sucursales registradas (`Branch`)</td>
+                      <td>Sucursales registradas (`Branch`)</td>
                       <td style={{ textAlign: "right" }}><strong>{formatNum(dbAuditData.counts.branches)}</strong></td>
                     </tr>
                     <tr>
-                      <td>🖼️ Imágenes en la nube (`Image`)</td>
+                      <td>Imágenes en la nube (`Image`)</td>
                       <td style={{ textAlign: "right" }}><strong>{formatNum(dbAuditData.counts.images)}</strong></td>
                     </tr>
                     <tr>
-                      <td>❤️ Vehículos Favoritos (`Favorite`)</td>
+                      <td>Vehículos Favoritos (`Favorite`)</td>
                       <td style={{ textAlign: "right" }}><strong>{formatNum(dbAuditData.counts.favorites)}</strong></td>
                     </tr>
                     <tr>
-                      <td>💬 Consultas de Interesados (`Consultation`)</td>
+                      <td>Consultas de Interesados (`Consultation`)</td>
                       <td style={{ textAlign: "right" }}><strong>{formatNum(dbAuditData.counts.consultations)}</strong></td>
                     </tr>
                     <tr>
-                      <td>🔔 Alertas del Sistema (`Notification`)</td>
+                      <td>Alertas del Sistema (`Notification`)</td>
                       <td style={{ textAlign: "right" }}><strong>{formatNum(dbAuditData.counts.notifications)}</strong></td>
                     </tr>
                     <tr>
-                      <td>📈 Telemetría de Visitas (`PageVisit`)</td>
+                      <td>Telemetría de Visitas (`PageVisit`)</td>
                       <td style={{ textAlign: "right" }}><strong>{formatNum(dbAuditData.counts.pageVisits)}</strong></td>
                     </tr>
                     <tr>
-                      <td>🎫 Banners de Publicidad (`Advertisement`)</td>
+                      <td>Banners de Publicidad (`Advertisement`)</td>
                       <td style={{ textAlign: "right" }}><strong>{formatNum(dbAuditData.counts.advertisements)}</strong></td>
                     </tr>
                   </tbody>
