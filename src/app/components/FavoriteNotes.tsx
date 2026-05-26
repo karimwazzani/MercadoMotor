@@ -49,7 +49,6 @@ export default function FavoriteNotes({ vehicleId, initialNotes }: FavoriteNotes
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className={`${styles.notesToggleBtn} ${isExpanded ? styles.notesToggleBtnActive : ""}`}
-        title="Mis anotaciones privadas sobre este vehículo"
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 20h9"></path>
