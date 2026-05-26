@@ -36,6 +36,7 @@ export default function ShareButtons({
   // Instagram modal and generation states
   const [showIgModal, setShowIgModal] = useState(false);
   const [igImageSrc, setIgImageSrc] = useState<string | null>(null);
+  const [igFile, setIgFile] = useState<File | null>(null);
   const [generatingIg, setGeneratingIg] = useState(false);
   const [shareError, setShareError] = useState("");
 
@@ -269,6 +270,7 @@ export default function ShareButtons({
     setGeneratingIg(true);
     setShareError("");
     setIgImageSrc(null);
+    setIgFile(null);
 
     try {
       const blob = await drawInstagramStoryCard();
@@ -276,14 +278,13 @@ export default function ShareButtons({
         const generatedUrl = URL.createObjectURL(blob);
         setIgImageSrc(generatedUrl);
 
+        const filename = `mercadomotor-${brand}-${model}-story.png`.toLowerCase().replace(/\s+/g, "-");
+        const file = new File([blob], filename, { type: "image/png" });
+        setIgFile(file);
+
         // Auto-download as a fallback for desktop or non-sharing browsers
         if (!navigator.share || !navigator.canShare) {
-          const a = document.createElement("a");
-          a.href = generatedUrl;
-          a.download = `mercadomotor-${brand}-${model}-story.png`.toLowerCase().replace(/\s+/g, "-");
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
+          triggerDownload(generatedUrl, filename);
         }
       } else {
         setShareError("No se pudo generar la tarjeta de historia.");
@@ -296,33 +297,27 @@ export default function ShareButtons({
     }
   };
 
-  const handleInstagramShare = async () => {
-    if (!igImageSrc) return;
+  const handleInstagramShare = () => {
+    if (!igImageSrc || !igFile) return;
 
     try {
-      const response = await fetch(igImageSrc);
-      const blob = await response.blob();
-      const filename = `mercadomotor-${brand}-${model}-story.png`.toLowerCase().replace(/\s+/g, "-");
-      const file = new File([blob], filename, { type: "image/png" });
-
       if (navigator.share) {
-        // Double check browser file share compatibility
         const shareData = {
-          files: [file],
+          files: [igFile],
           title: `MercadoMotor - ${brand} ${model}`,
           text: `¡Mirá esta publicación en MercadoMotor!`,
         };
-        if (navigator.canShare && navigator.canShare(shareData)) {
-          await navigator.share(shareData);
-        } else {
+        navigator.share(shareData).catch((err) => {
+          console.error("Error direct share:", err);
           // Fallback manual download
-          triggerDownload(igImageSrc, filename);
-        }
+          triggerDownload(igImageSrc, igFile.name);
+        });
       } else {
-        triggerDownload(igImageSrc, filename);
+        triggerDownload(igImageSrc, igFile.name);
       }
     } catch (e) {
       console.error("Error sharing story card:", e);
+      triggerDownload(igImageSrc, igFile.name);
     }
   };
 
