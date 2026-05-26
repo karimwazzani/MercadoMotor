@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 import { Providers } from "./providers";
 import CompareBar from "./components/CompareBar";
 import SplashScreen from "./components/SplashScreen";
+import CookieConsent from "./components/CookieConsent";
 
 export default function RootLayout({
   children,
@@ -37,6 +38,7 @@ export default function RootLayout({
           <SplashScreen />
           {children}
           <CompareBar />
+          <CookieConsent />
         </Providers>
       </body>
     </html>
