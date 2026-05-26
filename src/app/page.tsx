@@ -235,7 +235,7 @@ export default async function Home() {
             <div className={styles.footerLinks}>
               <Link href="/terminos">Términos</Link>
               <Link href="/privacidad">Privacidad</Link>
-              <Link href="#">Contacto</Link>
+              <Link href="/contacto">Contacto</Link>
             </div>
           </div>
           <div className={styles.footerBottom}>

@@ -550,3 +550,62 @@ Panel: ${dashboardLink}
   `);
   return true;
 }
+
+/**
+ * Envía un correo con el contenido del formulario de contacto
+ */
+export async function sendContactMessageEmail(senderName: string, senderEmail: string, subject: string, message: string) {
+  const title = `Nuevo mensaje de contacto: ${subject}`;
+  const contentHtml = `
+    <h2 class="title" style="color: #ffffff; text-align: left;">📬 Nuevo mensaje de contacto</h2>
+    <p class="text" style="color: #a1a1aa;">
+      Has recibido un nuevo mensaje a través del formulario de contacto de MercadoMotor:
+    </p>
+    <div style="background-color: #27272a; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #3f3f46;">
+      <p class="text" style="margin: 0 0 10px 0; color: #ffffff;"><strong>Detalles del Remitente:</strong></p>
+      <ul style="color: #e4e4e7; font-size: 14px; padding-left: 20px; margin: 0 0 20px 0; list-style-type: none; padding-left: 0;">
+        <li style="margin-bottom: 5px;">👤 Nombre: <strong style="color: #ffffff;">${senderName}</strong></li>
+        <li style="margin-bottom: 5px;">📧 Email: <a href="mailto:${senderEmail}" style="color: #b89759; text-decoration: underline;">${senderEmail}</a></li>
+        <li style="margin-bottom: 5px;">📌 Asunto: <strong style="color: #ffffff;">${subject}</strong></li>
+      </ul>
+      <p class="text" style="margin: 0 0 10px 0; color: #ffffff;"><strong>Mensaje:</strong></p>
+      <div style="color: #e4e4e7; font-size: 14.5px; line-height: 1.6; white-space: pre-wrap; background-color: #18181b; padding: 15px; border-radius: 6px; border: 1px solid #27272a;">${message}</div>
+    </div>
+    <div class="btn-container">
+      <a href="mailto:${senderEmail}" class="btn" style="transition: background-color 0.2s ease;">
+        Responder a ${senderName}
+      </a>
+    </div>
+  `;
+
+  const html = getEmailTemplate(title, contentHtml);
+
+  if (resend) {
+    try {
+      await resend.emails.send({
+        from: FROM_EMAIL,
+        to: "info@mercadomotor.ar",
+        subject: `Contacto: ${subject}`,
+        html,
+        replyTo: senderEmail
+      });
+      console.log(`✉️ Correo de contacto enviado con éxito vía Resend.`);
+      return true;
+    } catch (error) {
+      console.error("❌ Error enviando correo de contacto con Resend:", error);
+    }
+  }
+
+  console.log(`
+=========================================
+📧 E-MAIL SIMULADO: FORMULARIO DE CONTACTO (MOCK)
+-----------------------------------------
+Para: info@mercadomotor.ar
+Remitente: ${senderName} <${senderEmail}>
+Asunto: ${subject}
+Mensaje: ${message}
+=========================================
+  `);
+  return true;
+}
+
