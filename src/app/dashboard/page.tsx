@@ -125,6 +125,14 @@ export default async function DashboardPage() {
                     <div style={{fontSize: '0.8rem', color: 'var(--color-primary)', marginBottom: '0.5rem', fontWeight: 500}}>
                       Ref: MM{vehicle.id.replace(/-/g, '').substring(0, 8).toUpperCase()}
                     </div>
+                    
+                    {isRejected && vehicle.rejectionComment && (
+                      <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', borderRadius: '8px', padding: '0.75rem 1rem', marginTop: '0.5rem', marginBottom: '0.75rem', fontSize: '0.82rem' }}>
+                        <strong style={{ color: '#ef4444', display: 'block', marginBottom: '0.2rem', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px' }}>⚠️ Motivo del rechazo:</strong>
+                        <span style={{ color: '#fca5a5', fontStyle: 'italic' }}>"{vehicle.rejectionComment}"</span>
+                      </div>
+                    )}
+
                     <p className={styles.details}>{vehicle.year} • {vehicle.mileage} km</p>
                     <p className={styles.price}>{vehicle.currency === "ARS" ? "$" : "US$"} {vehicle.price.toLocaleString()}</p>
                     
@@ -134,18 +142,19 @@ export default async function DashboardPage() {
                       </Link>
                       
                       {isApproved && !isExpired && (
-                        <Link href={`/catalogo/${vehicle.id}`} className={styles.btnView}>
-                          👀 Ver en catálogo
-                        </Link>
+                        <>
+                          <Link href={`/catalogo/${vehicle.id}`} className={styles.btnView}>
+                            👀 Ver en catálogo
+                          </Link>
+                          <Link href={`/catalogo/${vehicle.id}/poster`} className={styles.btnPoster} target="_blank">
+                            🖨️ Cartel para el auto
+                          </Link>
+                        </>
                       )}
                       
                       {(isExpiringSoon || isExpired) && (
                         <RenewButton vehicleId={vehicle.id} isExpired={isExpired} />
                       )}
-
-                      <Link href={`/catalogo/${vehicle.id}/poster`} className={styles.btnPoster} target="_blank">
-                        🖨️ Cartel para el auto
-                      </Link>
 
                       <DeleteButton vehicleId={vehicle.id} />
 

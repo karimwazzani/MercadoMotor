@@ -14,12 +14,22 @@ export default function AdminDashboardClient({ allVehicles, allUsers, pendingCou
   const [vehicleSearch, setVehicleSearch] = useState("");
   const [userSearch, setUserSearch] = useState("");
 
+  // Rejection states
+  const [showRejectionForm, setShowRejectionForm] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+
+  const closeModal = () => {
+    setSelectedVehicle(null);
+    setShowRejectionForm(false);
+    setRejectionReason("");
+  };
+
   const handleAction = (actionFn: any, id: string) => {
     if (confirm("¿Estás seguro de realizar esta acción?")) {
       startTransition(() => {
         actionFn(id);
         if (selectedVehicle && selectedVehicle.id === id) {
-          setSelectedVehicle(null);
+          closeModal();
         }
         if (editingUser && editingUser.id === id) {
           setEditingUser(null);
@@ -156,7 +166,7 @@ export default function AdminDashboardClient({ allVehicles, allUsers, pendingCou
                     <td><div className={styles.subtext}>{new Date(vehicle.createdAt).toLocaleDateString()}</div></td>
                     <td>
                       <div className={styles.actionsCell}>
-                        <button className={styles.btnViewAdmin} onClick={() => setSelectedVehicle(vehicle)}>Revisar</button>
+                        <button className={styles.btnViewAdmin} onClick={() => { setSelectedVehicle(vehicle); setShowRejectionForm(false); setRejectionReason(""); }}>Revisar</button>
                         <button className={styles.btnReject} onClick={() => handleAction(deleteVehicle, vehicle.id)} disabled={isPending}>Eliminar</button>
                       </div>
                     </td>
@@ -220,11 +230,11 @@ export default function AdminDashboardClient({ allVehicles, allUsers, pendingCou
       {/* REVIEW MODAL */}
       {selectedVehicle && (
         <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", backgroundColor: "rgba(0,0,0,0.8)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center", padding: "2rem" }}>
-          <div style={{ backgroundColor: "white", borderRadius: "12px", width: "100%", maxWidth: "900px", maxHeight: "90vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          <div style={{ backgroundColor: "white", borderRadius: "12px", width: "100%", maxWidth: "900px", maxHeight: "90vh", display: "flex", flexDirection: "column", overflow: "hidden", color: "#1c1917" }}>
             
             <div style={{ padding: "1rem 1.5rem", borderBottom: "1px solid #eee", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <h2 style={{ fontSize: "1.2rem", fontWeight: 700 }}>Revisión de Publicación: {selectedVehicle.brand} {selectedVehicle.model}</h2>
-              <button onClick={() => setSelectedVehicle(null)} style={{ background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer" }}>&times;</button>
+              <button onClick={closeModal} style={{ background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer", color: "#1c1917" }}>&times;</button>
             </div>
             
             <div style={{ padding: "1.5rem", overflowY: "auto", flex: 1, display: "flex", gap: "2rem" }}>
@@ -259,12 +269,60 @@ export default function AdminDashboardClient({ allVehicles, allUsers, pendingCou
               </div>
             </div>
 
-            <div style={{ padding: "1rem 1.5rem", borderTop: "1px solid #eee", display: "flex", gap: "1rem", justifyContent: "flex-end", backgroundColor: "#f9fafb" }}>
-              <button className={styles.btnSecondary} onClick={() => setSelectedVehicle(null)} style={{ borderRadius: "12px" }}>Cerrar</button>
-              {selectedVehicle.status === "PENDING" && (
+            <div style={{ padding: "1rem 1.5rem", borderTop: "1px solid #eee", display: "flex", gap: "1rem", justifyContent: "flex-end", backgroundColor: "#f9fafb", minHeight: "80px" }}>
+              {showRejectionForm ? (
+                <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "0.75rem", backgroundColor: "#fff5f5", border: "1px solid #fee2e2", padding: "1rem", borderRadius: "8px" }}>
+                  <label style={{ fontSize: "0.85rem", fontWeight: 700, color: "#991b1b" }}>Especificá el motivo del rechazo para el vendedor:</label>
+                  <textarea
+                    value={rejectionReason}
+                    onChange={(e) => setRejectionReason(e.target.value)}
+                    placeholder="Ej: Las fotos del auto deben ser más nítidas y de día. Por favor, subí nuevas imágenes para aprobar tu publicación."
+                    rows={3}
+                    required
+                    style={{ width: "100%", padding: "0.6rem", border: "1px solid #fca5a5", borderRadius: "6px", fontSize: "0.85rem", resize: "none", color: "#1c1917" }}
+                  />
+                  <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>
+                    <button
+                      type="button"
+                      className={styles.btnSecondary}
+                      onClick={() => setShowRejectionForm(false)}
+                      style={{ fontSize: "0.8rem", padding: "0.45rem 1rem", borderRadius: "8px", border: "1px solid #ddd", cursor: "pointer" }}
+                    >
+                      Volver
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.btnReject}
+                      onClick={() => {
+                        if (!rejectionReason.trim()) {
+                          alert("Por favor, escribí un motivo para rechazar la publicación.");
+                          return;
+                        }
+                        startTransition(async () => {
+                          const res = await rejectVehicle(selectedVehicle.id, rejectionReason);
+                          if (res.success) {
+                            closeModal();
+                          } else {
+                            alert("Error al rechazar: " + res.message);
+                          }
+                        });
+                      }}
+                      disabled={isPending}
+                      style={{ fontSize: "0.8rem", padding: "0.45rem 1.2rem", borderRadius: "8px", backgroundColor: "#ef4444", color: "#fff", cursor: "pointer", border: "none", fontWeight: 600 }}
+                    >
+                      {isPending ? "Procesando..." : "Confirmar Rechazo ❌"}
+                    </button>
+                  </div>
+                </div>
+              ) : (
                 <>
-                  <button className={styles.btnReject} onClick={() => handleAction(rejectVehicle, selectedVehicle.id)} disabled={isPending} style={{ borderRadius: "12px" }}>Rechazar</button>
-                  <button className={styles.btnApprove} onClick={() => handleAction(approveVehicle, selectedVehicle.id)} disabled={isPending} style={{ borderRadius: "12px" }}>Aprobar Publicación</button>
+                  <button className={styles.btnSecondary} onClick={closeModal} style={{ borderRadius: "12px" }}>Cerrar</button>
+                  {selectedVehicle.status === "PENDING" && (
+                    <>
+                      <button className={styles.btnReject} onClick={() => setShowRejectionForm(true)} disabled={isPending} style={{ borderRadius: "12px" }}>Rechazar</button>
+                      <button className={styles.btnApprove} onClick={() => handleAction(approveVehicle, selectedVehicle.id)} disabled={isPending} style={{ borderRadius: "12px" }}>Aprobar Publicación</button>
+                    </>
+                  )}
                 </>
               )}
             </div>

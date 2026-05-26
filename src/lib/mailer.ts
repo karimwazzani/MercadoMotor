@@ -500,10 +500,7 @@ Enlace: ${vehicleLink}
   return true;
 }
 
-/**
- * Envía una notificación cuando la publicación es rechazada y requiere revisión
- */
-export async function sendVehicleRejectedEmail(recipientEmail: string, brand: string, model: string) {
+export async function sendVehicleRejectedEmail(recipientEmail: string, brand: string, model: string, rejectionComment?: string) {
   const title = "Tu publicación requiere revisión - MercadoMotor";
   const dashboardLink = `${process.env.NEXTAUTH_URL || 'https://mercadomotor.ar'}/dashboard`;
   
@@ -512,8 +509,14 @@ export async function sendVehicleRejectedEmail(recipientEmail: string, brand: st
     <p class="text">
       Te informamos que la publicación de tu <strong>${brand} ${model}</strong> ha sido revisada por nuestro equipo y requiere que realices algunas modificaciones antes de que podamos aprobarla y publicarla en el catálogo.
     </p>
-    <p class="text" style="font-size: 14px; background-color: #27272a; padding: 15px; border-radius: 8px; border: 1px solid #3f3f46; color: #a1a1aa;">
-      📌 <strong>¿Qué tenés que hacer?</strong><br>
+    <p class="text" style="font-size: 14px; background-color: #27272a; padding: 15px; border-radius: 8px; border: 1px solid #3f3f46; color: #a1a1aa; line-height: 1.6;">
+      📌 <strong>¿Qué tenés que hacer?</strong><br><br>
+      ${rejectionComment ? `
+      <div style="background-color: rgba(239, 68, 68, 0.08); border-left: 3px solid #ef4444; padding: 12px 16px; margin-bottom: 16px; border-radius: 4px; color: #fca5a5;">
+        <strong style="color: #ef4444; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Motivo señalado por el moderador:</strong>
+        <span style="font-style: italic; font-size: 13.5px; line-height: 1.5;">"${rejectionComment}"</span>
+      </div>
+      ` : ''}
       Ingresá a tu Panel de Control, hacé clic en editar sobre esta publicación, y revisá que las fotos sean nítidas, que el precio esté correcto, y que la descripción cumpla con las normas de convivencia de MercadoMotor.
     </p>
     <div class="btn-container" style="margin-top: 30px;">

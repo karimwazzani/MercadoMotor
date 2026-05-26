@@ -6,6 +6,7 @@ import Link from "next/link";
 import styles from "../page.module.css";
 import FavoriteButton from "@/app/components/FavoriteButton";
 import prisma from "@/lib/prisma";
+import FavoriteNotes from "@/app/components/FavoriteNotes";
 
 
 export default async function FavoritesPage() {
@@ -115,6 +116,9 @@ export default async function FavoritesPage() {
                       <div className={styles.cardLocation} style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>{vehicle.location}</div>
                     </div>
                   </Link>
+                  <div style={{ padding: '0 1rem 1rem 1rem' }}>
+                    <FavoriteNotes vehicleId={vehicle.id} initialNotes={fav.notes || ""} />
+                  </div>
                 </div>
               );
             })}

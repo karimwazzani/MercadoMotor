@@ -51,13 +51,16 @@ export async function approveVehicle(vehicleId: string) {
   }
 }
 
-export async function rejectVehicle(vehicleId: string) {
+export async function rejectVehicle(vehicleId: string, rejectionComment?: string) {
   try {
     await verifyAdmin();
 
     const vehicle = await prisma.vehicle.update({
       where: { id: vehicleId },
-      data: { status: "REJECTED" },
+      data: { 
+        status: "REJECTED",
+        rejectionComment: rejectionComment || null
+      },
       include: {
         user: true
       }
@@ -65,7 +68,7 @@ export async function rejectVehicle(vehicleId: string) {
 
     // Enviar correo de rechazo de forma asíncrona (background)
     if (vehicle?.user?.email) {
-      sendVehicleRejectedEmail(vehicle.user.email, vehicle.brand, vehicle.model).catch((err) => {
+      sendVehicleRejectedEmail(vehicle.user.email, vehicle.brand, vehicle.model, rejectionComment).catch((err) => {
         console.error("❌ Falló el envío de correo de rechazo de publicación:", err);
       });
     }

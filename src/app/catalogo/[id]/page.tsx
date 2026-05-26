@@ -15,6 +15,7 @@ import ShareButtons from "@/app/components/ShareButtons";
 import ContactActions from "./ContactActions";
 import { formatLocation } from "@/lib/utils";
 import AdSlot from "@/app/components/AdSlot";
+import FavoriteNotes from "@/app/components/FavoriteNotes";
 
 import { headers } from "next/headers";
 
@@ -101,6 +102,7 @@ export default async function VehicleDetail({
   } catch(e) {}
 
   let isFavorite = false;
+  let favoriteNotes = "";
   if (session?.user?.email) {
     const userFav = await prisma.favorite.findFirst({
       where: {
@@ -109,6 +111,9 @@ export default async function VehicleDetail({
       }
     });
     isFavorite = !!userFav;
+    if (userFav) {
+      favoriteNotes = userFav.notes || "";
+    }
   }
 
   const relatedVehicles = await prisma.vehicle.findMany({
@@ -268,6 +273,12 @@ export default async function VehicleDetail({
                 )}
                 <span className={styles.price}>{vehicle.currency === "ARS" ? "$" : "US$"} {vehicle.price.toLocaleString()}</span>
               </div>
+
+              {isFavorite && (
+                <div style={{ marginTop: "1rem", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "1rem" }}>
+                  <FavoriteNotes vehicleId={vehicle.id} initialNotes={favoriteNotes} />
+                </div>
+              )}
               
               <ContactActions 
                 vehicleId={vehicle.id} 
@@ -293,6 +304,7 @@ export default async function VehicleDetail({
                 price={vehicle.price}
                 currency={vehicle.currency}
                 mainImageUrl={mainImage ? (mainImage.url.startsWith('http') ? mainImage.url : `${siteUrl}${mainImage.url}`) : ""}
+                status={vehicle.status}
               />
             </div>
 
