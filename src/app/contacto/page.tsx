@@ -323,7 +323,7 @@ export default function Contacto() {
         <div className="container">
           <div className={styles.footerTop}>
             <Link href="/" className={styles.footerLogo}>
-              <img src="/logo-dark.svg" alt="MercadoMotor" className={styles.footerLogoImg} />
+              <img src="/logo.svg" alt="MercadoMotor" className={styles.footerLogoImg} />
             </Link>
             <div className={styles.footerLinks}>
               <Link href="/terminos">Términos</Link>

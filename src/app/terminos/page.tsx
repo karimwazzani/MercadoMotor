@@ -153,7 +153,7 @@ export default function TerminosPage() {
       <footer className={styles.footer}>
         <div className={styles.footerTop}>
           <Link href="/" className={styles.footerLogo}>
-            <img src="/logo-dark.svg" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
+            <img src="/logo.svg" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
           </Link>
           <div className={styles.footerLinks}>
             <Link href="/terminos">Términos</Link>
