@@ -17,7 +17,7 @@ export default function Contacto() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputChangeEvent | HTMLTextAreaElement> | any) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
