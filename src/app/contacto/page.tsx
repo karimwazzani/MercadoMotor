@@ -16,21 +16,14 @@ export default function Contacto() {
   const [turnstileToken, setTurnstileToken] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
-  
-  // Anti-Spam: Obfuscación de email en cliente
-  const [isEmailRevealed, setIsEmailRevealed] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputChangeEvent | HTMLTextAreaElement> | any) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleVerifyTurnstile = (token: string) => {
     setTurnstileToken(token);
-  };
-
-  const handleRevealEmail = () => {
-    setIsEmailRevealed(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -115,8 +108,8 @@ export default function Contacto() {
           <span className="eyebrow">[ Canal Oficial de Comunicación ]</span>
           <h1 className={styles.title}>Ponete en Contacto</h1>
           <p className={styles.subtitle}>
-            ¿Tenés alguna consulta, sugerencia o querés saber más sobre nuestros planes para agencias? 
-            Escribinos y nuestro equipo te responderá de forma personalizada.
+            ¿Tenés alguna consulta o sugerencia? 
+            Escribinos a través del formulario y nuestro equipo te responderá a la brevedad.
           </p>
         </div>
 
@@ -187,7 +180,7 @@ export default function Contacto() {
                   value={formData.subject}
                   onChange={handleInputChange}
                   className={styles.input}
-                  placeholder="Ej. Consulta sobre planes de Agencia"
+                  placeholder="Ej. Consulta sobre publicación"
                   required
                 />
               </div>
@@ -238,35 +231,11 @@ export default function Contacto() {
 
           {/* Info & Socials Side */}
           <div className={styles.infoColumn}>
-            {/* Direct contact card */}
-            <div className={styles.infoCard}>
-              <h3 className={styles.infoCardTitle}>Contacto Directo</h3>
-              <p className={styles.infoText}>
-                Para evitar bots automáticos y spam masivo, nuestro correo electrónico está protegido. 
-                Hacé clic en el botón de revelar para verlo y ponerte en contacto.
-              </p>
-              
-              <div className={styles.emailObfuscated}>
-                {isEmailRevealed ? (
-                  <a href="mailto:info@mercadomotor.ar" className={styles.emailLink}>
-                    info@mercadomotor.ar
-                  </a>
-                ) : (
-                  <>
-                    <span className={styles.emailPlaceholder}>inf*@mercadomotor.ar</span>
-                    <button onClick={handleRevealEmail} className={styles.revealBtn}>
-                      Revelar
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-
             {/* Social media card */}
             <div className={styles.infoCard}>
               <h3 className={styles.infoCardTitle}>Nuestras Redes</h3>
               <p className={styles.infoText} style={{ marginBottom: "2rem" }}>
-                Seguinos en nuestras plataformas para ver novedades, lanzamientos de vehículos premium y contenido exclusivo.
+                Seguinos en nuestras plataformas oficiales para enterarte de todas las novedades y ver contenido exclusivo de MercadoMotor.
               </p>
 
               <div className={styles.socialGrid}>
