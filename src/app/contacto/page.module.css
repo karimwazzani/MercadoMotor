@@ -245,6 +245,18 @@
   border-radius: var(--radius-lg);
   padding: 2.5rem;
   box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden; /* Clips the top gold bar precisely at the rounded corner curve */
+}
+
+.infoCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-hover));
 }
 
 .infoCardTitle {
