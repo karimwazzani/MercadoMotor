@@ -69,7 +69,7 @@ export default async function DashboardPage() {
 
         <ReferralBanner userId={userId} />
 
-        <DashboardClient initialVehicles={myVehicles} userId={userId} />
+        <DashboardClient initialVehicles={myVehicles} userId={userId} styles={styles} />
       </main>
     </div>
   );

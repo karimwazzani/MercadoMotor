@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import styles from "./page.module.css";
 
 interface VehicleImage {
   id: string;
@@ -58,9 +57,10 @@ interface VehicleWithImages extends Vehicle {
 interface DashboardClientProps {
   initialVehicles: VehicleWithImages[];
   userId: string;
+  styles: Record<string, string>;
 }
 
-export default function DashboardClient({ initialVehicles, userId }: DashboardClientProps) {
+export default function DashboardClient({ initialVehicles, userId, styles }: DashboardClientProps) {
   const [vehicles, setVehicles] = useState<VehicleWithImages[]>(initialVehicles);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null);
