@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "../../page.module.css"; 
+import CustomSelect from "@/app/catalogo/CustomSelect";
 import { 
   CATEGORIES, 
   COLORS, 
@@ -137,6 +138,35 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
     };
 
     // Resets cascade filters when parents change
+    if (name === "province") {
+      updatedData.municipality = "";
+      updatedData.locality = "";
+    }
+    if (name === "municipality") {
+      updatedData.locality = "";
+    }
+    if (name === "category") {
+      updatedData.brand = "";
+      updatedData.model = "";
+      updatedData.version = "";
+    }
+    if (name === "brand") {
+      updatedData.model = "";
+      updatedData.version = "";
+    }
+    if (name === "model") {
+      updatedData.version = "";
+    }
+
+    setFormData(updatedData);
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    const updatedData = {
+      ...formData,
+      [name]: value,
+    };
+
     if (name === "province") {
       updatedData.municipality = "";
       updatedData.locality = "";
@@ -422,53 +452,56 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
             
             <div className={styles.inputGroup}>
               <label>Categoría</label>
-              <select name="category" value={formData.category} onChange={handleChange} required>
-                <option value="">Seleccioná una categoría</option>
-                {CATEGORIES.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
+              <CustomSelect
+                options={CATEGORIES}
+                value={formData.category}
+                onChange={(val: string) => handleSelectChange("category", val)}
+                placeholder="Seleccioná una categoría"
+              />
             </div>
 
             <div className={styles.row}>
               <div className={styles.inputGroup}>
                 <label>Marca</label>
-                <select name="brand" value={formData.brand} onChange={handleChange} required disabled={!formData.category}>
-                  <option value="">Seleccioná marca</option>
-                  {brands.map(b => (
-                    <option key={b} value={b}>{b}</option>
-                  ))}
-                </select>
+                <CustomSelect
+                  options={brands}
+                  value={formData.brand}
+                  onChange={(val: string) => handleSelectChange("brand", val)}
+                  placeholder="Seleccioná marca"
+                  disabled={!formData.category}
+                />
               </div>
               <div className={styles.inputGroup}>
                 <label>Modelo</label>
-                <select name="model" value={formData.model} onChange={handleChange} required disabled={!formData.brand}>
-                  <option value="">Seleccioná modelo</option>
-                  {models.map(m => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
+                <CustomSelect
+                  options={models}
+                  value={formData.model}
+                  onChange={(val: string) => handleSelectChange("model", val)}
+                  placeholder="Seleccioná modelo"
+                  disabled={!formData.brand}
+                />
               </div>
             </div>
 
             <div className={styles.row}>
               <div className={styles.inputGroup}>
                 <label>Versión</label>
-                <select name="version" value={formData.version} onChange={handleChange} disabled={!formData.model}>
-                  <option value="">Seleccioná versión</option>
-                  {versions.map(v => (
-                    <option key={v} value={v}>{v}</option>
-                  ))}
-                </select>
+                <CustomSelect
+                  options={versions}
+                  value={formData.version}
+                  onChange={(val: string) => handleSelectChange("version", val)}
+                  placeholder="Seleccioná versión"
+                  disabled={!formData.model}
+                />
               </div>
               <div className={styles.inputGroup}>
                 <label>Año</label>
-                <select name="year" value={formData.year} onChange={handleChange} required>
-                  <option value="">Seleccioná año</option>
-                  {YEARS.map(y => (
-                    <option key={y} value={y}>{y}</option>
-                  ))}
-                </select>
+                <CustomSelect
+                  options={YEARS}
+                  value={formData.year}
+                  onChange={(val: string) => handleSelectChange("year", val)}
+                  placeholder="Seleccioná año"
+                />
               </div>
             </div>
           </div>
@@ -482,38 +515,39 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
             <div className={styles.row}>
               <div className={styles.inputGroup}>
                 <label>Provincia</label>
-                <select name="province" value={formData.province} onChange={handleChange} required>
-                  <option value="">Seleccioná provincia</option>
-                  {provinces.map(p => (
-                    <option key={p} value={p}>{p}</option>
-                  ))}
-                </select>
+                <CustomSelect
+                  options={provinces}
+                  value={formData.province}
+                  onChange={(val: string) => handleSelectChange("province", val)}
+                  placeholder="Seleccioná provincia"
+                />
               </div>
               <div className={styles.inputGroup}>
                 <label>Municipio</label>
-                <select name="municipality" value={formData.municipality} onChange={handleChange} required disabled={!formData.province}>
-                  <option value="">Seleccioná municipio</option>
-                  {municipalities.map(m => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
+                <CustomSelect
+                  options={municipalities}
+                  value={formData.municipality}
+                  onChange={(val: string) => handleSelectChange("municipality", val)}
+                  placeholder="Seleccioná municipio"
+                  disabled={!formData.province}
+                />
               </div>
             </div>
 
             <div className={styles.inputGroup}>
               <label>Localidad</label>
-              <select name="locality" value={formData.locality} onChange={handleChange} required disabled={!formData.municipality}>
-                <option value="">Seleccioná localidad</option>
-                {localities.map(l => (
-                  <option key={l} value={l}>{l}</option>
-                ))}
-              </select>
+              <CustomSelect
+                options={localities}
+                value={formData.locality}
+                onChange={(val: string) => handleSelectChange("locality", val)}
+                placeholder="Seleccioná localidad"
+                disabled={!formData.municipality}
+              />
             </div>
           </div>
 
           <div className={styles.editSeparator} />
 
-          {/* SECCIÓN 3: FICHA TÉCNICA */}
           <div className={styles.editSection}>
             <h3 className={styles.editSectionTitle}>3. Detalles Técnicos y Ficha</h3>
             
@@ -524,46 +558,45 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
               </div>
               <div className={styles.inputGroup}>
                 <label>Combustible</label>
-                <select name="fuel" value={formData.fuel} onChange={handleChange}>
-                  <option value="">Seleccionar</option>
-                  <option value="Nafta">Nafta</option>
-                  <option value="Diesel">Diesel</option>
-                  <option value="GNC">GNC</option>
-                  <option value="Híbrido">Híbrido</option>
-                  <option value="Eléctrico">Eléctrico</option>
-                </select>
+                <CustomSelect
+                  options={["Nafta", "Diesel", "GNC", "Híbrido", "Eléctrico"]}
+                  value={formData.fuel}
+                  onChange={(val: string) => handleSelectChange("fuel", val)}
+                  placeholder="Seleccionar combustible"
+                />
               </div>
             </div>
 
             <div className={styles.row}>
               <div className={styles.inputGroup}>
                 <label>Transmisión</label>
-                <select name="transmission" value={formData.transmission} onChange={handleChange}>
-                  <option value="">Seleccionar</option>
-                  <option value="Manual">Manual</option>
-                  <option value="Automática">Automática</option>
-                </select>
+                <CustomSelect
+                  options={["Manual", "Automática"]}
+                  value={formData.transmission}
+                  onChange={(val: string) => handleSelectChange("transmission", val)}
+                  placeholder="Seleccionar transmisión"
+                />
               </div>
               <div className={styles.inputGroup}>
                 <label>Color Exterior</label>
-                <select name="color" value={formData.color} onChange={handleChange}>
-                  <option value="">Seleccioná color</option>
-                  {COLORS.map(c => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
+                <CustomSelect
+                  options={COLORS}
+                  value={formData.color}
+                  onChange={(val: string) => handleSelectChange("color", val)}
+                  placeholder="Seleccioná color"
+                />
               </div>
             </div>
 
             <div className={styles.row}>
               <div className={styles.inputGroup} style={{ flex: 1 }}>
                 <label>Cantidad de Puertas</label>
-                <select name="doors" value={formData.doors} onChange={handleChange}>
-                  <option value="">Seleccionar</option>
-                  {DOORS.map(d => (
-                    <option key={d} value={d}>{d}</option>
-                  ))}
-                </select>
+                <CustomSelect
+                  options={DOORS}
+                  value={formData.doors}
+                  onChange={(val: string) => handleSelectChange("doors", val)}
+                  placeholder="Cantidad puertas"
+                />
               </div>
               <div style={{ flex: 1 }}></div>
             </div>
@@ -578,10 +611,12 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
             <div className={styles.row}>
               <div className={styles.inputGroup}>
                 <label>Moneda</label>
-                <select name="currency" value={formData.currency} onChange={handleChange}>
-                  <option value="USD">Dólares (USD)</option>
-                  <option value="ARS">Pesos (ARS)</option>
-                </select>
+                <CustomSelect
+                  options={[{ value: "USD", label: "Dólares (USD)" }, { value: "ARS", label: "Pesos (ARS)" }]}
+                  value={formData.currency}
+                  onChange={(val: string) => handleSelectChange("currency", val)}
+                  placeholder="Seleccionar moneda"
+                />
               </div>
               <div className={styles.inputGroup} style={{ flex: 2 }}>
                 <label>Precio</label>
@@ -685,19 +720,14 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
               Agrega o elimina fotos de tu unidad. Se recomienda usar formatos horizontales. Límite total: 15 fotos.
             </p>
             
-            <div className={styles.mockUploadBox} style={{ position: 'relative', marginBottom: "2rem" }}>
-              <input 
-                type="file" 
-                multiple 
-                accept="image/*"
-                onChange={handleFileChange}
-                className={styles.fileInputHidden}
-              />
-              <div className={styles.uploadIcon}>📸</div>
-              <div className={styles.uploadText}>
-                <strong>Haz clic aquí</strong> para buscar y sumar fotos nuevas desde tu dispositivo.
-              </div>
-            </div>
+            <input 
+              type="file" 
+              id="photos"
+              multiple 
+              accept="image/*"
+              onChange={handleFileChange}
+              className={styles.fileInputHidden}
+            />
 
             {gallery.length > 0 && (
               <div>
@@ -719,6 +749,16 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
                       {index === 0 && <span className={styles.mainPhotoTag}>Principal</span>}
                     </div>
                   ))}
+
+                  {gallery.length < 15 && (
+                    <label htmlFor="photos" className={styles.photoItemUploadCard}>
+                      <svg width="28" height="24" viewBox="0 0 28 24" fill="none" className={styles.uploadCardIcon}>
+                        <path d="M23 19C23 19.5304 22.7893 20.0391 22.4142 20.4142C22.0391 20.7893 21.5304 21 21 21H7C6.46957 21 5.96086 20.7893 5.58579 20.4142C5.21071 20.0391 5 19.5304 5 19V9C5 8.46957 5.21071 7.96086 5.58579 7.58579C5.96086 7.21071 6.46957 7 7 7H10L12 4H16L18 7H21C21.5304 7 22.0391 7.21071 22.4142 7.58579C22.7893 7.96086 23 8.46957 23 9V19Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M15 14C15 14.5304 14.7893 15.0391 14.4142 15.4142C14.0391 15.7893 13.5304 16 13 16C12.4696 16 11.9609 15.7893 11.5858 15.4142C11.2107 15.0391 11 14.5304 11 14C11 13.4696 11.2107 12.9609 11.5858 12.5858C11.9609 12.2107 12.4696 12 13 12C13.5304 12 14.0391 12.2107 14.4142 12.5858C14.7893 12.9609 15 13.4696 15 14Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span>Sumar Foto</span>
+                    </label>
+                  )}
                 </div>
               </div>
             )}
