@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
+import CustomSelect from "./CustomSelect";
 import { 
   CATEGORIES, 
   YEARS, 
@@ -101,15 +102,15 @@ export default function CatalogFilterForm({ initialParams }: CatalogFilterFormPr
   }, [category, brand]);
 
   // Reset dependent states when category changes
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCategory(e.target.value);
+  const handleCategoryChange = (val: string) => {
+    setCategory(val);
     setBrand("");
     setModel("");
   };
 
   // Reset model when brand changes
-  const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setBrand(e.target.value);
+  const handleBrandChange = (val: string) => {
+    setBrand(val);
     setModel("");
   };
 
@@ -136,50 +137,46 @@ export default function CatalogFilterForm({ initialParams }: CatalogFilterFormPr
         {/* 1. CATEGORÍA */}
         <div className={styles.filterGroup}>
           <label className={styles.filterLabel}>Categoría</label>
-          <select 
-            name="categoria" 
-            className={styles.filterSelect} 
+          <input type="hidden" name="categoria" value={category} />
+          <CustomSelect
+            options={[
+              { value: "Todas", label: "Todas las categorías" },
+              ...CATEGORIES.map(cat => ({ value: cat, label: cat }))
+            ]}
             value={category}
             onChange={handleCategoryChange}
-          >
-            <option value="Todas">Todas las categorías</option>
-            {CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
+          />
         </div>
 
         {/* 2. MARCA */}
         <div className={styles.filterGroup}>
           <label className={styles.filterLabel}>Marca</label>
-          <select 
-            name="marca" 
-            className={styles.filterSelect}
+          <input type="hidden" name="marca" value={brand} />
+          <CustomSelect
+            options={[
+              { value: "", label: "Todas las marcas" },
+              ...availableBrands.map(b => ({ value: b, label: b }))
+            ]}
             value={brand}
             onChange={handleBrandChange}
-          >
-            <option value="">Todas las marcas</option>
-            {availableBrands.map((b) => (
-              <option key={b} value={b}>{b}</option>
-            ))}
-          </select>
+            placeholder="Selecciona una marca..."
+          />
         </div>
 
         {/* 3. MODELO */}
         <div className={styles.filterGroup}>
           <label className={styles.filterLabel}>Modelo</label>
-          <select 
-            name="modelo" 
-            className={styles.filterSelect}
+          <input type="hidden" name="modelo" value={model} />
+          <CustomSelect
+            options={[
+              { value: "", label: "Todos los modelos" },
+              ...availableModels.map(m => ({ value: m, label: m }))
+            ]}
             value={model}
-            onChange={e => setModel(e.target.value)}
+            onChange={setModel}
             disabled={!brand}
-          >
-            <option value="">Todos los modelos</option>
-            {availableModels.map((m) => (
-              <option key={m} value={m}>{m}</option>
-            ))}
-          </select>
+            placeholder={brand ? "Todos los modelos" : "Selecciona marca..."}
+          />
         </div>
 
         {/* 4. PRECIO */}
@@ -210,29 +207,27 @@ export default function CatalogFilterForm({ initialParams }: CatalogFilterFormPr
         <div className={styles.filterGroup}>
           <label className={styles.filterLabel}>Año</label>
           <div className={styles.rangeInputs}>
-            <select 
-              name="minYear" 
-              className={styles.filterSelect}
+            <input type="hidden" name="minYear" value={minYear} />
+            <CustomSelect
+              options={[
+                { value: "", label: "Desde" },
+                ...YEARS.map(y => ({ value: y, label: y }))
+              ]}
               value={minYear}
-              onChange={e => setMinYear(e.target.value)}
-            >
-              <option value="">Desde</option>
-              {YEARS.map(y => (
-                <option key={`min-yr-${y}`} value={y}>{y}</option>
-              ))}
-            </select>
+              onChange={setMinYear}
+              placeholder="Desde"
+            />
             <span>-</span>
-            <select 
-              name="maxYear" 
-              className={styles.filterSelect}
+            <input type="hidden" name="maxYear" value={maxYear} />
+            <CustomSelect
+              options={[
+                { value: "", label: "Hasta" },
+                ...YEARS.map(y => ({ value: y, label: y }))
+              ]}
               value={maxYear}
-              onChange={e => setMaxYear(e.target.value)}
-            >
-              <option value="">Hasta</option>
-              {YEARS.map(y => (
-                <option key={`max-yr-${y}`} value={y}>{y}</option>
-              ))}
-            </select>
+              onChange={setMaxYear}
+              placeholder="Hasta"
+            />
           </div>
         </div>
 
@@ -263,20 +258,20 @@ export default function CatalogFilterForm({ initialParams }: CatalogFilterFormPr
         {/* 7. ORDENAR POR */}
         <div className={styles.filterGroup}>
           <label className={styles.filterLabel}>Ordenar por</label>
-          <select 
-            name="orden" 
-            className={styles.filterSelect} 
+          <input type="hidden" name="orden" value={order} />
+          <CustomSelect
+            options={[
+              { value: "relevantes", label: "Destacados y Relevantes" },
+              { value: "fecha_desc", label: "Más recientes" },
+              { value: "fecha_asc", label: "Más antiguos" },
+              { value: "precio_asc", label: "Menor precio" },
+              { value: "precio_desc", label: "Mayor precio" },
+              { value: "ano_desc", label: "Año: más nuevos" },
+              { value: "ano_asc", label: "Año: más antiguos" }
+            ]}
             value={order}
-            onChange={e => setOrder(e.target.value)}
-          >
-            <option value="relevantes">Destacados y Relevantes</option>
-            <option value="fecha_desc">Más recientes</option>
-            <option value="fecha_asc">Más antiguos</option>
-            <option value="precio_asc">Menor precio</option>
-            <option value="precio_desc">Mayor precio</option>
-            <option value="ano_desc">Año: más nuevos</option>
-            <option value="ano_asc">Año: más antiguos</option>
-          </select>
+            onChange={setOrder}
+          />
         </div>
 
         <button type="submit" className={styles.btnFilterSubmit}>Aplicar Filtros</button>
