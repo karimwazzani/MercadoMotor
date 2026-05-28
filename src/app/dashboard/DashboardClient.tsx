@@ -96,6 +96,7 @@ export default function DashboardClient({ initialVehicles, userId }: DashboardCl
 
   // Selección múltiple
   const handleToggleSelect = (id: string) => {
+    setActiveDropdownId(null);
     setSelectedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) {
@@ -401,111 +402,113 @@ export default function DashboardClient({ initialVehicles, userId }: DashboardCl
                   )}
 
                   {/* Botón de opciones colapsable */}
-                  <div className={styles.dropdownContainer}>
-                    <button
-                      type="button"
-                      className={styles.btnDropdownToggle}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveDropdownId(
-                          activeDropdownId === vehicle.id ? null : vehicle.id
-                        );
-                      }}
-                    >
-                      Opciones
-                      <svg
-                        width="10"
-                        height="6"
-                        viewBox="0 0 10 6"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        style={{
-                          transform:
-                            activeDropdownId === vehicle.id
-                              ? "rotate(180deg)"
-                              : "rotate(0)",
-                          transition: "transform 0.2s ease",
+                  {selectedIds.size === 0 && (
+                    <div className={styles.dropdownContainer}>
+                      <button
+                        type="button"
+                        className={styles.btnDropdownToggle}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveDropdownId(
+                            activeDropdownId === vehicle.id ? null : vehicle.id
+                          );
                         }}
                       >
-                        <path
-                          d="M1 1L5 5L9 1"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </button>
-
-                    {activeDropdownId === vehicle.id && (
-                      <div className={styles.dropdownMenu}>
-                        <Link
-                          href={`/publish/edit/${vehicle.id}`}
-                          className={styles.dropdownItem}
+                        Opciones
+                        <svg
+                          width="10"
+                          height="6"
+                          viewBox="0 0 10 6"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          style={{
+                            transform:
+                              activeDropdownId === vehicle.id
+                                ? "rotate(180deg)"
+                                : "rotate(0)",
+                            transition: "transform 0.2s ease",
+                          }}
                         >
-                          Editar publicación
-                        </Link>
+                          <path
+                            d="M1 1L5 5L9 1"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
 
-                        {isApproved && !isExpired && (
-                          <>
-                            <Link
-                              href={`/catalogo/${vehicle.id}`}
+                      {activeDropdownId === vehicle.id && (
+                        <div className={styles.dropdownMenu}>
+                          <Link
+                            href={`/publish/edit/${vehicle.id}`}
+                            className={styles.dropdownItem}
+                          >
+                            Editar publicación
+                          </Link>
+
+                          {isApproved && !isExpired && (
+                            <>
+                              <Link
+                                href={`/catalogo/${vehicle.id}`}
+                                className={styles.dropdownItem}
+                              >
+                                Ver en catálogo
+                              </Link>
+                              <Link
+                                href={`/catalogo/${vehicle.id}/poster`}
+                                className={styles.dropdownItem}
+                                target="_blank"
+                              >
+                                Cartel para el auto
+                              </Link>
+                            </>
+                          )}
+
+                          {(isApproved || isPaused) && !isExpired && (
+                            <button
+                              type="button"
                               className={styles.dropdownItem}
+                              onClick={() =>
+                                handleTogglePauseIndividual(vehicle.id, vehicle.status)
+                              }
                             >
-                              Ver en catálogo
-                            </Link>
-                            <Link
-                              href={`/catalogo/${vehicle.id}/poster`}
+                              {isPaused ? "Reanudar publicación" : "Pausar publicación"}
+                            </button>
+                          )}
+
+                          {(isApproved || isPaused || isExpired) && (
+                            <button
+                              type="button"
                               className={styles.dropdownItem}
-                              target="_blank"
+                              onClick={() => handleOpenFinalizeIndividual(vehicle.id)}
                             >
-                              Cartel para el auto
-                            </Link>
-                          </>
-                        )}
+                              Finalizar publicación
+                            </button>
+                          )}
 
-                        {(isApproved || isPaused) && !isExpired && (
+                          {(isExpiringSoon || isExpired) && (
+                            <button
+                              type="button"
+                              className={styles.dropdownItem}
+                              onClick={() => handleRenewIndividual(vehicle.id)}
+                            >
+                              Renovar (45 días)
+                            </button>
+                          )}
+
                           <button
                             type="button"
-                            className={styles.dropdownItem}
-                            onClick={() =>
-                              handleTogglePauseIndividual(vehicle.id, vehicle.status)
-                            }
+                            className={`${styles.dropdownItem} ${styles.dropdownItemDanger}`}
+                            onClick={() => handleDeleteIndividual(vehicle.id)}
                           >
-                            {isPaused ? "Reanudar publicación" : "Pausar publicación"}
+                            Eliminar publicación
                           </button>
-                        )}
-
-                        {(isApproved || isPaused || isExpired) && (
-                          <button
-                            type="button"
-                            className={styles.dropdownItem}
-                            onClick={() => handleOpenFinalizeIndividual(vehicle.id)}
-                          >
-                            Finalizar publicación
-                          </button>
-                        )}
-
-                        {(isExpiringSoon || isExpired) && (
-                          <button
-                            type="button"
-                            className={styles.dropdownItem}
-                            onClick={() => handleRenewIndividual(vehicle.id)}
-                          >
-                            Renovar (45 días)
-                          </button>
-                        )}
-
-                        <button
-                          type="button"
-                          className={`${styles.dropdownItem} ${styles.dropdownItemDanger}`}
-                          onClick={() => handleDeleteIndividual(vehicle.id)}
-                        >
-                          Eliminar publicación
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             );
