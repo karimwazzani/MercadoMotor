@@ -13,6 +13,8 @@ import AdSlot from "@/app/components/AdSlot";
 import { Metadata } from "next";
 import { CATEGORIES } from "@/lib/constants";
 
+import CatalogFilterForm from "./CatalogFilterForm";
+
 export const metadata: Metadata = {
   title: "Catálogo de Vehículos | MercadoMotor",
   description: "Buscá y encontrá tu próximo auto, camioneta o moto en la plataforma premium de Argentina.",
@@ -343,128 +345,21 @@ export default async function Catalogo({
       <main className={`container ${styles.main}`}>
         <FilterToggle count={vehicles.length}>
           <aside className={styles.sidebar}>
-            <div className={styles.filterCard}>
-              <h3 className={styles.filterTitle}>Refinar Búsqueda</h3>
-              
-              <form action="/catalogo" method="GET" className={styles.filterForm}>
-                {queryParam && <input type="hidden" name="query" value={queryParam} />}
-
-                <div className={styles.filterGroup}>
-                  <label className={styles.filterLabel}>Categoría</label>
-                  <select name="categoria" className={styles.filterSelect} defaultValue={activeCategory}>
-                    <option value="Todas">Todas las categorías</option>
-                    {CATEGORIES.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className={styles.filterGroup}>
-                  <label className={styles.filterLabel}>Marca</label>
-                  <input 
-                    type="text" 
-                    name="marca" 
-                    placeholder="Ej: BMW, Audi..." 
-                    className={styles.filterInput} 
-                    defaultValue={brandParam}
-                  />
-                </div>
-
-                <div className={styles.filterGroup}>
-                  <label className={styles.filterLabel}>Modelo</label>
-                  <input 
-                    type="text" 
-                    name="modelo" 
-                    placeholder="Ej: Golf, Hilux..." 
-                    className={styles.filterInput} 
-                    defaultValue={modelParam}
-                  />
-                </div>
-
-                <div className={styles.filterGroup}>
-                  <label className={styles.filterLabel}>Precio</label>
-                  <div className={styles.rangeInputs}>
-                    <input 
-                      type="number" 
-                      name="minPrice" 
-                      placeholder="Mínimo" 
-                      className={styles.filterInput}
-                      defaultValue={minPriceParam} 
-                    />
-                    <span>-</span>
-                    <input 
-                      type="number" 
-                      name="maxPrice" 
-                      placeholder="Máximo" 
-                      className={styles.filterInput} 
-                      defaultValue={maxPriceParam}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.filterGroup}>
-                  <label className={styles.filterLabel}>Año</label>
-                  <div className={styles.rangeInputs}>
-                    <input 
-                      type="number" 
-                      name="minYear" 
-                      placeholder="Desde" 
-                      className={styles.filterInput}
-                      defaultValue={minYearParam} 
-                    />
-                    <span>-</span>
-                    <input 
-                      type="number" 
-                      name="maxYear" 
-                      placeholder="Hasta" 
-                      className={styles.filterInput} 
-                      defaultValue={maxYearParam}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.filterGroup}>
-                  <label className={styles.filterLabel}>Kilometraje</label>
-                  <div className={styles.rangeInputs}>
-                    <input 
-                      type="number" 
-                      name="minKm" 
-                      placeholder="Mín" 
-                      className={styles.filterInput}
-                      defaultValue={minKmParam} 
-                    />
-                    <span>-</span>
-                    <input 
-                      type="number" 
-                      name="maxKm" 
-                      placeholder="Máx" 
-                      className={styles.filterInput} 
-                      defaultValue={maxKmParam}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.filterGroup}>
-                  <label className={styles.filterLabel}>Ordenar por</label>
-                  <select name="orden" className={styles.filterSelect} defaultValue={orderParam}>
-                    <option value="relevantes">Destacados y Relevantes</option>
-                    <option value="fecha_desc">Más recientes</option>
-                    <option value="fecha_asc">Más antiguos</option>
-                    <option value="precio_asc">Menor precio</option>
-                    <option value="precio_desc">Mayor precio</option>
-                    <option value="ano_desc">Año: más nuevos</option>
-                    <option value="ano_asc">Año: más antiguos</option>
-                  </select>
-                </div>
-
-                <button type="submit" className={styles.btnFilterSubmit}>Aplicar Filtros</button>
-                
-                {(queryParam || categoryParam || minPriceParam || maxPriceParam || brandParam || modelParam || (orderParam && orderParam !== "relevantes") || minYearParam || maxYearParam || minKmParam || maxKmParam) && (
-                   <Link href="/catalogo" className={styles.btnClearFilters}>Borrar Filtros</Link>
-                )}
-              </form>
-            </div>
-            
+            <CatalogFilterForm 
+              initialParams={{
+                query: queryParam,
+                categoria: categoryParam,
+                marca: brandParam,
+                modelo: modelParam,
+                minPrice: minPriceParam?.toString(),
+                maxPrice: maxPriceParam?.toString(),
+                minYear: minYearParam?.toString(),
+                maxYear: maxYearParam?.toString(),
+                minKm: minKmParam?.toString(),
+                maxKm: maxKmParam?.toString(),
+                orden: orderParam,
+              }}
+            />
             <AdSlot areaKey="CAT_SIDEBAR" />
           </aside>
         </FilterToggle>
