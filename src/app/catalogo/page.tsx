@@ -33,6 +33,8 @@ export default async function Catalogo({
   const minPriceParam = typeof resolvedParams.minPrice === 'string' ? parseInt(resolvedParams.minPrice) : undefined;
   const maxPriceParam = typeof resolvedParams.maxPrice === 'string' ? parseInt(resolvedParams.maxPrice) : undefined;
   const brandParam = typeof resolvedParams.marca === 'string' ? resolvedParams.marca : undefined;
+  const modelParam = typeof resolvedParams.modelo === 'string' ? resolvedParams.modelo : undefined;
+  const orderParam = typeof resolvedParams.orden === 'string' ? resolvedParams.orden : 'relevantes';
   const vendedorParam = typeof resolvedParams.vendedor === 'string' ? resolvedParams.vendedor : undefined;
   const minYearParam = typeof resolvedParams.minYear === 'string' ? parseInt(resolvedParams.minYear) : undefined;
   const maxYearParam = typeof resolvedParams.maxYear === 'string' ? parseInt(resolvedParams.maxYear) : undefined;
@@ -109,7 +111,11 @@ export default async function Catalogo({
   }
   
   if (brandParam && brandParam !== "") {
-    whereClause.brand = { contains: brandParam };
+    whereClause.brand = { contains: brandParam, mode: 'insensitive' };
+  }
+  
+  if (modelParam && modelParam !== "") {
+    whereClause.model = { contains: modelParam, mode: 'insensitive' };
   }
 
   if (minPriceParam || maxPriceParam) {
@@ -130,6 +136,29 @@ export default async function Catalogo({
     if (maxKmParam) whereClause.mileage.lte = maxKmParam;
   }
 
+  // Determinar orden de resultados
+  let orderByClause: any = { createdAt: "desc" };
+  
+  if (orderParam === 'precio_desc') {
+    orderByClause = { price: 'desc' };
+  } else if (orderParam === 'precio_asc') {
+    orderByClause = { price: 'asc' };
+  } else if (orderParam === 'ano_desc') {
+    orderByClause = { year: 'desc' };
+  } else if (orderParam === 'ano_asc') {
+    orderByClause = { year: 'asc' };
+  } else if (orderParam === 'fecha_desc') {
+    orderByClause = { createdAt: 'desc' };
+  } else if (orderParam === 'fecha_asc') {
+    orderByClause = { createdAt: 'asc' };
+  } else {
+    // 'relevantes' (orden premium por defecto: Destacados primero, luego fecha descendente)
+    orderByClause = [
+      { isHighlighted: 'desc' },
+      { createdAt: 'desc' }
+    ];
+  }
+
   // Execute session verification and vehicles search in parallel to optimize TTFB
   let [session, vehicles] = await Promise.all([
     sessionPromise,
@@ -143,7 +172,7 @@ export default async function Catalogo({
         agency: true,
         user: true,
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: orderByClause,
       take: isNovedades ? 16 : undefined,
     })
   ]);
@@ -342,6 +371,17 @@ export default async function Catalogo({
                 </div>
 
                 <div className={styles.filterGroup}>
+                  <label className={styles.filterLabel}>Modelo</label>
+                  <input 
+                    type="text" 
+                    name="modelo" 
+                    placeholder="Ej: Golf, Hilux..." 
+                    className={styles.filterInput} 
+                    defaultValue={modelParam}
+                  />
+                </div>
+
+                <div className={styles.filterGroup}>
                   <label className={styles.filterLabel}>Precio</label>
                   <div className={styles.rangeInputs}>
                     <input 
@@ -404,9 +444,22 @@ export default async function Catalogo({
                   </div>
                 </div>
 
+                <div className={styles.filterGroup}>
+                  <label className={styles.filterLabel}>Ordenar por</label>
+                  <select name="orden" className={styles.filterSelect} defaultValue={orderParam}>
+                    <option value="relevantes">Destacados y Relevantes</option>
+                    <option value="fecha_desc">Más recientes</option>
+                    <option value="fecha_asc">Más antiguos</option>
+                    <option value="precio_asc">Menor precio</option>
+                    <option value="precio_desc">Mayor precio</option>
+                    <option value="ano_desc">Año: más nuevos</option>
+                    <option value="ano_asc">Año: más antiguos</option>
+                  </select>
+                </div>
+
                 <button type="submit" className={styles.btnFilterSubmit}>Aplicar Filtros</button>
                 
-                {(queryParam || categoryParam || minPriceParam || maxPriceParam || brandParam || minYearParam || maxYearParam || minKmParam || maxKmParam) && (
+                {(queryParam || categoryParam || minPriceParam || maxPriceParam || brandParam || modelParam || (orderParam && orderParam !== "relevantes") || minYearParam || maxYearParam || minKmParam || maxKmParam) && (
                    <Link href="/catalogo" className={styles.btnClearFilters}>Borrar Filtros</Link>
                 )}
               </form>
