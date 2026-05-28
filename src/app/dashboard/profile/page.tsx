@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
-import dashboardStyles from "../page.module.css"; // Reuse dashboard layout shell implicitly if needed, or stick to inside
+import dashboardStyles from "../dashboard.module.css";
 import Link from "next/link";
 import Image from "next/image";
 

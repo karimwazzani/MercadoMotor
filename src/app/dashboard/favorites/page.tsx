@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import styles from "../page.module.css";
+import styles from "../dashboard.module.css";
 import FavoriteButton from "@/app/components/FavoriteButton";
 import prisma from "@/lib/prisma";
 import FavoriteNotes from "@/app/components/FavoriteNotes";

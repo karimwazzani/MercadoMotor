@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
-import dashboardStyles from "../../page.module.css";
+import dashboardStyles from "../../dashboard.module.css";
 import Link from "next/link";
 import Image from "next/image";
 import { LOCATION_DATA } from "@/lib/constants";
