@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import styles from "./dashboard.module.css";
+import ReferralBanner from "./ReferralBanner";
+import NotificationCenter from "@/app/components/NotificationCenter";
 
 interface VehicleImage {
   id: string;
@@ -57,10 +60,10 @@ interface VehicleWithImages extends Vehicle {
 interface DashboardClientProps {
   initialVehicles: VehicleWithImages[];
   userId: string;
-  styles: Record<string, string>;
+  accountType: string;
 }
 
-export default function DashboardClient({ initialVehicles, userId, styles }: DashboardClientProps) {
+export default function DashboardClient({ initialVehicles, userId, accountType }: DashboardClientProps) {
   const [vehicles, setVehicles] = useState<VehicleWithImages[]>(initialVehicles);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null);
@@ -283,238 +286,277 @@ export default function DashboardClient({ initialVehicles, userId, styles }: Das
   };
 
   return (
-    <>
-      {vehicles.length === 0 ? (
-        <div className={styles.emptyState}>
-          Aún no has cargado ningún vehículo al catálogo. <br /><br />
-          <Link href="/publish" className={styles.btnPrimary}>Comenzar a vender</Link>
+    <div className={styles.dashboardPage}>
+      <header className={styles.header}>
+        <div className={`container ${styles.headerContent}`}>
+          <div className={styles.logo}>
+            <img src="/logo-dark.svg" alt="MercadoMotor" style={{ height: "36px", width: "auto", display: "block" }} />
+          </div>
+          <nav className={styles.nav}>
+            <NotificationCenter />
+            {accountType === "ADMINISTRADOR" && (
+              <Link href="/admin" className={styles.navLink} style={{ color: "var(--color-accent)", fontWeight: "bold" }}>Centro Admin</Link>
+            )}
+            <Link href="/dashboard/favorites" className={styles.navLink} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--color-accent)"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              Favoritos
+            </Link>
+            <Link href="/dashboard/profile" className={styles.navLink}>Mi Perfil</Link>
+            <Link href="/" className={styles.navLink}>Cerrar Panel</Link>
+            <Link href="/api/auth/signout" className={styles.navLink} style={{ opacity: 0.7 }}>Cerrar sesión</Link>
+            <Link href="/publish" className="btnPublish">PUBLICAR GRATIS</Link>
+          </nav>
         </div>
-      ) : (
-        <div className={styles.grid}>
-          {vehicles.map((vehicle) => {
-            const mainImg = vehicle.images.find((i) => i.isMain) || vehicle.images[0];
-            const isRejected = vehicle.status === "REJECTED";
-            const isPending = vehicle.status === "PENDING";
-            const isApproved = vehicle.status === "APPROVED";
-            const isPaused = vehicle.status === "PAUSED";
-            const isSold = vehicle.status === "SOLD";
+      </header>
 
-            // Lógica de expiración temporal
-            let isExpired = false;
-            let isExpiringSoon = false;
-            let daysLeft = 0;
+      <main className={`container ${styles.main}`}>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem'}}>
+          <div>
+            <h1 className={styles.title} style={{marginBottom: '0.5rem'}}>Mis Publicaciones</h1>
+            <p className={styles.subtitle}>Supervisá el estado de los vehículos que tenés a la venta en MercadoMotor.</p>
+          </div>
+          <div style={{backgroundColor: 'var(--color-bg-secondary)', padding: '0.8rem 1.5rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', textAlign: 'center'}}>
+            <div style={{fontSize: '0.75rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.2rem'}}>Tu Código de Usuario</div>
+            <div style={{fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-primary)'}}>
+              MM{userId.replace(/-/g, '').substring(0, 8).toUpperCase()}
+            </div>
+          </div>
+        </div>
 
-            if (isApproved && vehicle.expiresAt) {
-              const now = new Date();
-              const exp = new Date(vehicle.expiresAt);
-              const diffTime = exp.getTime() - now.getTime();
-              daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        <ReferralBanner userId={userId} />
 
-              if (daysLeft < 0) {
-                isExpired = true;
-              } else if (daysLeft <= 5) {
-                isExpiringSoon = true;
+        {vehicles.length === 0 ? (
+          <div className={styles.emptyState}>
+            Aún no has cargado ningún vehículo al catálogo. <br /><br />
+            <Link href="/publish" className={styles.btnPrimary}>Comenzar a vender</Link>
+          </div>
+        ) : (
+          <div className={styles.grid}>
+            {vehicles.map((vehicle) => {
+              const mainImg = vehicle.images.find((i) => i.isMain) || vehicle.images[0];
+              const isRejected = vehicle.status === "REJECTED";
+              const isPending = vehicle.status === "PENDING";
+              const isApproved = vehicle.status === "APPROVED";
+              const isPaused = vehicle.status === "PAUSED";
+              const isSold = vehicle.status === "SOLD";
+
+              // Lógica de expiración temporal
+              let isExpired = false;
+              let isExpiringSoon = false;
+              let daysLeft = 0;
+
+              if (isApproved && vehicle.expiresAt) {
+                const now = new Date();
+                const exp = new Date(vehicle.expiresAt);
+                const diffTime = exp.getTime() - now.getTime();
+                daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (daysLeft < 0) {
+                  isExpired = true;
+                } else if (daysLeft <= 5) {
+                  isExpiringSoon = true;
+                }
               }
-            }
 
-            const isSelected = selectedIds.has(vehicle.id);
+              const isSelected = selectedIds.has(vehicle.id);
 
-            return (
-              <div
-                key={vehicle.id}
-                className={`${styles.card} ${isRejected ? styles.cardRejected : ""} ${
-                  isExpired ? styles.cardExpired : ""
-                } ${isSelected ? styles.cardSelected : ""}`}
-              >
-                <div className={styles.imageOverlayContainer}>
-                  {/* Checkbox de selección múltiple */}
-                  <label className={styles.checkboxContainer} onClick={(e) => e.stopPropagation()}>
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => handleToggleSelect(vehicle.id)}
-                      className={styles.checkboxInput}
-                    />
-                  </label>
+              return (
+                <div
+                  key={vehicle.id}
+                  className={`${styles.card} ${isRejected ? styles.cardRejected : ""} ${
+                    isExpired ? styles.cardExpired : ""
+                  } ${isSelected ? styles.cardSelected : ""}`}
+                >
+                  <div className={styles.imageOverlayContainer}>
+                    {/* Checkbox de selección múltiple */}
+                    <label className={styles.checkboxContainer} onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleToggleSelect(vehicle.id)}
+                        className={styles.checkboxInput}
+                      />
+                    </label>
 
-                  {mainImg ? (
-                    <Image
-                      src={mainImg.url}
-                      alt={`${vehicle.brand} ${vehicle.model}`}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
-                      style={{ objectFit: "cover" }}
-                    />
-                  ) : (
-                    <div className={styles.noImage}>Sin Foto</div>
-                  )}
+                    {mainImg ? (
+                      <Image
+                        src={mainImg.url}
+                        alt={`${vehicle.brand} ${vehicle.model}`}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
+                        style={{ objectFit: "cover" }}
+                      />
+                    ) : (
+                      <div className={styles.noImage}>Sin Foto</div>
+                    )}
 
-                  <div
-                    className={`${styles.statusBadge} ${
-                      styles[
-                        isExpired
-                          ? "expired"
-                          : isSold
-                          ? "sold"
-                          : isPaused
-                          ? "paused"
-                          : vehicle.status.toLowerCase()
-                      ]
-                    }`}
-                  >
-                    {isPending && "En Revisión"}
-                    {isApproved && !isExpired && !isExpiringSoon && "Público Activo"}
-                    {isApproved && isExpiringSoon && `Vence en ${daysLeft} días`}
-                    {isExpired && "Vencido - No Público"}
-                    {isRejected && "Rechazado - Corregir"}
-                    {isPaused && "Pausado"}
-                    {isSold && "Finalizado"}
-                  </div>
-                </div>
-
-                <div className={styles.cardContent}>
-                  <h3>
-                    {vehicle.brand} {vehicle.model}
-                  </h3>
-                  <div className={styles.cardRefCode}>
-                    Ref: MM{vehicle.id.replace(/-/g, "").substring(0, 8).toUpperCase()}
+                    <div
+                      className={`${styles.statusBadge} ${
+                        styles[
+                          isExpired
+                            ? "expired"
+                            : isSold
+                            ? "sold"
+                            : isPaused
+                            ? "paused"
+                            : vehicle.status.toLowerCase()
+                        ]
+                      }`}
+                    >
+                      {isPending && "En Revisión"}
+                      {isApproved && !isExpired && !isExpiringSoon && "Público Activo"}
+                      {isApproved && isExpiringSoon && `Vence en ${daysLeft} días`}
+                      {isExpired && "Vencido - No Público"}
+                      {isRejected && "Rechazado - Corregir"}
+                      {isPaused && "Pausado"}
+                      {isSold && "Finalizado"}
+                    </div>
                   </div>
 
-                  {isRejected && vehicle.rejectionComment && (
-                    <div className={styles.rejectionBox}>
-                      <strong className={styles.rejectionTitle}>Motivo del rechazo:</strong>
-                      <span className={styles.rejectionText}>"{vehicle.rejectionComment}"</span>
+                  <div className={styles.cardContent}>
+                    <h3>
+                      {vehicle.brand} {vehicle.model}
+                    </h3>
+                    <div className={styles.cardRefCode}>
+                      Ref: MM{vehicle.id.replace(/-/g, "").substring(0, 8).toUpperCase()}
                     </div>
-                  )}
 
-                  <p className={styles.details}>
-                    {vehicle.year} • {vehicle.mileage.toLocaleString()} km
-                  </p>
-                  <p className={styles.price}>
-                    {vehicle.currency === "ARS" ? "$" : "US$"}{" "}
-                    {vehicle.price.toLocaleString()}
-                  </p>
+                    {isRejected && vehicle.rejectionComment && (
+                      <div className={styles.rejectionBox}>
+                        <strong className={styles.rejectionTitle}>Motivo del rechazo:</strong>
+                        <span className={styles.rejectionText}>"{vehicle.rejectionComment}"</span>
+                      </div>
+                    )}
 
-                  {isPending && (
-                    <div className={styles.pendingNotice}>
-                      En revisión por moderadores.
-                    </div>
-                  )}
+                    <p className={styles.details}>
+                      {vehicle.year} • {vehicle.mileage.toLocaleString()} km
+                    </p>
+                    <p className={styles.price}>
+                      {vehicle.currency === "ARS" ? "$" : "US$"}{" "}
+                      {vehicle.price.toLocaleString()}
+                    </p>
 
-                  {/* Botón de opciones colapsable */}
-                  {selectedIds.size === 0 && (
-                    <div className={styles.dropdownContainer}>
-                      <button
-                        type="button"
-                        className={styles.btnDropdownToggle}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveDropdownId(
-                            activeDropdownId === vehicle.id ? null : vehicle.id
-                          );
-                        }}
-                      >
-                        Opciones
-                        <svg
-                          width="10"
-                          height="6"
-                          viewBox="0 0 10 6"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          style={{
-                            transform:
-                              activeDropdownId === vehicle.id
-                                ? "rotate(180deg)"
-                                : "rotate(0)",
-                            transition: "transform 0.2s ease",
+                    {isPending && (
+                      <div className={styles.pendingNotice}>
+                        En revisión por moderadores.
+                      </div>
+                    )}
+
+                    {/* Botón de opciones colapsable */}
+                    {selectedIds.size === 0 && (
+                      <div className={styles.dropdownContainer}>
+                        <button
+                          type="button"
+                          className={styles.btnDropdownToggle}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveDropdownId(
+                              activeDropdownId === vehicle.id ? null : vehicle.id
+                            );
                           }}
                         >
-                          <path
-                            d="M1 1L5 5L9 1"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </button>
-
-                      {activeDropdownId === vehicle.id && (
-                        <div className={styles.dropdownMenu}>
-                          <Link
-                            href={`/publish/edit/${vehicle.id}`}
-                            className={styles.dropdownItem}
+                          Opciones
+                          <svg
+                            width="10"
+                            height="6"
+                            viewBox="0 0 10 6"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            style={{
+                              transform:
+                                activeDropdownId === vehicle.id
+                                  ? "rotate(180deg)"
+                                  : "rotate(0)",
+                              transition: "transform 0.2s ease",
+                            }}
                           >
-                            Editar publicación
-                          </Link>
+                            <path
+                              d="M1 1L5 5L9 1"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </button>
 
-                          {isApproved && !isExpired && (
-                            <>
-                              <Link
-                                href={`/catalogo/${vehicle.id}`}
+                        {activeDropdownId === vehicle.id && (
+                          <div className={styles.dropdownMenu}>
+                            <Link
+                              href={`/publish/edit/${vehicle.id}`}
+                              className={styles.dropdownItem}
+                            >
+                              Editar publicación
+                            </Link>
+
+                            {isApproved && !isExpired && (
+                              <>
+                                <Link
+                                  href={`/catalogo/${vehicle.id}`}
+                                  className={styles.dropdownItem}
+                                >
+                                  Ver en catálogo
+                                </Link>
+                                <Link
+                                  href={`/catalogo/${vehicle.id}/poster`}
+                                  className={styles.dropdownItem}
+                                  target="_blank"
+                                >
+                                  Cartel para el auto
+                                </Link>
+                              </>
+                            )}
+
+                            {(isApproved || isPaused) && !isExpired && (
+                              <button
+                                type="button"
                                 className={styles.dropdownItem}
+                                onClick={() =>
+                                  handleTogglePauseIndividual(vehicle.id, vehicle.status)
+                                }
                               >
-                                Ver en catálogo
-                              </Link>
-                              <Link
-                                href={`/catalogo/${vehicle.id}/poster`}
+                                {isPaused ? "Reanudar publicación" : "Pausar publicación"}
+                              </button>
+                            )}
+
+                            {(isApproved || isPaused || isExpired) && (
+                              <button
+                                type="button"
                                 className={styles.dropdownItem}
-                                target="_blank"
+                                onClick={() => handleOpenFinalizeIndividual(vehicle.id)}
                               >
-                                Cartel para el auto
-                              </Link>
-                            </>
-                          )}
+                                Finalizar publicación
+                              </button>
+                            )}
 
-                          {(isApproved || isPaused) && !isExpired && (
+                            {(isExpiringSoon || isExpired) && (
+                              <button
+                                type="button"
+                                className={styles.dropdownItem}
+                                onClick={() => handleRenewIndividual(vehicle.id)}
+                              >
+                                Renovar (45 días)
+                              </button>
+                            )}
+
                             <button
                               type="button"
-                              className={styles.dropdownItem}
-                              onClick={() =>
-                                handleTogglePauseIndividual(vehicle.id, vehicle.status)
-                              }
+                              className={`${styles.dropdownItem} ${styles.dropdownItemDanger}`}
+                              onClick={() => handleDeleteIndividual(vehicle.id)}
                             >
-                              {isPaused ? "Reanudar publicación" : "Pausar publicación"}
+                              Eliminar publicación
                             </button>
-                          )}
-
-                          {(isApproved || isPaused || isExpired) && (
-                            <button
-                              type="button"
-                              className={styles.dropdownItem}
-                              onClick={() => handleOpenFinalizeIndividual(vehicle.id)}
-                            >
-                              Finalizar publicación
-                            </button>
-                          )}
-
-                          {(isExpiringSoon || isExpired) && (
-                            <button
-                              type="button"
-                              className={styles.dropdownItem}
-                              onClick={() => handleRenewIndividual(vehicle.id)}
-                            >
-                              Renovar (45 días)
-                            </button>
-                          )}
-
-                          <button
-                            type="button"
-                            className={`${styles.dropdownItem} ${styles.dropdownItemDanger}`}
-                            onClick={() => handleDeleteIndividual(vehicle.id)}
-                          >
-                            Eliminar publicación
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </main>
 
       {/* Barra de acciones masivas flotante sticky */}
       {selectedIds.size > 0 && (
@@ -700,6 +742,6 @@ export default function DashboardClient({ initialVehicles, userId, styles }: Das
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
