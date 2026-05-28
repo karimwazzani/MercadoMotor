@@ -340,7 +340,7 @@
   position: absolute;
   top: 5px;
   right: 5px;
-  background: rgba(255, 0, 0, 0.8);
+  background-color: var(--color-accent);
   color: white;
   border: none;
   border-radius: 50%;
@@ -352,6 +352,17 @@
   align-items: center;
   justify-content: center;
   font-weight: bold;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.btnRemovePhoto:hover {
+  background-color: var(--color-accent-hover);
+  transform: scale(1.1);
+}
+
+.photoItemDragging {
+  opacity: 0.5;
+  border: 2px dashed var(--color-accent) !important;
 }
 
 .mainPhotoTag {

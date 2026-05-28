@@ -57,6 +57,7 @@ export default function PublishForm() {
   const [files, setFiles] = useState<(File | Blob)[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   useEffect(() => {
     document.title = "Publicar Vehículo | MercadoMotor";
@@ -66,24 +67,65 @@ export default function PublishForm() {
     const ref = params.get('ref');
     if (ref) setReferralCode(ref);
 
+    const findExactLocationMatch = (provInput: string, muniInput: string, locInput: string) => {
+      const norm = (s: string) => s ? s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : "";
+      
+      const normProv = norm(provInput);
+      const normMuni = norm(muniInput);
+      const normLoc = norm(locInput);
+      
+      let matchedProvince = "";
+      let matchedMunicipality = "";
+      let matchedLocality = "";
+      
+      const provinceKeys = Object.keys(LOCATION_DATA);
+      const matchedProvKey = provinceKeys.find(p => norm(p) === normProv);
+      
+      if (matchedProvKey) {
+        matchedProvince = matchedProvKey;
+        const muniKeys = Object.keys(LOCATION_DATA[matchedProvKey] || {});
+        const matchedMuniKey = muniKeys.find(m => norm(m) === normMuni);
+        
+        if (matchedMuniKey) {
+          matchedMunicipality = matchedMuniKey;
+          const localitiesList = LOCATION_DATA[matchedProvKey][matchedMuniKey] || [];
+          const matchedLocKey = localitiesList.find(l => norm(l) === normLoc);
+          
+          if (matchedLocKey) {
+            matchedLocality = matchedLocKey;
+          } else if (localitiesList.length > 0) {
+            matchedLocality = localitiesList[0];
+          }
+        }
+      }
+      
+      return {
+        province: matchedProvince,
+        municipality: matchedMunicipality,
+        locality: matchedLocality
+      };
+    };
+
     fetch('/api/profile').then(res => res.json()).then(data => {
       if (data?.accountType === "AGENCIA" && data.agencies?.[0]) {
         const agency = data.agencies[0];
         const cityParts = agency.city?.split(", ") || [];
+        const matched = findExactLocationMatch(agency.province || "", cityParts[1] || "", cityParts[0] || "");
         setFormData(prev => ({
           ...prev,
-          province: agency.province || "",
-          municipality: cityParts[1] || "",
-          locality: cityParts[0] || ""
+          province: matched.province,
+          municipality: matched.municipality,
+          locality: matched.locality
         }));
       } else if (data?.location) {
         const parts = data.location.split(", ");
         if (parts.length >= 3) {
+          const matched = findExactLocationMatch(parts[2]?.trim() || "", parts[1]?.trim() || "", parts[0]?.trim() || "");
           setFormData(prev => ({
             ...prev,
-            locality: parts[0]?.trim() || "",
-            municipality: parts[1]?.trim() || "",
-            province: parts[2]?.trim() || ""
+            province: matched.province,
+            municipality: matched.municipality,
+            locality: matched.locality
           }));
         }
       }
@@ -250,6 +292,42 @@ export default function PublishForm() {
       newUrls.splice(index, 1);
       return newUrls;
     });
+  };
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", index.toString());
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    const sourceIndex = draggedIndex !== null ? draggedIndex : parseInt(e.dataTransfer.getData("text/plain"), 10);
+    
+    if (sourceIndex === targetIndex || isNaN(sourceIndex)) {
+      setDraggedIndex(null);
+      return;
+    }
+
+    setFiles(prev => {
+      const updated = [...prev];
+      const [removed] = updated.splice(sourceIndex, 1);
+      updated.splice(targetIndex, 0, removed);
+      return updated;
+    });
+
+    setPreviewUrls(prev => {
+      const updated = [...prev];
+      const [removed] = updated.splice(sourceIndex, 1);
+      updated.splice(targetIndex, 0, removed);
+      return updated;
+    });
+
+    setDraggedIndex(null);
   };
 
   const nextStep = () => {
@@ -663,8 +741,17 @@ export default function PublishForm() {
 
                 <div className={styles.photoGrid}>
                   {previewUrls.map((url, index) => (
-                    <div key={index} className={styles.photoItem}>
-                      <Image src={url} alt={`Preview ${index}`} fill style={{ objectFit: 'cover' }} />
+                    <div 
+                      key={index} 
+                      className={`${styles.photoItem} ${draggedIndex === index ? styles.photoItemDragging : ""}`}
+                      draggable="true"
+                      onDragStart={(e) => handleDragStart(e, index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDrop={(e) => handleDrop(e, index)}
+                      onDragEnd={() => setDraggedIndex(null)}
+                      style={{ cursor: "grab" }}
+                    >
+                      <Image src={url} alt={`Preview ${index}`} fill style={{ objectFit: 'cover', pointerEvents: 'none' }} />
                       <button type="button" onClick={() => removeFile(index)} className={styles.btnRemovePhoto}>×</button>
                       {index === 0 && <span className={styles.mainPhotoTag}>Principal</span>}
                     </div>

@@ -59,6 +59,16 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       }
     }
 
+    const imageOrderJson = formData.get("imageOrder") as string;
+    let imageOrder: { type: "existing" | "new"; id?: string; index?: number }[] = [];
+    if (imageOrderJson) {
+      try {
+        imageOrder = JSON.parse(imageOrderJson);
+      } catch (e) {
+        console.error("No se pudo parsear imageOrder");
+      }
+    }
+
     // Proceso 1: Destrucción local y en DB de imagenes seleccionadas
     if (imagesToDelete.length > 0) {
       const imagesToNuke = await prisma.image.findMany({
@@ -85,40 +95,50 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
     // Proceso 2: Agregar nuevas fotos
     const newFiles = (formData.getAll("newImages") as File[]).filter(f => f.name && f.size > 0);
-    const uploadedImagesPaths: { url: string; order: number; isMain: boolean }[] = [];
-
-    // Calcular el order base basado en las imagenes que quedaron
-    const remainingImagesCount = existingVehicle.images.length - imagesToDelete.length;
-    let startingOrder = Math.max(0, remainingImagesCount);
+    const uploadedUrls: string[] = [];
 
     if (newFiles.length > 0) {
       for (let i = 0; i < newFiles.length; i++) {
         const file = newFiles[i];
         const publicUrl = await uploadToCloud(file, "vehicles");
-
-        uploadedImagesPaths.push({
-          url: publicUrl,
-          order: startingOrder + i,
-          isMain: startingOrder === 0 && i === 0, 
-        });
+        uploadedUrls.push(publicUrl);
       }
     }
 
-    // Asegurar si borramos la main image obligar a la primera remanente a ser isMain=true
-    if (imagesToDelete.length > 0) {
-      const dbImages = await prisma.image.findMany({
-        where: { 
-          vehicleId,
-          NOT: { id: { in: imagesToDelete } }
-        },
-        orderBy: { order: 'asc' }
-      });
-      
-      if (dbImages.length > 0 && !dbImages.some(img => img.isMain) && uploadedImagesPaths.length === 0) {
-        await prisma.image.update({
-          where: { id: dbImages[0].id },
-          data: { isMain: true }
+    const hasImageOrder = imageOrder.length > 0;
+    const uploadedImagesPaths: { url: string; order: number; isMain: boolean }[] = [];
+
+    if (!hasImageOrder) {
+      // Legacy fallback
+      const remainingImagesCount = existingVehicle.images.length - imagesToDelete.length;
+      let startingOrder = Math.max(0, remainingImagesCount);
+
+      if (uploadedUrls.length > 0) {
+        for (let i = 0; i < uploadedUrls.length; i++) {
+          uploadedImagesPaths.push({
+            url: uploadedUrls[i],
+            order: startingOrder + i,
+            isMain: startingOrder === 0 && i === 0, 
+          });
+        }
+      }
+
+      // Asegurar si borramos la main image obligar a la primera remanente a ser isMain=true
+      if (imagesToDelete.length > 0) {
+        const dbImages = await prisma.image.findMany({
+          where: { 
+            vehicleId,
+            NOT: { id: { in: imagesToDelete } }
+          },
+          orderBy: { order: 'asc' }
         });
+        
+        if (dbImages.length > 0 && !dbImages.some(img => img.isMain) && uploadedImagesPaths.length === 0) {
+          await prisma.image.update({
+            where: { id: dbImages[0].id },
+            data: { isMain: true }
+          });
+        }
       }
     }
 
@@ -156,11 +176,40 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         acceptsTradeIn,
         acceptsFinancing,
         status: "PENDING", // Devuelto a revision
-        images: {
-          create: uploadedImagesPaths
-        }
+        ...(!hasImageOrder ? {
+          images: {
+            create: uploadedImagesPaths
+          }
+        } : {})
       }
     });
+
+    if (hasImageOrder) {
+      for (let i = 0; i < imageOrder.length; i++) {
+        const item = imageOrder[i];
+        if (item.type === "existing") {
+          await prisma.image.update({
+            where: { id: item.id },
+            data: {
+              order: i,
+              isMain: i === 0
+            }
+          });
+        } else if (item.type === "new") {
+          const newUrl = uploadedUrls[item.index!];
+          if (newUrl) {
+            await prisma.image.create({
+              data: {
+                url: newUrl,
+                order: i,
+                isMain: i === 0,
+                vehicleId: vehicleId
+              }
+            });
+          }
+        }
+      }
+    }
 
     if (newPrice < existingVehicle.price) {
       console.log(`[DEBUG] Price Drop Detected! Searching for interested users...`);

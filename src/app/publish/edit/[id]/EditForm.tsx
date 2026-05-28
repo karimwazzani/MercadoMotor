@@ -15,6 +15,14 @@ import {
 } from "@/lib/constants";
 import { EQUIPMENT_CATEGORIES } from "@/lib/equipment";
 
+interface GalleryItem {
+  key: string;
+  type: "existing" | "new";
+  id?: string;
+  url: string;
+  file?: File | Blob;
+}
+
 export default function EditForm({ vehicle }: { vehicle: any }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -36,9 +44,40 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
   // Parse location (format: "Locality, Municipality, Province")
   const initialLocation = vehicle.location || "";
   const locationParts = initialLocation.split(", ");
-  const initialLocality = locationParts[0] || "";
-  const initialMunicipality = locationParts[1] || "";
-  const initialProvince = locationParts[2] || "";
+  const rawLocality = locationParts[0] || "";
+  const rawMunicipality = locationParts[1] || "";
+  const rawProvince = locationParts[2] || "";
+
+  // Normalize case-insensitively
+  const norm = (s: string) => s ? s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : "";
+  const normProv = norm(rawProvince);
+  const normMuni = norm(rawMunicipality);
+  const normLoc = norm(rawLocality);
+
+  let initialProvince = "";
+  let initialMunicipality = "";
+  let initialLocality = "";
+
+  const provinceKeys = Object.keys(LOCATION_DATA);
+  const matchedProvKey = provinceKeys.find(p => norm(p) === normProv);
+
+  if (matchedProvKey) {
+    initialProvince = matchedProvKey;
+    const muniKeys = Object.keys(LOCATION_DATA[matchedProvKey] || {});
+    const matchedMuniKey = muniKeys.find(m => norm(m) === normMuni);
+
+    if (matchedMuniKey) {
+      initialMunicipality = matchedMuniKey;
+      const localitiesList = LOCATION_DATA[matchedProvKey][matchedMuniKey] || [];
+      const matchedLocKey = localitiesList.find(l => norm(l) === normLoc);
+
+      if (matchedLocKey) {
+        initialLocality = matchedLocKey;
+      } else if (localitiesList.length > 0) {
+        initialLocality = localitiesList[0];
+      }
+    }
+  }
 
   const [formData, setFormData] = useState({
     category: vehicle.category || "",
@@ -73,12 +112,22 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
   const models = (categoryData && formData.brand) ? Object.keys(categoryData[formData.brand] || {}).sort((a, b) => a === "Otro" ? 1 : b === "Otro" ? -1 : a.localeCompare(b)) : [];
   const versions = (categoryData && formData.brand && formData.model) ? (categoryData[formData.brand]?.[formData.model] || ["Otro"]) : [];
 
-  // Existing vs New Images management
-  const [existingImages, setExistingImages] = useState<{id: string, url: string}[]>(vehicle.images || []);
+  // Gallery management unificada
+  const [gallery, setGallery] = useState<GalleryItem[]>(() => {
+    if (vehicle.images) {
+      return [...vehicle.images]
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+        .map((img: any) => ({
+          key: `existing-${img.id}`,
+          type: "existing",
+          id: img.id,
+          url: img.url
+        }));
+    }
+    return [];
+  });
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
-  
-  const [newFiles, setNewFiles] = useState<File[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const handleChange = (e: any) => {
     const { name, value, type, checked } = e.target;
@@ -121,34 +170,139 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
     });
   };
 
-  const handleOldImageRemove = (imageId: string) => {
-    setExistingImages(prev => prev.filter(img => img.id !== imageId));
-    setImagesToDelete(prev => [...prev, imageId]);
+  const compressImage = (file: File, maxWidth = 1200, quality = 0.75): Promise<File | Blob> => {
+    return new Promise((resolve) => {
+      const dataURLtoBlob = (dataurl: string): Blob => {
+        const arr = dataurl.split(',');
+        const mime = arr[0].match(/:(.*?);/)![1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
+      };
+
+      const img = new window.Image();
+      const objectUrl = URL.createObjectURL(file);
+      
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const resolveCompressed = (blob: Blob) => {
+          const name = file.name ? file.name.replace(/\.[^.]+$/, '.jpg') : 'image.jpg';
+          const compressed = Object.assign(blob, {
+            name: name,
+            lastModified: Date.now()
+          });
+          resolve(compressed);
+        };
+
+        try {
+          if (canvas.toBlob) {
+            canvas.toBlob(
+              (blob) => {
+                if (blob) {
+                  resolveCompressed(blob);
+                } else {
+                  try {
+                    const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    resolveCompressed(dataURLtoBlob(dataUrl));
+                  } catch (e) {
+                    resolve(file);
+                  }
+                }
+              },
+              'image/jpeg',
+              quality
+            );
+          } else {
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            resolveCompressed(dataURLtoBlob(dataUrl));
+          }
+        } catch (e) {
+          resolve(file);
+        }
+      };
+      
+      img.onerror = () => { 
+        URL.revokeObjectURL(objectUrl); 
+        resolve(file);
+      };
+      img.src = objectUrl;
+    });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
-      if (existingImages.length + newFiles.length + selectedFiles.length > 15) {
-        setError("Podés tener hasta un máximo de 15 fotos por publicación.");
+      if (gallery.length + selectedFiles.length > 15) {
+        setError("Podés subir hasta un máximo de 15 fotos por publicación.");
         return;
       }
       setError("");
-      setNewFiles((prev) => [...prev, ...selectedFiles]);
-
-      const newUrls = selectedFiles.map(file => URL.createObjectURL(file));
-      setPreviewUrls((prev) => [...prev, ...newUrls]);
+      
+      const compressed = await Promise.all(selectedFiles.map(f => compressImage(f)));
+      const newItems: GalleryItem[] = compressed.map(file => {
+        const url = URL.createObjectURL(file as File);
+        return {
+          key: `new-${Date.now()}-${Math.random()}`,
+          type: "new",
+          url: url,
+          file: file
+        };
+      });
+      setGallery(prev => [...prev, ...newItems]);
     }
   };
 
-  const removeNewFile = (index: number) => {
-    setNewFiles(prev => prev.filter((_, i) => i !== index));
-    setPreviewUrls(prev => {
-      const newUrls = [...prev];
-      URL.revokeObjectURL(newUrls[index]);
-      newUrls.splice(index, 1);
-      return newUrls;
+  const removeGalleryItem = (item: GalleryItem) => {
+    if (item.type === "existing") {
+      setImagesToDelete(prev => [...prev, item.id!]);
+    } else {
+      URL.revokeObjectURL(item.url);
+    }
+    setGallery(prev => prev.filter(x => x.key !== item.key));
+  };
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", index.toString());
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    const sourceIndex = draggedIndex !== null ? draggedIndex : parseInt(e.dataTransfer.getData("text/plain"), 10);
+    
+    if (sourceIndex === targetIndex || isNaN(sourceIndex)) {
+      setDraggedIndex(null);
+      return;
+    }
+
+    setGallery(prev => {
+      const updated = [...prev];
+      const [removed] = updated.splice(sourceIndex, 1);
+      updated.splice(targetIndex, 0, removed);
+      return updated;
     });
+
+    setDraggedIndex(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -175,7 +329,7 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
-    if (existingImages.length === 0 && newFiles.length === 0) {
+    if (gallery.length === 0) {
       setError("Debes conservar al menos 1 foto del vehículo.");
       setLoading(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -195,9 +349,25 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
       uploadData.append("equipment", JSON.stringify(formData.equipment));
       uploadData.append("imagesToDelete", JSON.stringify(imagesToDelete));
 
-      newFiles.forEach((file) => {
-        uploadData.append("newImages", file);
+      const newFilesToUpload = gallery
+        .filter(item => item.type === "new")
+        .map(item => item.file) as (File | Blob)[];
+
+      const imageOrder = gallery.map((item) => {
+        if (item.type === "existing") {
+          return { type: "existing", id: item.id };
+        } else {
+          const newItemsOnly = gallery.filter(x => x.type === "new");
+          const index = newItemsOnly.findIndex(x => x.key === item.key);
+          return { type: "new", index: index };
+        }
       });
+
+      newFilesToUpload.forEach((file) => {
+        const filename = (file as any).name || "image.jpg";
+        uploadData.append("newImages", file, filename);
+      });
+      uploadData.append("imageOrder", JSON.stringify(imageOrder));
 
       const res = await fetch(`/api/vehicles/${vehicle.id}`, {
         method: "PUT",
@@ -515,20 +685,6 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
               Agrega o elimina fotos de tu unidad. Se recomienda usar formatos horizontales. Límite total: 15 fotos.
             </p>
             
-            {existingImages.length > 0 && (
-              <div style={{ marginBottom: "2rem" }}>
-                <h4 style={{ marginBottom: "1rem", color: "var(--color-primary)", fontSize: "0.9rem" }}>Fotos Guardadas Actuales</h4>
-                <div className={styles.photoGrid}>
-                  {existingImages.map((img) => (
-                    <div key={img.id} className={styles.photoItem}>
-                      <Image src={img.url} alt="vehiculo" fill style={{ objectFit: 'cover' }} />
-                      <button type="button" onClick={() => handleOldImageRemove(img.id)} className={styles.btnRemovePhoto}>X</button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
             <div className={styles.mockUploadBox} style={{ position: 'relative', marginBottom: "2rem" }}>
               <input 
                 type="file" 
@@ -543,14 +699,24 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
               </div>
             </div>
 
-            {previewUrls.length > 0 && (
+            {gallery.length > 0 && (
               <div>
-                <h4 style={{ marginBottom: "1rem", color: "var(--color-accent)", fontSize: "0.9rem" }}>Fotos Nuevas a Subir</h4>
+                <h4 style={{ marginBottom: "1.25rem", color: "var(--color-primary)", fontSize: "0.9rem" }}>Fotos del Vehículo (Arrastra para reordenar)</h4>
                 <div className={styles.photoGrid}>
-                  {previewUrls.map((url, index) => (
-                    <div key={index} className={styles.photoItem}>
-                      <Image src={url} alt="previa" fill style={{ objectFit: 'cover' }} />
-                      <button type="button" onClick={() => removeNewFile(index)} className={styles.btnRemovePhoto}>X</button>
+                  {gallery.map((item, index) => (
+                    <div 
+                      key={item.key} 
+                      className={`${styles.photoItem} ${draggedIndex === index ? styles.photoItemDragging : ""}`}
+                      draggable="true"
+                      onDragStart={(e) => handleDragStart(e, index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDrop={(e) => handleDrop(e, index)}
+                      onDragEnd={() => setDraggedIndex(null)}
+                      style={{ cursor: "grab" }}
+                    >
+                      <Image src={item.url} alt="vehiculo" fill style={{ objectFit: 'cover', pointerEvents: 'none' }} />
+                      <button type="button" onClick={() => removeGalleryItem(item)} className={styles.btnRemovePhoto}>X</button>
+                      {index === 0 && <span className={styles.mainPhotoTag}>Principal</span>}
                     </div>
                   ))}
                 </div>
@@ -566,7 +732,7 @@ export default function EditForm({ vehicle }: { vehicle: any }) {
             <button 
               type="submit" 
               className={styles.btnSubmit} 
-              disabled={loading || (existingImages.length === 0 && newFiles.length === 0)}
+              disabled={loading || gallery.length === 0}
               style={{ minWidth: "180px" }}
             >
               {loading ? "Guardando cambios..." : "Guardar Cambios"}
