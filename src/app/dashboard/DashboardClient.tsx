@@ -389,9 +389,11 @@ export default function DashboardClient({ initialVehicles, userId, accountType }
                     ) : (
                       <div className={styles.noImage}>Sin Foto</div>
                     )}
+                  </div>
 
+                  <div className={styles.cardContent}>
                     <div
-                      className={`${styles.statusBadge} ${
+                      className={`${styles.statusBadgeInline} ${
                         styles[
                           isExpired
                             ? "expired"
@@ -406,14 +408,11 @@ export default function DashboardClient({ initialVehicles, userId, accountType }
                       {isPending && "En Revisión"}
                       {isApproved && !isExpired && !isExpiringSoon && "Público Activo"}
                       {isApproved && isExpiringSoon && `Vence en ${daysLeft} días`}
-                      {isExpired && "Vencido - No Público"}
-                      {isRejected && "Rechazado - Corregir"}
+                      {isExpired && "Vencido"}
+                      {isRejected && "Rechazado"}
                       {isPaused && "Pausado"}
                       {isSold && "Finalizado"}
                     </div>
-                  </div>
-
-                  <div className={styles.cardContent}>
                     <h3>
                       {vehicle.brand} {vehicle.model}
                     </h3>
