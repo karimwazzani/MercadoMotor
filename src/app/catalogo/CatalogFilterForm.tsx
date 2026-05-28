@@ -128,10 +128,11 @@ export default function CatalogFilterForm({ initialParams }: CatalogFilterFormPr
     (initialParams.orden && initialParams.orden !== "relevantes");
 
   return (
-    <div className={styles.filterCard}>
-      <h3 className={styles.filterTitle}>Refinar Búsqueda</h3>
-      
-      <form action="/catalogo" method="GET" className={styles.filterForm}>
+    <div className={styles.filterCardShell}>
+      <div className={styles.filterCardCore}>
+        <h3 className={styles.filterTitle}>Refinar Búsqueda</h3>
+        
+        <form action="/catalogo" method="GET" className={styles.filterForm}>
         {initialParams.query && <input type="hidden" name="query" value={initialParams.query} />}
 
         {/* 1. CATEGORÍA */}
@@ -280,6 +281,7 @@ export default function CatalogFilterForm({ initialParams }: CatalogFilterFormPr
            <Link href="/catalogo" className={styles.btnClearFilters}>Borrar Filtros</Link>
         )}
       </form>
+      </div>
     </div>
   );
 }
